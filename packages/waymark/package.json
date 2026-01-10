@@ -1,0 +1,42 @@
+{
+  "name": "waymark",
+  "version": "0.1.0",
+  "description": "Simplest strongly typed router for React",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "author": "strblr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/strblr/waymark"
+  },
+  "homepage": "https://github.com/strblr/waymark",
+  "bugs": "https://github.com/strblr/waymark/issues",
+  "keywords": [
+    "react",
+    "router",
+    "wouter",
+    "typescript",
+    "type",
+    "typed",
+    "navigate",
+    "navigation",
+    "search",
+    "params",
+    "strongly-typed",
+    "react-router",
+    "react-router-dom"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

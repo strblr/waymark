@@ -1,0 +1,7 @@
+{
+  "name": "waymark",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
