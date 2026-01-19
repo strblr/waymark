@@ -19,8 +19,10 @@ const tos2 = tos.route("section2").component(Section2);
 
 const user = root.route("user/:id").component(User);
 
-// Only register routes that can be targeted
-const routes = [about, tos, tos1, tos2, user, notFound];
+const userBio = user.route("bio").component(UserBio);
+
+// Only register routes that should be reachable
+const routes = [about, tos, tos1, tos2, user, userBio, notFound];
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -78,7 +80,22 @@ function About() {
 
 function User() {
   const { id } = user.useParams();
-  return <div>User {JSON.stringify({ id, type: typeof id })}</div>;
+  return (
+    <div>
+      <Link to="/user/:id" params={{ id }}>
+        User
+      </Link>{" "}
+      <Link to="/user/:id/bio" params={{ id }}>
+        Bio
+      </Link>
+      <div>User {JSON.stringify({ id, type: typeof id })}</div>
+      <Outlet />
+    </div>
+  );
+}
+
+function UserBio() {
+  return <div>User Bio</div>;
 }
 
 function NotFound() {

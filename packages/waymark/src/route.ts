@@ -11,6 +11,7 @@ import {
 export class Route<Path extends string, Params extends {}, Search extends {}> {
   _keys: string[];
   _pattern: RegExp;
+  _prefixPattern: RegExp;
   _preloaded = false;
 
   constructor(
@@ -23,6 +24,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
     const { keys, pattern } = parse(_path);
     this._keys = keys;
     this._pattern = pattern;
+    this._prefixPattern = parse(_path, true).pattern;
   }
 
   route<SubPath extends string>(subPath: SubPath) {
