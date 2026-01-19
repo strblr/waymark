@@ -1,5 +1,5 @@
 import { useContext, useMemo, useSyncExternalStore } from "react";
-import { routerContext } from "./contexts";
+import { outletContext, routerContext } from "./contexts";
 import type { Router } from "../router";
 import type { Routes } from "../utils";
 
@@ -11,6 +11,12 @@ export function useRouter() {
     throw new Error("useRouter must be used within a router context");
   }
   return router;
+}
+
+// useOutlet
+
+export function useOutlet() {
+  return useContext(outletContext);
 }
 
 // useLocation

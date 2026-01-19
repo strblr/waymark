@@ -2,7 +2,6 @@ import {
   createElement,
   useMemo,
   useState,
-  useContext,
   useLayoutEffect,
   useRef,
   useEffect,
@@ -15,7 +14,7 @@ import {
   type RefAttributes
 } from "react";
 import { routerContext, outletContext } from "./contexts";
-import { _useSubscribe, useRouter } from "./hooks";
+import { useRouter, useOutlet, _useSubscribe } from "./hooks";
 import { Router, type RouterOptions } from "../router";
 import {
   mergeRefs,
@@ -58,7 +57,7 @@ export function RouterRoot(props: RouterRootProps) {
 // Outlet
 
 export function Outlet() {
-  return useContext(outletContext);
+  return useOutlet();
 }
 
 // Navigate
