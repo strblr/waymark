@@ -64,6 +64,7 @@ export class Router {
   }
 
   resolveParams<R extends Routes>(route: R, path: string): ParamsOfRoute<R> {
+    path = this.getCanonicalPath(path);
     return route._mapParams(extractParams(path, route._pattern, route._keys));
   }
 
