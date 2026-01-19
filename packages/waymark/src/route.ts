@@ -5,7 +5,8 @@ import {
   normalizePath,
   type Assign,
   type NormalizePath,
-  type ComponentLoader
+  type ComponentLoader,
+  type OptionalOnUndefined
 } from "./utils";
 
 export class Route<Path extends string, Params extends {}, Search extends {}> {
@@ -39,7 +40,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   }
 
   params<NextParams extends {}>(mapParams: (params: Params) => NextParams) {
-    type MergedParams = Assign<Params, NextParams>;
+    type MergedParams = Assign<Params, OptionalOnUndefined<NextParams>>;
     return new Route<Path, MergedParams, Search>(
       this._path,
       params => {
@@ -55,7 +56,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   search<NextSearch extends {}>(
     mapSearch: (search: Search & Record<string, unknown>) => NextSearch
   ) {
-    type MergedSearch = Assign<Search, NextSearch>;
+    type MergedSearch = Assign<Search, OptionalOnUndefined<NextSearch>>;
     return new Route<Path, Params, MergedSearch>(
       this._path,
       this._mapParams,
