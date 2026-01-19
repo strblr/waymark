@@ -7,16 +7,15 @@ const root = ultraroot.route("").component(Layout);
 
 const about = root.route("about").component(About);
 
-const user = root
-  .route("user/:id")
-  // .params(params => ({ id: Number(params.id) }))
-  .component(User);
-// .search(search => ({ q: String(search.q) }))
-// .search(search => ({ q: String(search.q) }));
+const tos = root
+  .route("terms")
+  .lazy(() => import("./terms").then(m => m.Terms));
+
+const user = root.route("user/:id").component(User);
 
 const notFound = root.route("*").component(NotFound);
 
-const routes = { ultraroot, root, about, user, notFound };
+const routes = { ultraroot, root, about, tos, user, notFound };
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -48,6 +47,9 @@ function Layout() {
     <div>
       <Link to="/about" activeStyle={{ color: "red" }}>
         About
+      </Link>{" "}
+      <Link to="/terms" activeStyle={{ color: "blue" }}>
+        Terms
       </Link>{" "}
       <Link
         to="/user/:id"

@@ -33,8 +33,7 @@ export class Router {
     this._routes = Object.values(this.routes);
   }
 
-  getRouteMatch(): Routes | undefined {
-    let path = this.history.getPath();
+  getRouteMatch(path: string): Routes | undefined {
     if (path === this.basePath || path.startsWith(`${this.basePath}/`)) {
       path = path.slice(this.basePath.length) || "/";
     }

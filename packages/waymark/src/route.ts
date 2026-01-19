@@ -65,32 +65,27 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
     );
   }
 
-  component(
-    component: ComponentType,
-    options?: { lazy?: false }
-  ): Route<Path, Params, Search>;
-
-  component(
-    loader: ComponentLoader,
-    options: { lazy: true }
-  ): Route<Path, Params, Search>;
-
-  component(
-    component: ComponentType | ComponentLoader,
-    options?: { lazy?: boolean }
-  ) {
-    const comp = options?.lazy
-      ? lazy(component as ComponentLoader)
-      : (component as ComponentType);
-    const preloaders = options?.lazy
-      ? [...this._preloaders, component as ComponentLoader]
-      : this._preloaders;
+  component(component: ComponentType) {
     return new Route<Path, Params, Search>(
       this._path,
       this._mapParams,
       this._mapSearch,
-      [...this._components, comp],
-      preloaders
+      [...this._components, component],
+      this._preloaders
+    );
+  }
+
+  lazy(loader: ComponentLoader) {
+    const lazyLoader = async () => {
+      const result = await loader();
+      return "default" in result ? result : { default: result };
+    };
+    return new Route<Path, Params, Search>(
+      this._path,
+      this._mapParams,
+      this._mapSearch,
+      [...this._components, lazy(lazyLoader)],
+      [...this._preloaders, loader]
     );
   }
 

@@ -22,7 +22,9 @@ export function RouterRoot(props: RouterRootProps) {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
-  const route = _useSubscribe(router, () => router.getRouteMatch());
+  const route = _useSubscribe(router, () =>
+    router.getRouteMatch(router.history.getPath())
+  );
   if (!route) {
     console.error("[Waymark] No route found for current path");
   }
