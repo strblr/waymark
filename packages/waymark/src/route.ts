@@ -1,7 +1,6 @@
 import { type ComponentType, lazy } from "react";
 import { type RouteParams, parse } from "regexparam";
 import type { Merge } from "type-fest";
-import { useParams, useSearch } from "./react";
 import {
   normalizePath,
   type NormalizePath,
@@ -95,14 +94,6 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
     if (this._preloaded) return;
     this._preloaders.forEach(loader => loader());
     this._preloaded = true;
-  }
-
-  useParams(): Params {
-    return useParams(this);
-  }
-
-  useSearch(): Search {
-    return useSearch(this);
   }
 }
 

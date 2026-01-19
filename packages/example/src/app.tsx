@@ -1,5 +1,13 @@
 import { useEffect } from "react";
-import { RouterRoot, route, Outlet, Link, useRouter } from "waymark";
+import {
+  RouterRoot,
+  route,
+  Outlet,
+  Link,
+  useRouter,
+  useParams,
+  useSearch
+} from "waymark";
 
 const ultraroot = route("").component(Outlet);
 
@@ -17,9 +25,15 @@ const tos1 = tos.route("section1").component(Section1);
 
 const tos2 = tos.route("section2").component(Section2);
 
-const user = root.route("user/:id").component(User);
+const user = root
+  .route("user/:id")
+  .params(p => ({ id: Number(p.id) }))
+  .component(User);
 
-const userBio = user.route("bio").component(UserBio);
+const userBio = user
+  .route("bio")
+  .search(s => ({ name: s.name ? String(s.name) : "" }))
+  .component(UserBio);
 
 // Only register routes that should be reachable
 const routes = [about, tos, tos1, tos2, user, userBio, notFound];
@@ -41,7 +55,7 @@ export function App() {
 function Layout() {
   const router = useRouter();
   const navigateToUser2 = () =>
-    router.navigate({ to: "/user/:id", params: { id: "2" } });
+    router.navigate({ to: "/user/:id", params: { id: 2 } });
 
   useEffect(
     () => () => {
@@ -58,11 +72,7 @@ function Layout() {
       <Link to="/terms" activeStyle={{ color: "blue" }}>
         Terms
       </Link>{" "}
-      <Link
-        to="/user/:id"
-        params={{ id: "1" }}
-        activeStyle={{ color: "yellow" }}
-      >
+      <Link to="/user/:id" params={{ id: 1 }} activeStyle={{ color: "yellow" }}>
         User 1
       </Link>{" "}
       <a onClick={navigateToUser2}>User 2</a>{" "}
@@ -79,13 +89,13 @@ function About() {
 }
 
 function User() {
-  const { id } = user.useParams();
+  const { id } = useParams(user);
   return (
     <div>
       <Link to="/user/:id" params={{ id }}>
         User
       </Link>{" "}
-      <Link to="/user/:id/bio" params={{ id }}>
+      <Link to="/user/:id/bio" params={{ id }} search={{ name: "John" }}>
         Bio
       </Link>
       <div>User {JSON.stringify({ id, type: typeof id })}</div>
@@ -95,7 +105,9 @@ function User() {
 }
 
 function UserBio() {
-  return <div>User Bio</div>;
+  const router = useRouter();
+  const search = useSearch(router.getRoute("/user/:id/bio"));
+  return <div>User Bio {JSON.stringify(search)}</div>;
 }
 
 function NotFound() {

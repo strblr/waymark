@@ -12,7 +12,8 @@ import {
   type NavigateOptions,
   type HistoryLike,
   type SearchOfRoute,
-  type ParamsOfRoute
+  type ParamsOfRoute,
+  type RouteOf
 } from "../utils";
 
 export interface RouterOptions {
@@ -27,12 +28,22 @@ export class Router {
   basePath: string;
   routes: RouteList;
   defaultLinkOptions?: LinkOptions;
+  _routeMap: Map<string, Routes>;
 
   constructor(options: RouterOptions) {
     this.history = options.history ?? new BrowserHistory();
     this.basePath = normalizePath(options.basePath ?? "/");
     this.routes = options.routes;
     this.defaultLinkOptions = options.defaultLinkOptions;
+    this._routeMap = new Map(options.routes.map(route => [route._path, route]));
+  }
+
+  get<P extends Paths>(path: P) {
+    const route = this._routeMap.get(path);
+    if (!route) {
+      throw new Error(`Route not found for path: ${path}`);
+    }
+    return route as RouteOf<P>;
   }
 
   getFullPath(path: string): string {

@@ -13,20 +13,11 @@ export type RouteList = RegisterRoutes extends {
   ? RouteList
   : ReadonlyArray<Route<string, any, any>>;
 
-export type NavigateOptions<P extends Paths> = {
-  to: P;
-  replace?: boolean;
-  data?: any;
-} & MaybeOptional<ParamsOfPath<P>, "params"> &
-  MaybeOptional<SearchOfPath<P>, "search">;
+export type RouteOf<P extends Paths> = Extract<Routes, { _path: P }>;
 
-export type ParamsOfPath<P extends Paths> = ParamsOfRoute<
-  Extract<Routes, { _path: P }>
->;
+export type ParamsOfPath<P extends Paths> = ParamsOfRoute<RouteOf<P>>;
 
-export type SearchOfPath<P extends Paths> = SearchOfRoute<
-  Extract<Routes, { _path: P }>
->;
+export type SearchOfPath<P extends Paths> = SearchOfRoute<RouteOf<P>>;
 
 export type ParamsOfRoute<R extends Routes> = R extends Route<
   string,
@@ -43,6 +34,13 @@ export type SearchOfRoute<R extends Routes> = R extends Route<
 >
   ? Search
   : never;
+
+export type NavigateOptions<P extends Paths> = {
+  to: P;
+  replace?: boolean;
+  data?: any;
+} & MaybeOptional<ParamsOfPath<P>, "params"> &
+  MaybeOptional<SearchOfPath<P>, "search">;
 
 export interface HistoryLike {
   getPath: () => string;
