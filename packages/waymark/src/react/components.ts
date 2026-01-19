@@ -1,10 +1,12 @@
 import {
-  createElement,
   useMemo,
   useState,
   useLayoutEffect,
   useRef,
   useEffect,
+  createElement,
+  isValidElement,
+  cloneElement,
   type ReactNode,
   type MouseEvent,
   type FocusEvent,
@@ -75,7 +77,7 @@ export function Navigate<P extends Paths>(props: NavigateProps<P>) {
 export type LinkProps<P extends Paths> = NavigateOptions<P> &
   LinkOptions &
   AnchorHTMLAttributes<HTMLAnchorElement> &
-  RefAttributes<HTMLAnchorElement>;
+  RefAttributes<HTMLAnchorElement> & { asChild?: boolean };
 
 export interface LinkOptions {
   preload?: "intent" | "render" | "viewport" | false;
@@ -104,8 +106,10 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     active,
     activeStyle,
     activeClassName,
+    asChild,
     style,
     className,
+    children,
     ...rest
   } = {
     active: defaultLinkActive,
@@ -178,7 +182,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     }
   };
 
-  return createElement("a", {
+  const anchorProps = {
     ...rest,
     ...activeProps,
     ref: mergeRefs(rest.ref, ref),
@@ -186,5 +190,9 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     onClick,
     onFocus,
     onPointerEnter
-  });
+  };
+
+  return asChild && isValidElement(children)
+    ? cloneElement(children, anchorProps)
+    : createElement("a", { ...anchorProps, children });
 }
