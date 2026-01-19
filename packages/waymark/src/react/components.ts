@@ -3,6 +3,7 @@ import {
   useMemo,
   useState,
   useContext,
+  useLayoutEffect,
   type ReactNode,
   type MouseEvent,
   type AnchorHTMLAttributes,
@@ -48,6 +49,16 @@ export function Outlet() {
   return useContext(outletContext);
 }
 
+// Navigate
+
+export type NavigateProps<P extends Paths> = NavigateOptions<P>;
+
+export function Navigate<P extends Paths>(props: NavigateProps<P>) {
+  const router = useRouter();
+  useLayoutEffect(() => router.navigate(props), []);
+  return null;
+}
+
 // Link
 
 export type LinkProps<P extends Paths> = NavigateOptions<P> &
@@ -72,9 +83,9 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   const router = useRouter();
   const href = router.resolvePath(props);
   const currentPath = _useSubscribe(router, () => router.history.getPath());
-  const active = currentPath.startsWith(href);
 
   const activeProps = useMemo(() => {
+    const active = currentPath.startsWith(href);
     return {
       ["data-active"]: active,
       style: { ...style, ...(active && activeStyle) },
@@ -82,7 +93,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
         [className, active && activeClassName].filter(Boolean).join(" ") ||
         undefined
     };
-  }, [active, style, className, activeStyle, activeClassName]);
+  }, [href, currentPath, style, className, activeStyle, activeClassName]);
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     rest.onClick?.(event);

@@ -26,6 +26,13 @@ export function useLocation() {
   );
 }
 
+// useNavigate
+
+export function useNavigate() {
+  const router = useRouter();
+  return useMemo(() => router.navigate.bind(router), [router]);
+}
+
 // useParams
 
 export function useParams<R extends Routes>(route: R) {

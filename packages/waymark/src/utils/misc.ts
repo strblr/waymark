@@ -1,4 +1,4 @@
-export type Pretty<T> = { [K in keyof T]: T[K] } & NonNullable<unknown>;
+type Pretty<T> = { [K in keyof T]: T[K] } & NonNullable<unknown>;
 
 export type Assign<T extends object, U extends object> = Pretty<
   Omit<T, keyof U> & U
