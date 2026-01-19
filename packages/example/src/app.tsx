@@ -19,7 +19,7 @@ const tos2 = tos.route("section2").component(Section2);
 
 const user = root.route("user/:id").component(User);
 
-const routes = { ultraroot, root, about, tos, tos1, tos2, user, notFound };
+const routes = [ultraroot, root, about, tos, tos1, tos2, user, notFound];
 
 declare module "waymark" {
   interface RegisterRoutes {

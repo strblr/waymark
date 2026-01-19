@@ -7,7 +7,7 @@ import {
   toSearchString,
   parseSearchParams,
   type Routes,
-  type RouteMap,
+  type RouteList,
   type Paths,
   type NavigateOptions,
   type HistoryLike,
@@ -18,23 +18,21 @@ import {
 export interface RouterOptions {
   history?: HistoryLike;
   basePath?: string;
-  routes: RouteMap;
+  routes: RouteList;
   defaultLinkOptions?: LinkOptions;
 }
 
 export class Router {
   history: HistoryLike;
   basePath: string;
-  routes: RouteMap;
+  routes: RouteList;
   defaultLinkOptions?: LinkOptions;
-  private _routes: Routes[];
 
   constructor(options: RouterOptions) {
     this.history = options.history ?? new BrowserHistory();
     this.basePath = normalizePath(options.basePath ?? "/");
     this.routes = options.routes;
     this.defaultLinkOptions = options.defaultLinkOptions;
-    this._routes = Object.values(this.routes);
   }
 
   getFullPath(path: string): string {
@@ -50,7 +48,7 @@ export class Router {
 
   getRouteMatch(path: string): Routes | undefined {
     path = this.getCanonicalPath(path);
-    return this._routes.find(route => route._pattern.test(path));
+    return this.routes.find(route => route._pattern.test(path));
   }
 
   resolvePath<P extends Paths>(options: NavigateOptions<P>) {

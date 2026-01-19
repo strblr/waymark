@@ -5,13 +5,13 @@ export interface RegisterRoutes {}
 
 export type Paths = Routes["_path"];
 
-export type Routes = RouteMap[keyof RouteMap];
+export type Routes = RouteList[number];
 
-export type RouteMap = RegisterRoutes extends {
-  routes: infer RouteMap extends Record<string, Route<string, any, any>>;
+export type RouteList = RegisterRoutes extends {
+  routes: infer RouteList extends ReadonlyArray<Route<string, any, any>>;
 }
-  ? RouteMap
-  : Record<string, Route<string, any, any>>;
+  ? RouteList
+  : ReadonlyArray<Route<string, any, any>>;
 
 export type NavigateOptions<P extends Paths> = {
   to: P;
