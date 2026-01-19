@@ -2,28 +2,26 @@ import {
   createElement,
   useState,
   useContext,
-  useSyncExternalStore,
+  type ReactNode,
   type MouseEvent,
-  type AnchorHTMLAttributes
+  type AnchorHTMLAttributes,
+  type CSSProperties,
+  useMemo
 } from "react";
 import { routerContext, outletContext } from "./contexts";
-import { useRouter } from "./hooks";
+import { _useSubscribe, useRouter } from "./hooks";
 import { Router, RouterOptions } from "../router";
 import type { Paths, NavigateOptions } from "../utils";
 
 // RouterRoot
 
-type RouterRootProps = RouterOptions | { router: Router };
+export type RouterRootProps = RouterOptions | { router: Router };
 
-export function RouterRoot(props: RouterRootProps) {
+export function RouterRoot(props: RouterRootProps): ReactNode {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
-  const route = useSyncExternalStore(
-    router.history.subscribe,
-    router.getRouteMatch,
-    router.getRouteMatch
-  );
+  const route = _useSubscribe(router, () => router.getRouteMatch());
   if (!route) {
     console.error("[Waymark] No route found for current path");
     return null;
@@ -37,26 +35,49 @@ export function RouterRoot(props: RouterRootProps) {
 
 // Outlet
 
-export function Outlet() {
+export function Outlet(): ReactNode {
   const component = useContext(outletContext);
   return component ? createElement(component) : null;
 }
 
 // Link
 
-export function Link<P extends Paths>({
-  to,
-  replace,
-  data,
-  params,
-  search,
-  ...props
-}: NavigateOptions<P> & AnchorHTMLAttributes<HTMLAnchorElement>) {
-  const router = useRouter();
-  const path = router.resolvePath({ to, replace, data, params, search });
+export type LinkProps<P extends Paths> = NavigateOptions<P> &
+  AnchorHTMLAttributes<HTMLAnchorElement> & {
+    activeStyle?: CSSProperties;
+    activeClassName?: string;
+  };
 
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    props.onClick?.(event);
+export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
+  const {
+    to,
+    replace,
+    data,
+    params,
+    search,
+    style,
+    className,
+    activeStyle,
+    activeClassName,
+    ...rest
+  } = props;
+  const router = useRouter();
+  const href = router.resolvePath(props);
+  const currentPath = _useSubscribe(router, () => router.history.getPath());
+  const active = currentPath.startsWith(href);
+
+  const activeProps = useMemo(() => {
+    return {
+      ["data-active"]: active,
+      style: { ...style, ...(active && activeStyle) },
+      className:
+        [className, active && activeClassName].filter(Boolean).join(" ") ||
+        undefined
+    };
+  }, [active, style, className, activeStyle, activeClassName]);
+
+  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    rest.onClick?.(event);
     if (
       event.defaultPrevented ||
       event.ctrlKey ||
@@ -67,12 +88,8 @@ export function Link<P extends Paths>({
     )
       return;
     event.preventDefault();
-    router.history.push(path, replace, data);
+    router.history.push(href, replace, data);
   };
 
-  return createElement("a", {
-    ...props,
-    href: path,
-    onClick: handleClick
-  });
+  return createElement("a", { ...rest, ...activeProps, href, onClick });
 }

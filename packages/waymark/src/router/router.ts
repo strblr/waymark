@@ -2,14 +2,16 @@ import { inject } from "regexparam";
 import { BrowserHistory } from "./browser-history";
 import {
   normalizePath,
+  extractParams,
   toSearchString,
+  parseSearchParams,
   type Routes,
   type RouteMap,
   type Paths,
   type NavigateOptions,
   type HistoryLike,
-  parseSearchParams,
-  extractParams
+  type SearchOfRoute,
+  type ParamsOfRoute
 } from "../utils";
 
 export interface RouterOptions {
@@ -31,7 +33,7 @@ export class Router {
     this._routes = Object.values(this.routes);
   }
 
-  getRouteMatch() {
+  getRouteMatch(): Routes | undefined {
     let path = this.history.getPath();
     if (path === this.basePath || path.startsWith(`${this.basePath}/`)) {
       path = path.slice(this.basePath.length) || "/";
@@ -49,11 +51,11 @@ export class Router {
     return path;
   }
 
-  resolveParams<R extends Routes>(route: R, path: string) {
+  resolveParams<R extends Routes>(route: R, path: string): ParamsOfRoute<R> {
     return route._mapParams(extractParams(path, route._pattern, route._keys));
   }
 
-  resolveSearch<R extends Routes>(route: R, search: string) {
+  resolveSearch<R extends Routes>(route: R, search: string): SearchOfRoute<R> {
     return route._mapSearch(parseSearchParams(search));
   }
 

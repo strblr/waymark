@@ -1,5 +1,5 @@
 import type { Route } from "../route";
-import type { MaybeOptional, Pretty } from "./misc";
+import type { MaybeOptional } from "./misc";
 
 export interface RegisterRoutes {}
 
@@ -13,28 +13,36 @@ export type RouteMap = RegisterRoutes extends {
   ? RouteMap
   : Record<string, Route<string, any, any>>;
 
-export type NavigateOptions<P extends Paths> = Pretty<
-  {
-    to: P;
-    replace?: boolean;
-    data?: any;
-  } & MaybeOptional<ParamsOf<P>, "params"> &
-    MaybeOptional<SearchOf<P>, "search">
+export type NavigateOptions<P extends Paths> = {
+  to: P;
+  replace?: boolean;
+  data?: any;
+} & MaybeOptional<ParamsOfPath<P>, "params"> &
+  MaybeOptional<SearchOfPath<P>, "search">;
+
+export type ParamsOfPath<P extends Paths> = ParamsOfRoute<
+  Extract<Routes, { _path: P }>
 >;
 
-export type ParamsOf<P extends Paths> = Extract<
-  Routes,
-  { _path: P }
-> extends Route<string, infer Params, any>
+export type SearchOfPath<P extends Paths> = SearchOfRoute<
+  Extract<Routes, { _path: P }>
+>;
+
+export type ParamsOfRoute<R extends Routes> = R extends Route<
+  string,
+  infer Params,
+  any
+>
   ? Params
   : never;
 
-export type SearchOf<P extends Paths> = Extract<
-  Routes,
-  { _path: P }
-> extends Route<string, any, infer Search>
+export type SearchOfRoute<R extends Routes> = R extends Route<
+  string,
+  any,
+  infer Search
+>
   ? Search
-  : {};
+  : never;
 
 export interface HistoryLike {
   getPath(): string;

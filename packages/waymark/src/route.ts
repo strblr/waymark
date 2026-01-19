@@ -1,9 +1,6 @@
 import { type ComponentType, lazy } from "react";
 import { type RouteParams, parse } from "regexparam";
-import {
-  useParams as useRouteParams,
-  useSearch as useRouteSearch
-} from "./react";
+import { useParams, useSearch } from "./react";
 import {
   ComponentFactory,
   NormalizePath,
@@ -101,12 +98,12 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
     );
   }
 
-  useParams() {
-    return useRouteParams(this);
+  useParams(): Params {
+    return useParams(this);
   }
 
-  useSearch() {
-    return useRouteSearch(this);
+  useSearch(): Search {
+    return useSearch(this);
   }
 }
 
