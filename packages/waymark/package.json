@@ -38,5 +38,8 @@
   },
   "peerDependencies": {
     "react": ">=18"
+  },
+  "dependencies": {
+    "regexparam": "^3.0.0"
   }
 }
