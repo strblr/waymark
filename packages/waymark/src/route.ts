@@ -1,9 +1,9 @@
 import { type ComponentType, lazy } from "react";
 import { type RouteParams, parse } from "regexparam";
+import type { Merge } from "type-fest";
 import { useParams, useSearch } from "./react";
 import {
   normalizePath,
-  type Assign,
   type NormalizePath,
   type ComponentLoader,
   type OptionalOnUndefined
@@ -29,7 +29,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   }
 
   route<SubPath extends string>(subPath: SubPath) {
-    type NextParams = Assign<RouteParams<SubPath>, Params>;
+    type NextParams = Merge<RouteParams<SubPath>, Params>;
     return new Route<NormalizePath<`${Path}/${SubPath}`>, NextParams, Search>(
       normalizePath(`${this._path}/${subPath}`),
       this._mapParams as any,
@@ -40,7 +40,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   }
 
   params<NextParams extends {}>(mapParams: (params: Params) => NextParams) {
-    type MergedParams = Assign<Params, OptionalOnUndefined<NextParams>>;
+    type MergedParams = Merge<Params, OptionalOnUndefined<NextParams>>;
     return new Route<Path, MergedParams, Search>(
       this._path,
       params => {
@@ -53,10 +53,8 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
     );
   }
 
-  search<NextSearch extends {}>(
-    mapSearch: (search: Search & Record<string, unknown>) => NextSearch
-  ) {
-    type MergedSearch = Assign<Search, OptionalOnUndefined<NextSearch>>;
+  search<NextSearch extends {}>(mapSearch: (search: Search) => NextSearch) {
+    type MergedSearch = Merge<Search, OptionalOnUndefined<NextSearch>>;
     return new Route<Path, Params, MergedSearch>(
       this._path,
       this._mapParams,
@@ -110,7 +108,11 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
 
 export function route<Path extends string>(path: Path) {
   type NormalizedPath = NormalizePath<Path>;
-  return new Route<NormalizedPath, RouteParams<NormalizedPath>, {}>(
+  return new Route<
+    NormalizedPath,
+    RouteParams<NormalizedPath>,
+    Record<string, unknown>
+  >(
     normalizePath(path),
     params => params as any,
     search => search,
