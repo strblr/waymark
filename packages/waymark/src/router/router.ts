@@ -33,10 +33,19 @@ export class Router {
     this._routes = Object.values(this.routes);
   }
 
-  getRouteMatch(path: string): Routes | undefined {
+  getFullPath(path: string): string {
+    return normalizePath(`${this.basePath}/${path}`);
+  }
+
+  getCanonicalPath(path: string) {
     if (path === this.basePath || path.startsWith(`${this.basePath}/`)) {
       path = path.slice(this.basePath.length) || "/";
     }
+    return path;
+  }
+
+  getRouteMatch(path: string): Routes | undefined {
+    path = this.getCanonicalPath(path);
     return this._routes.find(route => route._pattern.test(path));
   }
 
@@ -44,7 +53,7 @@ export class Router {
     const { to, params, search } = options;
     let path: string = to;
     params && (path = inject(path, params));
-    path = normalizePath(`${this.basePath}/${path}`);
+    path = this.getFullPath(path);
     const searchString = search && toSearchString(search);
     searchString && (path = `${path}?${searchString}`);
     return path;
