@@ -17,7 +17,12 @@ import {
 import { routerContext, outletContext } from "./contexts";
 import { _useSubscribe, useRouter } from "./hooks";
 import { Router, type RouterOptions } from "../router";
-import { mergeRefs, type Paths, type NavigateOptions } from "../utils";
+import {
+  mergeRefs,
+  defaultLinkActive,
+  type Paths,
+  type NavigateOptions
+} from "../utils";
 
 // RouterRoot
 
@@ -72,6 +77,7 @@ export type LinkProps<P extends Paths> = NavigateOptions<P> &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   RefAttributes<HTMLAnchorElement> & {
     preload?: "intent" | "render" | "viewport" | false;
+    active?: (currentPath: string, targetPath: string) => boolean;
     activeStyle?: CSSProperties;
     activeClassName?: string;
   };
@@ -93,6 +99,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     params,
     search,
     preload = router.defaultPreload,
+    active = defaultLinkActive,
     activeStyle,
     activeClassName,
     style,
@@ -101,15 +108,23 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   } = props;
 
   const activeProps = useMemo(() => {
-    const active = currentPath.startsWith(href);
+    const isActive = active(currentPath, href);
     return {
-      ["data-active"]: active,
-      style: { ...style, ...(active && activeStyle) },
+      ["data-active"]: isActive,
+      style: { ...style, ...(isActive && activeStyle) },
       className:
-        [className, active && activeClassName].filter(Boolean).join(" ") ||
+        [className, isActive && activeClassName].filter(Boolean).join(" ") ||
         undefined
     };
-  }, [href, currentPath, style, className, activeStyle, activeClassName]);
+  }, [
+    active,
+    href,
+    currentPath,
+    style,
+    className,
+    activeStyle,
+    activeClassName
+  ]);
 
   useEffect(() => {
     if (preload === "render") {

@@ -13,9 +13,13 @@ const tos = root
   .route("terms")
   .lazy(() => import("./terms").then(m => m.Terms));
 
+const tos1 = tos.route("section1").component(Section1);
+
+const tos2 = tos.route("section2").component(Section2);
+
 const user = root.route("user/:id").component(User);
 
-const routes = { ultraroot, root, about, tos, user, notFound };
+const routes = { ultraroot, root, about, tos, tos1, tos2, user, notFound };
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -76,4 +80,12 @@ function User() {
 
 function NotFound() {
   return <div>Not Found</div>;
+}
+
+function Section1() {
+  return <div>Section 1</div>;
+}
+
+function Section2() {
+  return <div>Section 2</div>;
 }
