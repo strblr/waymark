@@ -1,6 +1,6 @@
 import { inject } from "regexparam";
 import { BrowserHistory } from "./browser-history";
-import type { LinkProps } from "../react";
+import type { LinkOptions } from "../react";
 import {
   normalizePath,
   extractParams,
@@ -19,21 +19,21 @@ export interface RouterOptions {
   history?: HistoryLike;
   basePath?: string;
   routes: RouteMap;
-  defaultPreload?: LinkProps<Paths>["preload"];
+  defaultLinkOptions?: LinkOptions;
 }
 
 export class Router {
   history: HistoryLike;
   basePath: string;
   routes: RouteMap;
-  defaultPreload: LinkProps<Paths>["preload"];
+  defaultLinkOptions?: LinkOptions;
   private _routes: Routes[];
 
   constructor(options: RouterOptions) {
     this.history = options.history ?? new BrowserHistory();
     this.basePath = normalizePath(options.basePath ?? "/");
     this.routes = options.routes;
-    this.defaultPreload = options.defaultPreload;
+    this.defaultLinkOptions = options.defaultLinkOptions;
     this._routes = Object.values(this.routes);
   }
 

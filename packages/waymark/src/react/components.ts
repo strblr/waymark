@@ -73,13 +73,16 @@ export function Navigate<P extends Paths>(props: NavigateProps<P>) {
 // Link
 
 export type LinkProps<P extends Paths> = NavigateOptions<P> &
+  LinkOptions &
   AnchorHTMLAttributes<HTMLAnchorElement> &
-  RefAttributes<HTMLAnchorElement> & {
-    preload?: "intent" | "render" | "viewport" | false;
-    active?: (currentPath: string, targetPath: string) => boolean;
-    activeStyle?: CSSProperties;
-    activeClassName?: string;
-  };
+  RefAttributes<HTMLAnchorElement>;
+
+export type LinkOptions = {
+  preload?: "intent" | "render" | "viewport" | false;
+  active?: (currentPath: string, targetPath: string) => boolean;
+  activeStyle?: CSSProperties;
+  activeClassName?: string;
+};
 
 export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
@@ -97,14 +100,18 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     data,
     params,
     search,
-    preload = router.defaultPreload,
-    active = defaultLinkActive,
+    preload,
+    active,
     activeStyle,
     activeClassName,
     style,
     className,
     ...rest
-  } = props;
+  } = {
+    active: defaultLinkActive,
+    ...router.defaultLinkOptions,
+    ...props
+  };
 
   const activeProps = useMemo(() => {
     const isActive = active(currentPath, href);

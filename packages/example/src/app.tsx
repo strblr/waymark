@@ -30,7 +30,11 @@ declare module "waymark" {
 export function App() {
   return (
     <div>
-      <RouterRoot routes={routes} basePath="/app" defaultPreload="intent" />
+      <RouterRoot
+        routes={routes}
+        basePath="/app"
+        defaultLinkOptions={{ preload: "intent" }}
+      />
     </div>
   );
 }
