@@ -11,13 +11,14 @@ import {
 export class Route<Path extends string, Params extends {}, Search extends {}> {
   _keys: string[];
   _pattern: RegExp;
+  _preloaded = false;
 
   constructor(
     public _path: Path,
     public _mapParams: (params: Record<string, string>) => Params,
     public _mapSearch: (search: Record<string, unknown>) => Search,
     public _components: ComponentType[],
-    public _preloaders: (() => void)[]
+    public _preloaders: (() => Promise<any>)[]
   ) {
     const { keys, pattern } = parse(_path);
     this._keys = keys;
@@ -87,6 +88,12 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
       [...this._components, lazy(lazyLoader)],
       [...this._preloaders, loader]
     );
+  }
+
+  preload() {
+    if (this._preloaded) return;
+    this._preloaders.forEach(loader => loader());
+    this._preloaded = true;
   }
 
   useParams(): Params {

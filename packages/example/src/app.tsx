@@ -5,6 +5,8 @@ const ultraroot = route("").component(Outlet);
 
 const root = ultraroot.route("").component(Layout);
 
+const notFound = root.route("*").component(NotFound);
+
 const about = root.route("about").component(About);
 
 const tos = root
@@ -12,8 +14,6 @@ const tos = root
   .lazy(() => import("./terms").then(m => m.Terms));
 
 const user = root.route("user/:id").component(User);
-
-const notFound = root.route("*").component(NotFound);
 
 const routes = { ultraroot, root, about, tos, user, notFound };
 
@@ -26,7 +26,7 @@ declare module "waymark" {
 export function App() {
   return (
     <div>
-      <RouterRoot routes={routes} />
+      <RouterRoot routes={routes} basePath="/app" defaultPreload="intent" />
     </div>
   );
 }
@@ -44,7 +44,7 @@ function Layout() {
   );
 
   return (
-    <div>
+    <div style={{ paddingTop: 0 }}>
       <Link to="/about" activeStyle={{ color: "red" }}>
         About
       </Link>{" "}
@@ -58,7 +58,8 @@ function Layout() {
       >
         User 1
       </Link>{" "}
-      <a onClick={navigateToUser2}>User 2</a>
+      <a onClick={navigateToUser2}>User 2</a>{" "}
+      <a onClick={() => router.navigate({ to: "/unknown" as any })}>Unknown</a>
       <Outlet />
     </div>
   );
@@ -76,22 +77,3 @@ function User() {
 function NotFound() {
   return <div>Not Found</div>;
 }
-
-// type K = "a" | "b" | "c";
-
-// type Options<U extends K> =
-//   {
-//     u: U;
-//   } & MaybeOptional<U extends "a" ? number : string, "other">
-
-// export type MaybeOptional<T, K extends string> = {} extends T
-//   ? { [P in K]?: T }
-//   : { [P in K]: T };
-
-// export type Pretty<T> = { [K in keyof T]: T[K] } & NonNullable<unknown>;
-
-// function f<U extends K>(options: Options<U>) {
-//   return options.u;
-// }
-
-// const a = f({ u: "a", other: "" });

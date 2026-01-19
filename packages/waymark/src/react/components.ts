@@ -4,15 +4,20 @@ import {
   useState,
   useContext,
   useLayoutEffect,
+  useRef,
+  useEffect,
   type ReactNode,
   type MouseEvent,
+  type FocusEvent,
+  type PointerEvent,
   type AnchorHTMLAttributes,
-  type CSSProperties
+  type CSSProperties,
+  type RefAttributes
 } from "react";
 import { routerContext, outletContext } from "./contexts";
 import { _useSubscribe, useRouter } from "./hooks";
 import { Router, type RouterOptions } from "../router";
-import type { Paths, NavigateOptions } from "../utils";
+import { mergeRefs, type Paths, type NavigateOptions } from "../utils";
 
 // RouterRoot
 
@@ -64,27 +69,36 @@ export function Navigate<P extends Paths>(props: NavigateProps<P>) {
 // Link
 
 export type LinkProps<P extends Paths> = NavigateOptions<P> &
-  AnchorHTMLAttributes<HTMLAnchorElement> & {
+  AnchorHTMLAttributes<HTMLAnchorElement> &
+  RefAttributes<HTMLAnchorElement> & {
+    preload?: "intent" | "render" | "viewport" | false;
     activeStyle?: CSSProperties;
     activeClassName?: string;
   };
 
 export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const router = useRouter();
+  const href = router.resolvePath(props);
+  const currentPath = _useSubscribe(router, () => router.history.getPath());
+  const possibleRoute = useMemo(
+    () => router.getRouteMatch(href),
+    [router, href]
+  );
+
   const {
     to,
     replace,
     data,
     params,
     search,
-    style,
-    className,
+    preload = router.defaultPreload,
     activeStyle,
     activeClassName,
+    style,
+    className,
     ...rest
   } = props;
-  const router = useRouter();
-  const href = router.resolvePath(props);
-  const currentPath = _useSubscribe(router, () => router.history.getPath());
 
   const activeProps = useMemo(() => {
     const active = currentPath.startsWith(href);
@@ -97,20 +111,59 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     };
   }, [href, currentPath, style, className, activeStyle, activeClassName]);
 
+  useEffect(() => {
+    if (preload === "render") {
+      possibleRoute?.preload();
+    } else if (preload === "viewport" && ref.current) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            possibleRoute?.preload();
+            observer.disconnect();
+          }
+        });
+      });
+      observer.observe(ref.current);
+      return () => observer.disconnect();
+    }
+  }, [preload, possibleRoute]);
+
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     rest.onClick?.(event);
     if (
-      event.defaultPrevented ||
       event.ctrlKey ||
       event.metaKey ||
       event.shiftKey ||
       event.altKey ||
-      event.button !== 0
+      event.button !== 0 ||
+      event.defaultPrevented
     )
       return;
     event.preventDefault();
     router.history.push(href, replace, data);
   };
 
-  return createElement("a", { ...rest, ...activeProps, href, onClick });
+  const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
+    rest.onFocus?.(event);
+    if (preload === "intent" && !event.defaultPrevented) {
+      possibleRoute?.preload();
+    }
+  };
+
+  const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
+    rest.onPointerEnter?.(event);
+    if (preload === "intent" && !event.defaultPrevented) {
+      possibleRoute?.preload();
+    }
+  };
+
+  return createElement("a", {
+    ...rest,
+    ...activeProps,
+    ref: mergeRefs(rest.ref, ref),
+    href,
+    onClick,
+    onFocus,
+    onPointerEnter
+  });
 }
