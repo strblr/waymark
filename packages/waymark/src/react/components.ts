@@ -77,12 +77,12 @@ export type LinkProps<P extends Paths> = NavigateOptions<P> &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   RefAttributes<HTMLAnchorElement>;
 
-export type LinkOptions = {
+export interface LinkOptions {
   preload?: "intent" | "render" | "viewport" | false;
   active?: (currentPath: string, targetPath: string) => boolean;
   activeStyle?: CSSProperties;
   activeClassName?: string;
-};
+}
 
 export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);

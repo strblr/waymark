@@ -19,7 +19,8 @@ const tos2 = tos.route("section2").component(Section2);
 
 const user = root.route("user/:id").component(User);
 
-const routes = [ultraroot, root, about, tos, tos1, tos2, user, notFound];
+// Only register routes that can be targeted
+const routes = [about, tos, tos1, tos2, user, notFound];
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -30,11 +31,7 @@ declare module "waymark" {
 export function App() {
   return (
     <div>
-      <RouterRoot
-        routes={routes}
-        basePath="/app"
-        defaultLinkOptions={{ preload: "intent" }}
-      />
+      <RouterRoot routes={routes} defaultLinkOptions={{ preload: "intent" }} />
     </div>
   );
 }
@@ -46,7 +43,7 @@ function Layout() {
 
   useEffect(
     () => () => {
-      console.log("unmount");
+      console.log("unmount Layout");
     },
     []
   );
@@ -67,7 +64,9 @@ function Layout() {
         User 1
       </Link>{" "}
       <a onClick={navigateToUser2}>User 2</a>{" "}
-      <a onClick={() => router.navigate({ to: "/unknown" as any })}>Unknown</a>
+      <a onClick={() => router.navigate({ to: "/unknown" as any })}>Unknown</a>{" "}
+      <a onClick={() => router.navigate(-1)}>Back</a>{" "}
+      <a onClick={() => router.navigate(1)}>Forward</a>
       <Outlet />
     </div>
   );
