@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { RouterRoot, route, Outlet, Link, useRouter } from "waymark";
 
-const root = route("").component(Layout);
+const ultraroot = route("").component(Outlet);
+
+const root = ultraroot.route("").component(Layout);
 
 const about = root.route("about").component(About);
 
@@ -14,7 +16,7 @@ const user = root
 
 const notFound = root.route("*").component(NotFound);
 
-const routes = { root, about, user, notFound };
+const routes = { ultraroot, root, about, user, notFound };
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -44,7 +46,7 @@ function Layout() {
 
   return (
     <div>
-      <Link to="/about" params={{ x: "y" }} activeStyle={{ color: "red" }}>
+      <Link to="/about" activeStyle={{ color: "red" }}>
         About
       </Link>{" "}
       <Link

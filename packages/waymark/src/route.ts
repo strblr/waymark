@@ -2,10 +2,10 @@ import { type ComponentType, lazy } from "react";
 import { type RouteParams, parse } from "regexparam";
 import { useParams, useSearch } from "./react";
 import {
-  NormalizePath,
   normalizePath,
-  type ComponentLoader,
-  type Pretty
+  type Assign,
+  type NormalizePath,
+  type ComponentLoader
 } from "./utils";
 
 export class Route<Path extends string, Params extends {}, Search extends {}> {
@@ -25,7 +25,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   }
 
   route<SubPath extends string>(subPath: SubPath) {
-    type NextParams = Pretty<Params & RouteParams<SubPath>>;
+    type NextParams = Assign<RouteParams<SubPath>, Params>;
     return new Route<NormalizePath<`${Path}/${SubPath}`>, NextParams, Search>(
       normalizePath(`${this._path}/${subPath}`),
       this._mapParams as any,
@@ -36,7 +36,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   }
 
   params<NextParams extends {}>(mapParams: (params: Params) => NextParams) {
-    type MergedParams = Pretty<Params & NextParams>;
+    type MergedParams = Assign<Params, NextParams>;
     return new Route<Path, MergedParams, Search>(
       this._path,
       params => {
@@ -52,7 +52,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
   search<NextSearch extends {}>(
     mapSearch: (search: Search & Record<string, unknown>) => NextSearch
   ) {
-    type MergedSearch = Pretty<Search & NextSearch>;
+    type MergedSearch = Assign<Search, NextSearch>;
     return new Route<Path, Params, MergedSearch>(
       this._path,
       this._mapParams,
