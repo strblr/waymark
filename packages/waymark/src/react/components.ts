@@ -33,11 +33,10 @@ export function RouterRoot(props: RouterRootProps) {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
-  const route = _useSubscribe(router, () =>
-    router.getRouteMatch(router.history.getPath())
-  );
+  const path = _useSubscribe(router, router.history.getPath);
+  const route = useMemo(() => router.getRouteMatch(path), [router, path]);
   if (!route) {
-    console.error("[Waymark] No route found for current path");
+    console.error("[Waymark] No route found for path:", path);
   }
   return useMemo<ReactNode>(() => {
     return createElement(
@@ -90,7 +89,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
   const href = router.resolvePath(props);
-  const currentPath = _useSubscribe(router, () => router.history.getPath());
+  const currentPath = _useSubscribe(router, router.history.getPath);
   const possibleRoute = useMemo(
     () => router.getRouteMatch(href),
     [router, href]

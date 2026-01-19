@@ -22,32 +22,24 @@ export class BrowserHistory implements HistoryLike {
     }
   }
 
-  getPath() {
-    return location.pathname;
-  }
+  getPath = () => location.pathname;
 
-  getSearch() {
-    return location.search;
-  }
+  getSearch = () => location.search;
 
-  getState() {
-    return history.state;
-  }
+  getState = () => history.state;
 
-  go(delta: number) {
-    history.go(delta);
-  }
+  go = (delta: number) => history.go(delta);
 
-  push(path: string, replace?: boolean, data?: any) {
+  push = (path: string, replace?: boolean, data?: any) => {
     history[replace ? replaceStateEvent : pushStateEvent](data, "", path);
-  }
+  };
 
-  subscribe(callback: () => void) {
+  subscribe = (callback: () => void) => {
     events.forEach(event => window.addEventListener(event, callback));
     return () => {
       events.forEach(event => window.removeEventListener(event, callback));
     };
-  }
+  };
 }
 
 // Utils

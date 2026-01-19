@@ -45,10 +45,10 @@ export type SearchOfRoute<R extends Routes> = R extends Route<
   : never;
 
 export interface HistoryLike {
-  getPath(): string;
-  getSearch(): string;
-  getState(): any;
-  go(delta: number): void;
-  push(path: string, replace?: boolean, data?: any): void;
-  subscribe(callback: () => void): () => void;
+  getPath: () => string;
+  getSearch: () => string;
+  getState: () => any;
+  go: (delta: number) => void;
+  push: (path: string, replace?: boolean, data?: any) => void;
+  subscribe: (callback: () => void) => () => void;
 }
