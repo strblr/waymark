@@ -2,10 +2,8 @@ import { type ComponentType, lazy } from "react";
 import { type RouteParams, parse } from "regexparam";
 import { useParams, useSearch } from "./react";
 import {
-  ComponentFactory,
   NormalizePath,
   normalizePath,
-  wrapComponent,
   type ComponentLoader,
   type Pretty
 } from "./utils";
@@ -13,19 +11,17 @@ import {
 export class Route<Path extends string, Params extends {}, Search extends {}> {
   _keys: string[];
   _pattern: RegExp;
-  _component: ComponentType;
 
   constructor(
     public _path: Path,
     public _mapParams: (params: Record<string, string>) => Params,
     public _mapSearch: (search: Record<string, unknown>) => Search,
-    public _factory: ComponentFactory,
+    public _components: ComponentType[],
     public _preloaders: (() => void)[]
   ) {
     const { keys, pattern } = parse(_path);
     this._keys = keys;
     this._pattern = pattern;
-    this._component = _factory(() => null);
   }
 
   route<SubPath extends string>(subPath: SubPath) {
@@ -34,7 +30,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
       normalizePath(`${this._path}/${subPath}`),
       this._mapParams as any,
       this._mapSearch,
-      this._factory,
+      this._components,
       this._preloaders
     );
   }
@@ -48,7 +44,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
         return { ...mapped, ...mapParams(mapped) };
       },
       this._mapSearch,
-      this._factory,
+      this._components,
       this._preloaders
     );
   }
@@ -64,7 +60,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
         const mapped = this._mapSearch(search);
         return { ...mapped, ...mapSearch(mapped) };
       },
-      this._factory,
+      this._components,
       this._preloaders
     );
   }
@@ -93,7 +89,7 @@ export class Route<Path extends string, Params extends {}, Search extends {}> {
       this._path,
       this._mapParams,
       this._mapSearch,
-      wrapComponent(comp, this._factory),
+      [...this._components, comp],
       preloaders
     );
   }
@@ -113,7 +109,7 @@ export function route<Path extends string>(path: Path) {
     normalizePath(path),
     params => params as any,
     search => search,
-    next => next,
+    [],
     []
   );
 }

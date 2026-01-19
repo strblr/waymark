@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { RouterRoot, route, Outlet, Link, useRouter } from "waymark";
 
 const root = route("").component(Layout);
@@ -33,6 +34,14 @@ function Layout() {
   const router = useRouter();
   const navigateToUser2 = () =>
     router.navigate({ to: "/user/:id", params: { id: "2" } });
+
+  useEffect(
+    () => () => {
+      console.log("unmount");
+    },
+    []
+  );
+
   return (
     <div>
       <Link to="/about" params={{ x: "y" }} activeStyle={{ color: "red" }}>
@@ -40,7 +49,7 @@ function Layout() {
       </Link>{" "}
       <Link
         to="/user/:id"
-        params={{ id: "true" }}
+        params={{ id: "1" }}
         activeStyle={{ color: "yellow" }}
       >
         User 1
@@ -57,8 +66,7 @@ function About() {
 
 function User() {
   const { id } = user.useParams();
-  console.log({ id, type: typeof id });
-  return <div>User {id}</div>;
+  return <div>User {JSON.stringify({ id, type: typeof id })}</div>;
 }
 
 function NotFound() {

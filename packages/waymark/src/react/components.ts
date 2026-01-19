@@ -1,43 +1,51 @@
 import {
   createElement,
+  useMemo,
   useState,
   useContext,
   type ReactNode,
   type MouseEvent,
   type AnchorHTMLAttributes,
-  type CSSProperties,
-  useMemo
+  type CSSProperties
 } from "react";
 import { routerContext, outletContext } from "./contexts";
 import { _useSubscribe, useRouter } from "./hooks";
-import { Router, RouterOptions } from "../router";
+import { Router, type RouterOptions } from "../router";
 import type { Paths, NavigateOptions } from "../utils";
 
 // RouterRoot
 
 export type RouterRootProps = RouterOptions | { router: Router };
 
-export function RouterRoot(props: RouterRootProps): ReactNode {
+export function RouterRoot(props: RouterRootProps) {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
   const route = _useSubscribe(router, () => router.getRouteMatch());
   if (!route) {
     console.error("[Waymark] No route found for current path");
-    return null;
   }
-  return createElement(
-    routerContext.Provider,
-    { value: router },
-    createElement(route._component)
-  );
+  return useMemo<ReactNode>(() => {
+    return createElement(
+      routerContext.Provider,
+      { value: router },
+      route?._components.reduceRight<ReactNode>(
+        (acc, comp) =>
+          createElement(
+            outletContext.Provider,
+            { value: acc },
+            createElement(comp)
+          ),
+        null
+      )
+    );
+  }, [router, route]);
 }
 
 // Outlet
 
-export function Outlet(): ReactNode {
-  const component = useContext(outletContext);
-  return component ? createElement(component) : null;
+export function Outlet() {
+  return useContext(outletContext);
 }
 
 // Link
