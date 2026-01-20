@@ -1,25 +1,25 @@
-import type { Route } from "../route";
+import type { RouteConfig } from "../route";
 import type { MaybeOptional } from "./misc";
 
 export interface RegisterRoutes {}
 
-export type Paths = Routes["_path"];
+export type Paths = Routes["_"]["path"];
 
 export type Routes = RouteList[number];
 
 export type RouteList = RegisterRoutes extends {
-  routes: infer RouteList extends ReadonlyArray<Route<string, any, any>>;
+  routes: infer RouteList extends ReadonlyArray<RouteConfig<string, any, any>>;
 }
   ? RouteList
-  : ReadonlyArray<Route<string, any, any>>;
+  : ReadonlyArray<RouteConfig<string, any, any>>;
 
-export type RouteOf<P extends Paths> = Extract<Routes, { _path: P }>;
+export type RouteOf<P extends Paths> = Extract<Routes, { _: { path: P } }>;
 
 export type ParamsOfPath<P extends Paths> = ParamsOfRoute<RouteOf<P>>;
 
 export type SearchOfPath<P extends Paths> = SearchOfRoute<RouteOf<P>>;
 
-export type ParamsOfRoute<R extends Routes> = R extends Route<
+export type ParamsOfRoute<R extends Routes> = R extends RouteConfig<
   string,
   infer Params,
   any
@@ -27,7 +27,7 @@ export type ParamsOfRoute<R extends Routes> = R extends Route<
   ? Params
   : never;
 
-export type SearchOfRoute<R extends Routes> = R extends Route<
+export type SearchOfRoute<R extends Routes> = R extends RouteConfig<
   string,
   any,
   infer Search

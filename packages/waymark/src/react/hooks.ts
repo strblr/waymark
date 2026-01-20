@@ -1,7 +1,12 @@
-import { useContext, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import { outletContext, routerContext } from "./contexts";
 import type { Router } from "../router";
-import type { Routes } from "../utils";
+import {
+  parseSearchParams,
+  type Routes,
+  type SearchOfRoute,
+  type Updater
+} from "../utils";
 
 // useRouter
 
@@ -27,7 +32,7 @@ export function useLocation() {
   const search = _useSubscribe(router, router.history.getSearch);
   const state = _useSubscribe(router, router.history.getState);
   return useMemo(
-    () => ({ path, search: new URLSearchParams(search), state }),
+    () => ({ path, search: parseSearchParams(search), state }),
     [path, search, state]
   );
 }
@@ -54,11 +59,28 @@ export function useParams<R extends Routes>(route: R) {
 
 export function useSearch<R extends Routes>(route: R) {
   const router = useRouter();
-  const search = _useSubscribe(router, router.history.getSearch);
-  return useMemo(
-    () => router.resolveSearch(route, search),
-    [router, route, search]
+  const searchString = _useSubscribe(router, router.history.getSearch);
+  const search = useMemo(
+    () => router.resolveSearch(route, searchString),
+    [router, route, searchString]
   );
+
+  const setSearch = useCallback(
+    (update: Updater<SearchOfRoute<R>>, replace?: boolean) => {
+      const params = router.resolveParams(route, router.history.getPath());
+      const search = router.resolveSearch(route, router.history.getSearch());
+      update = typeof update === "function" ? update(search) : update;
+      router.navigate({
+        to: route._.path,
+        params,
+        search: { ...search, ...update },
+        replace
+      });
+    },
+    [router, route]
+  );
+
+  return [search, setSearch] as const;
 }
 
 // _useSubscribe

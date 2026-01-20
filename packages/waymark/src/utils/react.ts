@@ -1,5 +1,7 @@
 import type { ComponentType, Ref } from "react";
 
+export type Updater<T extends object> = Partial<T> | ((prev: T) => Partial<T>);
+
 export type ComponentLoader = () => Promise<
   ComponentType | { default: ComponentType }
 >;

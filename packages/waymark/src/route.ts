@@ -8,104 +8,100 @@ import {
   type OptionalOnUndefined
 } from "./utils";
 
-export class Route<Path extends string, Params extends {}, Search extends {}> {
-  _keys: string[];
-  _pattern: RegExp;
-  _prefixPattern: RegExp;
-  _preloaded = false;
+export class RouteConfig<P extends string, Prm extends {}, S extends {}> {
+  _: {
+    path: P;
+    mapSearch: (search: Record<string, unknown>) => S;
+    components: ComponentType[];
+    preloaded: boolean;
+    preloaders: (() => Promise<any>)[];
+    keys: string[];
+    pattern: RegExp;
+    prefixPattern: RegExp;
+  };
 
   constructor(
-    public _path: Path,
-    public _mapParams: (params: Record<string, string>) => Params,
-    public _mapSearch: (search: Record<string, unknown>) => Search,
-    public _components: ComponentType[],
-    public _preloaders: (() => Promise<any>)[]
+    path: P,
+    mapSearch: (search: Record<string, unknown>) => S,
+    components: ComponentType[],
+    preloaders: (() => Promise<any>)[]
   ) {
-    const { keys, pattern } = parse(_path);
-    this._keys = keys;
-    this._pattern = pattern;
-    this._prefixPattern = parse(_path, true).pattern;
+    const { keys, pattern } = parse(path);
+    this._ = {
+      path,
+      mapSearch,
+      components,
+      preloaded: false,
+      preloaders,
+      keys,
+      pattern,
+      prefixPattern: parse(path, true).pattern
+    };
   }
 
   route<SubPath extends string>(subPath: SubPath) {
-    type NextParams = Merge<RouteParams<SubPath>, Params>;
-    return new Route<NormalizePath<`${Path}/${SubPath}`>, NextParams, Search>(
-      normalizePath(`${this._path}/${subPath}`),
-      this._mapParams as any,
-      this._mapSearch,
-      this._components,
-      this._preloaders
+    type NextParams = Merge<RouteParams<SubPath>, Prm>;
+    const { path, mapSearch, components, preloaders } = this._;
+    return new RouteConfig<NormalizePath<`${P}/${SubPath}`>, NextParams, S>(
+      normalizePath(`${path}/${subPath}`),
+      mapSearch,
+      components,
+      preloaders
     );
   }
 
-  params<NextParams extends {}>(mapParams: (params: Params) => NextParams) {
-    type MergedParams = Merge<Params, OptionalOnUndefined<NextParams>>;
-    return new Route<Path, MergedParams, Search>(
-      this._path,
-      params => {
-        const mapped = this._mapParams(params);
-        return { ...mapped, ...mapParams(mapped) };
-      },
-      this._mapSearch,
-      this._components,
-      this._preloaders
-    );
-  }
-
-  search<NextSearch extends {}>(mapSearch: (search: Search) => NextSearch) {
-    type MergedSearch = Merge<Search, OptionalOnUndefined<NextSearch>>;
-    return new Route<Path, Params, MergedSearch>(
-      this._path,
-      this._mapParams,
+  search<NextSearch extends {}>(
+    mapper: (search: S & Record<string, unknown>) => NextSearch
+  ) {
+    type MergedSearch = Merge<S, OptionalOnUndefined<NextSearch>>;
+    const { path, mapSearch, components, preloaders } = this._;
+    return new RouteConfig<P, Prm, MergedSearch>(
+      path,
       search => {
-        const mapped = this._mapSearch(search);
-        return { ...mapped, ...mapSearch(mapped) };
+        const mapped = mapSearch(search);
+        return { ...mapped, ...mapper(mapped) };
       },
-      this._components,
-      this._preloaders
+      components,
+      preloaders
     );
   }
 
   component(component: ComponentType) {
-    return new Route<Path, Params, Search>(
-      this._path,
-      this._mapParams,
-      this._mapSearch,
-      [...this._components, component],
-      this._preloaders
+    const { path, mapSearch, components, preloaders } = this._;
+    return new RouteConfig<P, Prm, S>(
+      path,
+      mapSearch,
+      [...components, component],
+      preloaders
     );
   }
 
   lazy(loader: ComponentLoader) {
+    const { path, mapSearch, components, preloaders } = this._;
     const lazyLoader = async () => {
       const result = await loader();
       return "default" in result ? result : { default: result };
     };
-    return new Route<Path, Params, Search>(
-      this._path,
-      this._mapParams,
-      this._mapSearch,
-      [...this._components, lazy(lazyLoader)],
-      [...this._preloaders, loader]
+    return new RouteConfig<P, Prm, S>(
+      path,
+      mapSearch,
+      [...components, lazy(lazyLoader)],
+      [...preloaders, loader]
     );
   }
 
-  preload() {
-    if (this._preloaded) return;
-    this._preloaders.forEach(loader => loader());
-    this._preloaded = true;
+  async preload() {
+    const { preloaded, preloaders } = this._;
+    if (preloaded) return;
+    this._.preloaded = true;
+    await Promise.all(preloaders.map(loader => loader()));
   }
 }
 
-export function route<Path extends string>(path: Path) {
-  type NormalizedPath = NormalizePath<Path>;
-  return new Route<
-    NormalizedPath,
-    RouteParams<NormalizedPath>,
-    Record<string, unknown>
-  >(
+export function route<P extends string>(path: P) {
+  type NormalizedPath = NormalizePath<P>;
+  return new RouteConfig<NormalizedPath, RouteParams<NormalizedPath>, {}>(
     normalizePath(path),
-    params => params as any,
     search => search,
     [],
     []

@@ -42,7 +42,7 @@ export function RouterRoot(props: RouterRootProps) {
     return createElement(
       routerContext.Provider,
       { value: router },
-      route?._components.reduceRight<ReactNode>(
+      route?._.components.reduceRight<ReactNode>(
         (acc, comp) =>
           createElement(
             outletContext.Provider,

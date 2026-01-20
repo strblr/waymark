@@ -25,10 +25,7 @@ const tos1 = tos.route("section1").component(Section1);
 
 const tos2 = tos.route("section2").component(Section2);
 
-const user = root
-  .route("user/:id")
-  .params(p => ({ id: Number(p.id) }))
-  .component(User);
+const user = root.route("user/:id").component(User);
 
 const userBio = user
   .route("bio")
@@ -55,7 +52,7 @@ export function App() {
 function Layout() {
   const router = useRouter();
   const navigateToUser2 = () =>
-    router.navigate({ to: "/user/:id", params: { id: 2 } });
+    router.navigate({ to: "/user/:id", params: { id: "2" } });
 
   useEffect(
     () => () => {
@@ -72,11 +69,15 @@ function Layout() {
       <Link to="/terms" activeStyle={{ color: "blue" }}>
         Terms
       </Link>{" "}
-      <Link to="/user/:id" params={{ id: 1 }} activeStyle={{ color: "yellow" }}>
+      <Link
+        to="/user/:id"
+        params={{ id: "1" }}
+        activeStyle={{ color: "yellow" }}
+      >
         User 1
       </Link>{" "}
       <a onClick={navigateToUser2}>User 2</a>{" "}
-      <a onClick={() => router.navigate({ to: "/unknown" as any })}>Unknown</a>{" "}
+      <a onClick={() => router.navigate<any>({ to: "/unknown" })}>Unknown</a>{" "}
       <a onClick={() => router.navigate(-1)}>Back</a>{" "}
       <a onClick={() => router.navigate(1)}>Forward</a>
       <Outlet />
@@ -105,9 +106,15 @@ function User() {
 }
 
 function UserBio() {
-  const router = useRouter();
-  const search = useSearch(router.getRoute("/user/:id/bio"));
-  return <div>User Bio {JSON.stringify(search)}</div>;
+  const [search, setSearch] = useSearch(userBio);
+  return (
+    <div>
+      User Bio {JSON.stringify(search)}{" "}
+      <button onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}>
+        Set Name
+      </button>
+    </div>
+  );
 }
 
 function NotFound() {
