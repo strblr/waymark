@@ -1,6 +1,6 @@
-import { type ComponentType, lazy } from "react";
-import { type RouteParams, parse } from "regexparam";
-import type { Merge } from "type-fest";
+import { lazy, type ComponentType } from "react";
+import { parse, type RouteParams } from "regexparam";
+import type { Merge, Simplify } from "type-fest";
 import {
   normalizePath,
   type NormalizePath,
@@ -44,7 +44,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
 
   route<P2 extends string>(subPattern: P2) {
     type Pattern = NormalizePath<`${P}/${P2}`>;
-    type Params = RouteParams<Pattern>;
+    type Params = Simplify<RouteParams<Pattern>>;
     const { pattern, mapSearch, components, preloaders } = this._;
     return new Route<Pattern, Params, S>(
       normalizePath(`${pattern}/${subPattern}`),
@@ -102,7 +102,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
 
 export function route<P extends string>(pattern: P) {
   type Pattern = NormalizePath<P>;
-  type Params = RouteParams<Pattern>;
+  type Params = Simplify<RouteParams<Pattern>>;
   return new Route<Pattern, Params, {}>(
     normalizePath(pattern),
     search => search,
