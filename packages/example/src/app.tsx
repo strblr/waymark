@@ -8,16 +8,15 @@ import {
   useParams,
   useSearch
 } from "waymark";
+import { z } from "zod";
 
 const ultraroot = route("").component(Outlet);
 
-const root = ultraroot.route("").component(Layout);
+const layout = ultraroot.route("").component(Layout);
 
-const notFound = root.route("*").component(NotFound);
+const about = layout.route("about").component(About);
 
-const about = root.route("about").component(About);
-
-const tos = root
+const tos = layout
   .route("terms")
   .lazy(() => import("./terms").then(m => m.Terms));
 
@@ -25,15 +24,19 @@ const tos1 = tos.route("section1").component(Section1);
 
 const tos2 = tos.route("section2").component(Section2);
 
-const user = root.route("user/:id").component(User);
+const faulty = layout.route("faulty").component(Faulty);
+
+const user = layout.route("user/:id").component(User);
 
 const userBio = user
   .route("bio")
-  .search(s => ({ name: s.name ? String(s.name) : "" }))
+  .search(z.object({ name: z.string().catch("") }))
   .component(UserBio);
 
+const notFound = layout.route("*").component(NotFound);
+
 // Only register routes that should be reachable
-const routes = [about, tos, tos1, tos2, user, userBio, notFound];
+const routes = [about, tos, tos1, tos2, faulty, user, userBio, notFound];
 
 declare module "waymark" {
   interface RegisterRoutes {
@@ -69,17 +72,9 @@ function Layout() {
 
   return (
     <div style={{ paddingTop: 0 }}>
-      <Link to="/about" activeStyle={{ color: "red" }}>
-        About
-      </Link>{" "}
-      <Link to="/terms" activeStyle={{ color: "blue" }}>
-        Terms
-      </Link>{" "}
-      <Link
-        to="/user/:id"
-        params={{ id: "1" }}
-        activeStyle={{ color: "yellow" }}
-      >
+      <Link to="/about">About</Link> <Link to="/terms">Terms</Link>{" "}
+      <Link to="/faulty">Faulty</Link>{" "}
+      <Link to="/user/:id" params={{ id: "1" }}>
         User 1
       </Link>{" "}
       <a onClick={navigateToUser2}>User 2</a>{" "}
@@ -124,7 +119,12 @@ function UserBio() {
 }
 
 function NotFound() {
-  return <div>Not Found</div>;
+  const params = useParams(notFound);
+  return <div>Not Found {JSON.stringify(params)}</div>;
+}
+
+function Faulty(): never {
+  throw new Error("Faulty");
 }
 
 function Section1() {

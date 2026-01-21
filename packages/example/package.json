@@ -10,7 +10,8 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "waymark": "workspace:*"
+    "waymark": "workspace:*",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@types/bun": "^1.3.6",

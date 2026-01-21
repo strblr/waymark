@@ -1,8 +1,10 @@
 import { lazy, type ComponentType } from "react";
 import { parse } from "regexparam";
 import type { Merge } from "type-fest";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
   normalizePath,
+  validator,
   type ParsePattern,
   type NormalizePath,
   type ComponentLoader,
@@ -55,9 +57,14 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
     );
   }
 
-  search<S2 extends {}>(mapper: (search: S & Record<string, unknown>) => S2) {
+  search<S2 extends {}>(
+    mapper:
+      | ((search: S & Record<string, unknown>) => S2)
+      | StandardSchemaV1<S & Record<string, unknown>, S2>
+  ) {
     type Search = Merge<S, OptionalOnUndefined<S2>>;
     const { pattern, mapSearch, components, preloaders } = this._;
+    mapper = validator(mapper);
     return new Route<P, Ps, Search>(
       pattern,
       search => {
