@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import { outletContext, routerContext } from "./contexts";
 import type { Router } from "../router";
-import type { Routes, SearchOfRoute, Updater } from "../utils";
+import type { Routes, RouteSearch, Updater } from "../utils";
 
 // useRouter
 
@@ -61,7 +61,7 @@ export function useSearch<R extends Routes>(route: R) {
   );
 
   const setSearch = useCallback(
-    (update: Updater<SearchOfRoute<R>>, replace?: boolean) => {
+    (update: Updater<RouteSearch<R>>, replace?: boolean) => {
       const params = router.resolveParams(route, router.history.getPath());
       const search = router.resolveSearch(route, router.history.getSearch());
       update = typeof update === "function" ? update(search) : update;

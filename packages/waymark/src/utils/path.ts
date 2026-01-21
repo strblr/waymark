@@ -1,3 +1,8 @@
+import type { RouteParams } from "regexparam";
+import type { Simplify } from "type-fest";
+
+export type ParsePattern<P extends string> = Simplify<RouteParams<P>>;
+
 export type NormalizePath<P extends string> = RemoveTrailingSlash<
   DedupSlashes<`/${P}`>
 >;

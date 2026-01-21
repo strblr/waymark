@@ -4,16 +4,16 @@ import type { LinkOptions } from "../react";
 import {
   normalizePath,
   extract,
-  toSearchString,
-  parseSearchParams,
+  stringifySearch,
+  parseSearch,
   type Routes,
-  type RouteOf,
+  type PatternRoute,
   type RouteList,
   type Patterns,
   type NavigateOptions,
   type HistoryLike,
-  type SearchOfRoute,
-  type ParamsOfRoute
+  type RouteParams,
+  type RouteSearch
 } from "../utils";
 
 export interface RouterOptions {
@@ -56,7 +56,7 @@ export class Router {
     if (!route) {
       throw new Error(`Route not found for pattern: ${pattern}`);
     }
-    return route as RouteOf<P>;
+    return route as PatternRoute<P>;
   }
 
   getRouteMatch(path: string): Routes | undefined {
@@ -69,7 +69,7 @@ export class Router {
     let cpath: string = to;
     params && (cpath = inject(cpath, params));
     let path = this.getPath(cpath);
-    const searchString = search && toSearchString(search);
+    const searchString = search && stringifySearch(search);
     searchString && (path = `${path}?${searchString}`);
     return path;
   }
@@ -77,11 +77,11 @@ export class Router {
   resolveParams<R extends Routes>(route: R, path: string) {
     const cpath = this.getCanonicalPath(path);
     const { looseRegex, keys } = route._;
-    return extract(cpath, looseRegex, keys) as ParamsOfRoute<R>;
+    return extract(cpath, looseRegex, keys) as RouteParams<R>;
   }
 
-  resolveSearch<R extends Routes>(route: R, search: string): SearchOfRoute<R> {
-    return route._.mapSearch(parseSearchParams(search));
+  resolveSearch<R extends Routes>(route: R, search: string) {
+    return route._.mapSearch(parseSearch(search)) as RouteSearch<R>;
   }
 
   navigate<P extends Patterns>(options: NavigateOptions<P> | number) {

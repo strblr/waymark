@@ -1,14 +1,15 @@
 import { lazy, type ComponentType } from "react";
-import { parse, type RouteParams } from "regexparam";
-import type { Merge, Simplify } from "type-fest";
+import { parse } from "regexparam";
+import type { Merge } from "type-fest";
 import {
   normalizePath,
+  type ParsePattern,
   type NormalizePath,
   type ComponentLoader,
   type OptionalOnUndefined
 } from "./utils";
 
-export class Route<P extends string, Prm extends {}, S extends {}> {
+export class Route<P extends string, Ps extends {}, S extends {}> {
   _: {
     pattern: P;
     mapSearch: (search: Record<string, unknown>) => S;
@@ -18,7 +19,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
     keys: string[];
     regex: RegExp;
     looseRegex: RegExp;
-    _params?: Prm;
+    _params?: Ps;
     _search?: S;
   };
 
@@ -44,7 +45,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
 
   route<P2 extends string>(subPattern: P2) {
     type Pattern = NormalizePath<`${P}/${P2}`>;
-    type Params = Simplify<RouteParams<Pattern>>;
+    type Params = ParsePattern<Pattern>;
     const { pattern, mapSearch, components, preloaders } = this._;
     return new Route<Pattern, Params, S>(
       normalizePath(`${pattern}/${subPattern}`),
@@ -55,9 +56,9 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
   }
 
   search<S2 extends {}>(mapper: (search: S & Record<string, unknown>) => S2) {
-    type MergedSearch = Merge<S, OptionalOnUndefined<S2>>;
+    type Search = Merge<S, OptionalOnUndefined<S2>>;
     const { pattern, mapSearch, components, preloaders } = this._;
-    return new Route<P, Prm, MergedSearch>(
+    return new Route<P, Ps, Search>(
       pattern,
       search => {
         const mapped = mapSearch(search);
@@ -70,7 +71,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
 
   component(component: ComponentType) {
     const { pattern, mapSearch, components, preloaders } = this._;
-    return new Route<P, Prm, S>(
+    return new Route<P, Ps, S>(
       pattern,
       mapSearch,
       [...components, component],
@@ -84,7 +85,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
       const result = await loader();
       return "default" in result ? result : { default: result };
     };
-    return new Route<P, Prm, S>(
+    return new Route<P, Ps, S>(
       pattern,
       mapSearch,
       [...components, lazy(lazyLoader)],
@@ -102,7 +103,7 @@ export class Route<P extends string, Prm extends {}, S extends {}> {
 
 export function route<P extends string>(pattern: P) {
   type Pattern = NormalizePath<P>;
-  type Params = Simplify<RouteParams<Pattern>>;
+  type Params = ParsePattern<Pattern>;
   return new Route<Pattern, Params, {}>(
     normalizePath(pattern),
     search => search,

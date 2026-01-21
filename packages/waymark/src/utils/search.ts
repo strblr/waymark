@@ -1,4 +1,4 @@
-export function toSearchString(search: Record<string, unknown>) {
+export function stringifySearch(search: Record<string, unknown>) {
   const toValueString = (value: unknown) => {
     if (typeof value === "string" && !isJSONString(value)) {
       return value;
@@ -11,7 +11,7 @@ export function toSearchString(search: Record<string, unknown>) {
     .join("&");
 }
 
-export function parseSearchParams(search: string): Record<string, unknown> {
+export function parseSearch(search: string): Record<string, unknown> {
   const urlSearch = new URLSearchParams(search);
   return Object.fromEntries(
     [...urlSearch.entries()].map(([key, value]) => {
