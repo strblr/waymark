@@ -6,6 +6,7 @@ export function toSearchString(search: Record<string, unknown>) {
     return JSON.stringify(value);
   };
   return Object.entries(search)
+    .filter(([_, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${encodeURIComponent(toValueString(value))}`)
     .join("&");
 }

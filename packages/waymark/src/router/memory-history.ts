@@ -11,13 +11,16 @@ export class MemoryHistory implements HistoryLike {
   private currentIndex: number = 0;
   private listeners = new Set<() => void>();
 
-  constructor(initial?: Partial<MemoryHistoryLocation>) {
-    this.stack.push({ path: "/", search: "", state: undefined, ...initial });
+  constructor(initial: Partial<MemoryHistoryLocation> = {}) {
+    const { path, ...rest } = initial;
+    this.stack.push({
+      state: undefined,
+      ...this._parsePath(path ?? "/"),
+      ...rest
+    });
   }
 
-  _parsePath = (
-    path: string
-  ): Pick<MemoryHistoryLocation, "path" | "search"> => {
+  _parsePath = (path: string) => {
     const [p, search] = path.split("?");
     return { path: p, search: search ? `?${search}` : "" };
   };
@@ -52,10 +55,10 @@ export class MemoryHistory implements HistoryLike {
     this.listeners.forEach(listener => listener());
   };
 
-  subscribe = (callback: () => void) => {
-    this.listeners.add(callback);
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
     return () => {
-      this.listeners.delete(callback);
+      this.listeners.delete(listener);
     };
   };
 }

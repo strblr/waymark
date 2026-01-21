@@ -1,12 +1,7 @@
 import { useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import { outletContext, routerContext } from "./contexts";
 import type { Router } from "../router";
-import {
-  parseSearchParams,
-  type Routes,
-  type SearchOfRoute,
-  type Updater
-} from "../utils";
+import type { Routes, SearchOfRoute, Updater } from "../utils";
 
 // useRouter
 
@@ -32,7 +27,7 @@ export function useLocation() {
   const search = _useSubscribe(router, router.history.getSearch);
   const state = _useSubscribe(router, router.history.getState);
   return useMemo(
-    () => ({ path, search: parseSearchParams(search), state }),
+    () => ({ path, search: new URLSearchParams(search), state }),
     [path, search, state]
   );
 }
@@ -71,7 +66,7 @@ export function useSearch<R extends Routes>(route: R) {
       const search = router.resolveSearch(route, router.history.getSearch());
       update = typeof update === "function" ? update(search) : update;
       router.navigate({
-        to: route._.path,
+        to: route._.pattern,
         params,
         search: { ...search, ...update },
         replace

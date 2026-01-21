@@ -19,16 +19,16 @@ export function normalizePath<P extends string>(path: P) {
   return normalized as NormalizePath<P>;
 }
 
-export function extractParams(path: string, pattern: RegExp, keys: string[]) {
+export function extract(cpath: string, looseRegex: RegExp, keys: string[]) {
   const out: Record<string, string> = {};
-  let matches = pattern.exec(path);
+  const matches = looseRegex.exec(cpath);
   if (matches) {
-    for (let i = 0; i < keys.length; i++) {
+    keys.forEach((key, i) => {
       const match = matches[i + 1];
       if (match) {
-        out[keys[i]] = match;
+        out[key] = match;
       }
-    }
+    });
   }
   return out;
 }

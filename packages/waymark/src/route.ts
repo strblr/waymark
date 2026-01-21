@@ -8,55 +8,57 @@ import {
   type OptionalOnUndefined
 } from "./utils";
 
-export class RouteConfig<P extends string, Prm extends {}, S extends {}> {
+export class Route<P extends string, Prm extends {}, S extends {}> {
   _: {
-    path: P;
+    pattern: P;
     mapSearch: (search: Record<string, unknown>) => S;
     components: ComponentType[];
     preloaded: boolean;
     preloaders: (() => Promise<any>)[];
     keys: string[];
-    pattern: RegExp;
-    prefixPattern: RegExp;
+    regex: RegExp;
+    looseRegex: RegExp;
+    _params?: Prm;
+    _search?: S;
   };
 
   constructor(
-    path: P,
+    pattern: P,
     mapSearch: (search: Record<string, unknown>) => S,
     components: ComponentType[],
     preloaders: (() => Promise<any>)[]
   ) {
-    const { keys, pattern } = parse(path);
+    const { keys, pattern: regex } = parse(pattern);
+    const looseRegex = parse(pattern, true).pattern;
     this._ = {
-      path,
+      pattern,
       mapSearch,
       components,
       preloaded: false,
       preloaders,
       keys,
-      pattern,
-      prefixPattern: parse(path, true).pattern
+      regex,
+      looseRegex
     };
   }
 
-  route<SubPath extends string>(subPath: SubPath) {
-    type NextParams = Merge<RouteParams<SubPath>, Prm>;
-    const { path, mapSearch, components, preloaders } = this._;
-    return new RouteConfig<NormalizePath<`${P}/${SubPath}`>, NextParams, S>(
-      normalizePath(`${path}/${subPath}`),
+  route<P2 extends string>(subPattern: P2) {
+    type Pattern = NormalizePath<`${P}/${P2}`>;
+    type Params = RouteParams<Pattern>;
+    const { pattern, mapSearch, components, preloaders } = this._;
+    return new Route<Pattern, Params, S>(
+      normalizePath(`${pattern}/${subPattern}`),
       mapSearch,
       components,
       preloaders
     );
   }
 
-  search<NextSearch extends {}>(
-    mapper: (search: S & Record<string, unknown>) => NextSearch
-  ) {
-    type MergedSearch = Merge<S, OptionalOnUndefined<NextSearch>>;
-    const { path, mapSearch, components, preloaders } = this._;
-    return new RouteConfig<P, Prm, MergedSearch>(
-      path,
+  search<S2 extends {}>(mapper: (search: S & Record<string, unknown>) => S2) {
+    type MergedSearch = Merge<S, OptionalOnUndefined<S2>>;
+    const { pattern, mapSearch, components, preloaders } = this._;
+    return new Route<P, Prm, MergedSearch>(
+      pattern,
       search => {
         const mapped = mapSearch(search);
         return { ...mapped, ...mapper(mapped) };
@@ -67,9 +69,9 @@ export class RouteConfig<P extends string, Prm extends {}, S extends {}> {
   }
 
   component(component: ComponentType) {
-    const { path, mapSearch, components, preloaders } = this._;
-    return new RouteConfig<P, Prm, S>(
-      path,
+    const { pattern, mapSearch, components, preloaders } = this._;
+    return new Route<P, Prm, S>(
+      pattern,
       mapSearch,
       [...components, component],
       preloaders
@@ -77,13 +79,13 @@ export class RouteConfig<P extends string, Prm extends {}, S extends {}> {
   }
 
   lazy(loader: ComponentLoader) {
-    const { path, mapSearch, components, preloaders } = this._;
+    const { pattern, mapSearch, components, preloaders } = this._;
     const lazyLoader = async () => {
       const result = await loader();
       return "default" in result ? result : { default: result };
     };
-    return new RouteConfig<P, Prm, S>(
-      path,
+    return new Route<P, Prm, S>(
+      pattern,
       mapSearch,
       [...components, lazy(lazyLoader)],
       [...preloaders, loader]
@@ -98,10 +100,11 @@ export class RouteConfig<P extends string, Prm extends {}, S extends {}> {
   }
 }
 
-export function route<P extends string>(path: P) {
-  type NormalizedPath = NormalizePath<P>;
-  return new RouteConfig<NormalizedPath, RouteParams<NormalizedPath>, {}>(
-    normalizePath(path),
+export function route<P extends string>(pattern: P) {
+  type Pattern = NormalizePath<P>;
+  type Params = RouteParams<Pattern>;
+  return new Route<Pattern, Params, {}>(
+    normalizePath(pattern),
     search => search,
     [],
     []

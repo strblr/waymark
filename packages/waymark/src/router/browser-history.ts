@@ -18,7 +18,9 @@ export class BrowserHistory implements HistoryLike {
           return result;
         };
       }
-      (window as any)[BrowserHistory.patchKey] = true;
+      Object.assign(window, {
+        [BrowserHistory.patchKey]: true
+      });
     }
   }
 
@@ -34,10 +36,10 @@ export class BrowserHistory implements HistoryLike {
     history[replace ? replaceStateEvent : pushStateEvent](data, "", path);
   };
 
-  subscribe = (callback: () => void) => {
-    events.forEach(event => window.addEventListener(event, callback));
+  subscribe = (listener: () => void) => {
+    events.forEach(event => window.addEventListener(event, listener));
     return () => {
-      events.forEach(event => window.removeEventListener(event, callback));
+      events.forEach(event => window.removeEventListener(event, listener));
     };
   };
 }

@@ -1,46 +1,37 @@
-import type { RouteConfig } from "../route";
-import type { MaybeOptional } from "./misc";
+import type { Route } from "../route";
+import type { MaybeKey } from "./misc";
 
 export interface RegisterRoutes {}
 
-export type Paths = Routes["_"]["path"];
+export type Patterns = Routes["_"]["pattern"];
 
 export type Routes = RouteList[number];
 
+export type RouteOf<P extends Patterns> = Extract<
+  Routes,
+  { _: { pattern: P } }
+>;
+
 export type RouteList = RegisterRoutes extends {
-  routes: infer RouteList extends ReadonlyArray<RouteConfig<string, any, any>>;
+  routes: infer RouteList extends ReadonlyArray<Route<string, any, any>>;
 }
   ? RouteList
-  : ReadonlyArray<RouteConfig<string, any, any>>;
+  : ReadonlyArray<Route<string, any, any>>;
 
-export type RouteOf<P extends Paths> = Extract<Routes, { _: { path: P } }>;
+export type ParamsOfPattern<P extends Patterns> = ParamsOfRoute<RouteOf<P>>;
 
-export type ParamsOfPath<P extends Paths> = ParamsOfRoute<RouteOf<P>>;
+export type SearchOfPattern<P extends Patterns> = SearchOfRoute<RouteOf<P>>;
 
-export type SearchOfPath<P extends Paths> = SearchOfRoute<RouteOf<P>>;
+export type ParamsOfRoute<R extends Routes> = NonNullable<R["_"]["_params"]>;
 
-export type ParamsOfRoute<R extends Routes> = R extends RouteConfig<
-  string,
-  infer Params,
-  any
->
-  ? Params
-  : never;
+export type SearchOfRoute<R extends Routes> = NonNullable<R["_"]["_search"]>;
 
-export type SearchOfRoute<R extends Routes> = R extends RouteConfig<
-  string,
-  any,
-  infer Search
->
-  ? Search
-  : never;
-
-export type NavigateOptions<P extends Paths> = {
+export type NavigateOptions<P extends Patterns> = {
   to: P;
   replace?: boolean;
   data?: any;
-} & MaybeOptional<ParamsOfPath<P>, "params"> &
-  MaybeOptional<SearchOfPath<P>, "search">;
+} & MaybeKey<"params", ParamsOfPattern<P>> &
+  MaybeKey<"search", SearchOfPattern<P>>;
 
 export interface HistoryLike {
   getPath: () => string;
@@ -48,5 +39,5 @@ export interface HistoryLike {
   getState: () => any;
   go: (delta: number) => void;
   push: (path: string, replace?: boolean, data?: any) => void;
-  subscribe: (callback: () => void) => () => void;
+  subscribe: (listener: () => void) => () => void;
 }

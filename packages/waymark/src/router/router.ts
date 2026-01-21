@@ -3,17 +3,17 @@ import { BrowserHistory } from "./browser-history";
 import type { LinkOptions } from "../react";
 import {
   normalizePath,
-  extractParams,
+  extract,
   toSearchString,
   parseSearchParams,
   type Routes,
+  type RouteOf,
   type RouteList,
-  type Paths,
+  type Patterns,
   type NavigateOptions,
   type HistoryLike,
   type SearchOfRoute,
-  type ParamsOfRoute,
-  type RouteOf
+  type ParamsOfRoute
 } from "../utils";
 
 export interface RouterOptions {
@@ -36,20 +36,12 @@ export class Router {
     this.routes = options.routes;
     this.defaultLinkOptions = options.defaultLinkOptions;
     this._ = {
-      routeMap: new Map(options.routes.map(route => [route._.path, route]))
+      routeMap: new Map(options.routes.map(route => [route._.pattern, route]))
     };
   }
 
-  getRoute<P extends Paths>(path: P) {
-    const route = this._.routeMap.get(path);
-    if (!route) {
-      throw new Error(`Route not found for path: ${path}`);
-    }
-    return route as RouteOf<P>;
-  }
-
-  getFullPath(path: string): string {
-    return normalizePath(`${this.basePath}/${path}`);
+  getPath(cpath: string): string {
+    return normalizePath(`${this.basePath}/${cpath}`);
   }
 
   getCanonicalPath(path: string) {
@@ -59,37 +51,45 @@ export class Router {
     return path;
   }
 
-  getRouteMatch(path: string): Routes | undefined {
-    path = this.getCanonicalPath(path);
-    return this.routes.find(route => route._.pattern.test(path));
+  getRoute<P extends Patterns>(pattern: P) {
+    const route = this._.routeMap.get(pattern);
+    if (!route) {
+      throw new Error(`Route not found for pattern: ${pattern}`);
+    }
+    return route as RouteOf<P>;
   }
 
-  resolvePath<P extends Paths>(options: NavigateOptions<P>) {
+  getRouteMatch(path: string): Routes | undefined {
+    const cpath = this.getCanonicalPath(path);
+    return this.routes.find(route => route._.regex.test(cpath));
+  }
+
+  resolvePath<P extends Patterns>(options: NavigateOptions<P>) {
     const { to, params, search } = options;
-    let path: string = to;
-    params && (path = inject(path, params));
-    path = this.getFullPath(path);
+    let cpath: string = to;
+    params && (cpath = inject(cpath, params));
+    let path = this.getPath(cpath);
     const searchString = search && toSearchString(search);
     searchString && (path = `${path}?${searchString}`);
     return path;
   }
 
   resolveParams<R extends Routes>(route: R, path: string) {
-    path = this.getCanonicalPath(path);
-    const { prefixPattern, keys } = route._;
-    return extractParams(path, prefixPattern, keys) as ParamsOfRoute<R>;
+    const cpath = this.getCanonicalPath(path);
+    const { looseRegex, keys } = route._;
+    return extract(cpath, looseRegex, keys) as ParamsOfRoute<R>;
   }
 
   resolveSearch<R extends Routes>(route: R, search: string): SearchOfRoute<R> {
     return route._.mapSearch(parseSearchParams(search));
   }
 
-  navigate<P extends Paths>(options: NavigateOptions<P> | number) {
+  navigate<P extends Patterns>(options: NavigateOptions<P> | number) {
     if (typeof options === "number") {
       this.history.go(options);
     } else {
-      const to = this.resolvePath(options);
-      this.history.push(to, options.replace, options.data);
+      const path = this.resolvePath(options);
+      this.history.push(path, options.replace, options.data);
     }
   }
 }

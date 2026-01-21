@@ -21,7 +21,7 @@ import { Router, type RouterOptions } from "../router";
 import {
   mergeRefs,
   defaultLinkActive,
-  type Paths,
+  type Patterns,
   type NavigateOptions
 } from "../utils";
 
@@ -63,9 +63,9 @@ export function Outlet() {
 
 // Navigate
 
-export type NavigateProps<P extends Paths> = NavigateOptions<P>;
+export type NavigateProps<P extends Patterns> = NavigateOptions<P>;
 
-export function Navigate<P extends Paths>(props: NavigateProps<P>) {
+export function Navigate<P extends Patterns>(props: NavigateProps<P>) {
   const router = useRouter();
   useLayoutEffect(() => router.navigate(props), []);
   return null;
@@ -73,7 +73,7 @@ export function Navigate<P extends Paths>(props: NavigateProps<P>) {
 
 // Link
 
-export type LinkProps<P extends Paths> = NavigateOptions<P> &
+export type LinkProps<P extends Patterns> = NavigateOptions<P> &
   LinkOptions &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   RefAttributes<HTMLAnchorElement> & { asChild?: boolean };
@@ -85,14 +85,14 @@ export interface LinkOptions {
   activeClassName?: string;
 }
 
-export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
+export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  const href = router.resolvePath(props);
+  const path = router.resolvePath(props);
   const currentPath = _useSubscribe(router, router.history.getPath);
   const possibleRoute = useMemo(
-    () => router.getRouteMatch(href),
-    [router, href]
+    () => router.getRouteMatch(path),
+    [router, path]
   );
 
   const {
@@ -117,7 +117,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
   };
 
   const activeProps = useMemo(() => {
-    const isActive = active(currentPath, href);
+    const isActive = active(currentPath, path);
     return {
       ["data-active"]: isActive,
       style: { ...style, ...(isActive && activeStyle) },
@@ -127,7 +127,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     };
   }, [
     active,
-    href,
+    path,
     currentPath,
     style,
     className,
@@ -164,7 +164,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     )
       return;
     event.preventDefault();
-    router.history.push(href, replace, data);
+    router.history.push(path, replace, data);
   };
 
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
@@ -185,7 +185,7 @@ export function Link<P extends Paths>(props: LinkProps<P>): ReactNode {
     ...rest,
     ...activeProps,
     ref: mergeRefs(rest.ref, ref),
-    href,
+    href: path,
     onClick,
     onFocus,
     onPointerEnter

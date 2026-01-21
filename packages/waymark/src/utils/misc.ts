@@ -1,6 +1,6 @@
-import { Simplify } from "type-fest";
+import type { Simplify, EmptyObject } from "type-fest";
 
-export type MaybeOptional<T, K extends string> = [keyof T] extends [never]
+export type MaybeKey<K extends string, T> = T extends EmptyObject
   ? { [P in K]?: undefined }
   : {} extends T
   ? { [P in K]?: T }
