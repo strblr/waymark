@@ -1,4 +1,8 @@
-import type { HistoryLike } from "../utils";
+import {
+  normalizeSearch,
+  type HistoryLike,
+  type HistoryPushOptions
+} from "../utils";
 
 export class BrowserHistory implements HistoryLike {
   private static patchKey = Symbol.for("waymark_history_patch_v01");
@@ -26,14 +30,16 @@ export class BrowserHistory implements HistoryLike {
 
   getPath = () => location.pathname;
 
-  getSearch = () => location.search;
+  getSearch = () => normalizeSearch(location.search);
 
   getState = () => history.state;
 
   go = (delta: number) => history.go(delta);
 
-  push = (path: string, replace?: boolean, data?: any) => {
-    history[replace ? replaceStateEvent : pushStateEvent](data, "", path);
+  push = (options: HistoryPushOptions) => {
+    const { path, search, replace, state } = options;
+    const href = `${path}${search ? `?${search}` : ""}`;
+    history[replace ? replaceStateEvent : pushStateEvent](state, "", href);
   };
 
   subscribe = (listener: () => void) => {
@@ -44,7 +50,7 @@ export class BrowserHistory implements HistoryLike {
   };
 }
 
-// Utils
+// Events
 
 const popStateEvent = "popstate";
 const pushStateEvent = "pushState";

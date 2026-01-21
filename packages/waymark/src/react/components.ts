@@ -88,16 +88,16 @@ export interface LinkOptions {
 export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  const path = router.composePath(props);
+  const { path, search } = router.composePath(props);
   const currentPath = _useSubscribe(router, router.history.getPath);
   const route = useMemo(() => router.matchPath(path), [router, path]);
 
   const {
     to,
     replace,
-    data,
+    state,
     params,
-    search,
+    search: search_,
     preload,
     active,
     activeStyle,
@@ -161,7 +161,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     )
       return;
     event.preventDefault();
-    router.history.push(path, replace, data);
+    router.history.push({ path, search, replace, state });
   };
 
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
@@ -182,7 +182,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     ...rest,
     ...activeProps,
     ref: mergeRefs(rest.ref, ref),
-    href: path,
+    href: `${path}${search ? `?${search}` : ""}`,
     onClick,
     onFocus,
     onPointerEnter

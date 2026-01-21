@@ -44,7 +44,13 @@ declare module "waymark" {
 export function App() {
   return (
     <div>
-      <RouterRoot routes={routes} defaultLinkOptions={{ preload: "intent" }} />
+      <RouterRoot
+        routes={routes}
+        defaultLinkOptions={{
+          preload: "intent",
+          activeStyle: { color: "yellow" }
+        }}
+      />
     </div>
   );
 }

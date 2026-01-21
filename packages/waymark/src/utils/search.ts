@@ -1,24 +1,29 @@
+export function normalizeSearch(search: string) {
+  return search.startsWith("?") ? search.slice(1) : search;
+}
+
 export function stringifySearch(search: Record<string, unknown>) {
-  const toValueString = (value: unknown) => {
-    if (typeof value === "string" && !isJSONString(value)) {
-      return value;
-    }
-    return JSON.stringify(value);
-  };
   return Object.entries(search)
     .filter(([_, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${encodeURIComponent(toValueString(value))}`)
     .join("&");
 }
 
-export function parseSearch(searchString: string): Record<string, unknown> {
-  const urlSearch = new URLSearchParams(searchString);
+export function parseSearch(search: string): Record<string, unknown> {
+  const urlSearch = new URLSearchParams(search);
   return Object.fromEntries(
     [...urlSearch.entries()].map(([key, value]) => {
       value = decodeURIComponent(value);
       return [key, isJSONString(value) ? JSON.parse(value) : value];
     })
   );
+}
+
+function toValueString(value: unknown) {
+  if (typeof value === "string" && !isJSONString(value)) {
+    return value;
+  }
+  return JSON.stringify(value);
 }
 
 function isJSONString(value: string) {

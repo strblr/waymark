@@ -29,15 +29,22 @@ export type PatternRoute<P extends Patterns> = Extract<
 export type NavigateOptions<P extends Patterns> = {
   to: P;
   replace?: boolean;
-  data?: any;
+  state?: any;
 } & MaybeKey<"params", PatternParams<P>> &
   MaybeKey<"search", PatternSearch<P>>;
+
+export interface HistoryPushOptions {
+  path: string;
+  search?: string;
+  replace?: boolean;
+  state?: any;
+}
 
 export interface HistoryLike {
   getPath: () => string;
   getSearch: () => string;
   getState: () => any;
   go: (delta: number) => void;
-  push: (path: string, replace?: boolean, data?: any) => void;
+  push: (options: HistoryPushOptions) => void;
   subscribe: (listener: () => void) => () => void;
 }

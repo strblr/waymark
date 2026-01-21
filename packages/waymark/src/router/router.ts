@@ -66,32 +66,28 @@ export class Router {
 
   composePath<P extends Patterns>(options: NavigateOptions<P>) {
     const { to, params, search } = options;
-    let cpath: string = to;
-    params && (cpath = inject(cpath, params));
-    let path = this.getPath(cpath);
-    const searchString = search && stringifySearch(search);
-    searchString && (path = `${path}?${searchString}`);
-    return path;
+    return {
+      path: this.getPath(params ? inject(to, params) : to),
+      search: search ? stringifySearch(search) : ""
+    };
   }
 
-  decomposePath<R extends Routes>(
-    route: R,
-    path: string,
-    searchString: string
-  ) {
+  decomposePath<R extends Routes>(route: R, path: string, search: string) {
     const { keys, looseRegex, mapSearch } = route._;
     const cpath = this.getCanonicalPath(path);
-    const params: RouteParams<R> = extract(cpath, looseRegex, keys);
-    const search: RouteSearch<R> = mapSearch(parseSearch(searchString));
-    return { params, search };
+    return {
+      params: extract(cpath, looseRegex, keys) as RouteParams<R>,
+      search: mapSearch(parseSearch(search)) as RouteSearch<R>
+    };
   }
 
   navigate<P extends Patterns>(options: NavigateOptions<P> | number) {
     if (typeof options === "number") {
       this.history.go(options);
     } else {
-      const path = this.composePath(options);
-      this.history.push(path, options.replace, options.data);
+      const { path, search } = this.composePath(options);
+      const { replace, state } = options;
+      this.history.push({ path, search, replace, state });
     }
   }
 }

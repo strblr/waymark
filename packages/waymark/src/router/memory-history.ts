@@ -1,56 +1,49 @@
-import type { HistoryLike } from "../utils";
+import {
+  clamp,
+  normalizeSearch,
+  type HistoryLike,
+  type HistoryPushOptions
+} from "../utils";
 
-interface MemoryHistoryLocation {
+export interface MemoryLocation {
   path: string;
   search: string;
   state: any;
 }
 
 export class MemoryHistory implements HistoryLike {
-  private stack: MemoryHistoryLocation[] = [];
-  private currentIndex: number = 0;
+  private stack: MemoryLocation[] = [];
+  private index: number = 0;
   private listeners = new Set<() => void>();
 
-  constructor(initial: Partial<MemoryHistoryLocation> = {}) {
-    const { path, ...rest } = initial;
-    this.stack.push({
-      state: undefined,
-      ...this._parsePath(path ?? "/"),
-      ...rest
-    });
+  constructor(initial: Partial<MemoryLocation> = {}) {
+    const { path = "/", search = "", state } = initial;
+    this.stack.push({ path, search: normalizeSearch(search), state });
   }
 
-  _parsePath = (path: string) => {
-    const [p, search] = path.split("?");
-    return { path: p, search: search ? `?${search}` : "" };
-  };
+  getPath = () => this.stack[this.index].path;
 
-  _getCurrent = () => this.stack[this.currentIndex];
+  getSearch = () => this.stack[this.index].search;
 
-  getPath = () => this._getCurrent().path;
-
-  getSearch = () => this._getCurrent().search;
-
-  getState = () => this._getCurrent().state;
+  getState = () => this.stack[this.index].state;
 
   go = (delta: number) => {
-    this.currentIndex = Math.max(
-      0,
-      Math.min(this.stack.length - 1, this.currentIndex + delta)
-    );
+    this.index = clamp(this.index + delta, 0, this.stack.length - 1);
     this.listeners.forEach(listener => listener());
   };
 
-  push = (path: string, replace?: boolean, data?: any) => {
-    const location: MemoryHistoryLocation = {
-      ...this._parsePath(path),
-      state: data
+  push = (options: HistoryPushOptions) => {
+    const { path, search = "", replace, state } = options;
+    const location: MemoryLocation = {
+      path,
+      search: normalizeSearch(search),
+      state
     };
-    this.stack = this.stack.slice(0, this.currentIndex + 1);
+    this.stack = this.stack.slice(0, this.index + 1);
     if (replace) {
-      this.stack[this.currentIndex] = location;
+      this.stack[this.index] = location;
     } else {
-      this.currentIndex = this.stack.push(location) - 1;
+      this.index = this.stack.push(location) - 1;
     }
     this.listeners.forEach(listener => listener());
   };
