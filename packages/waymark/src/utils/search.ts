@@ -11,8 +11,8 @@ export function stringifySearch(search: Record<string, unknown>) {
     .join("&");
 }
 
-export function parseSearch(search: string): Record<string, unknown> {
-  const urlSearch = new URLSearchParams(search);
+export function parseSearch(searchString: string): Record<string, unknown> {
+  const urlSearch = new URLSearchParams(searchString);
   return Object.fromEntries(
     [...urlSearch.entries()].map(([key, value]) => {
       value = decodeURIComponent(value);

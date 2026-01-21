@@ -34,7 +34,7 @@ export function RouterRoot(props: RouterRootProps) {
     "router" in props ? props.router : new Router(props)
   );
   const path = _useSubscribe(router, router.history.getPath);
-  const route = useMemo(() => router.getRouteMatch(path), [router, path]);
+  const route = useMemo(() => router.matchPath(path), [router, path]);
   if (!route) {
     console.error("[Waymark] No route found for path:", path);
   }
@@ -88,12 +88,9 @@ export interface LinkOptions {
 export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  const path = router.resolvePath(props);
+  const path = router.composePath(props);
   const currentPath = _useSubscribe(router, router.history.getPath);
-  const possibleRoute = useMemo(
-    () => router.getRouteMatch(path),
-    [router, path]
-  );
+  const route = useMemo(() => router.matchPath(path), [router, path]);
 
   const {
     to,
@@ -137,12 +134,12 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
 
   useEffect(() => {
     if (preload === "render") {
-      possibleRoute?.preload();
+      route?.preload();
     } else if (preload === "viewport" && ref.current) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            possibleRoute?.preload();
+            route?.preload();
             observer.disconnect();
           }
         });
@@ -150,7 +147,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
       observer.observe(ref.current);
       return () => observer.disconnect();
     }
-  }, [preload, possibleRoute]);
+  }, [preload, route]);
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     rest.onClick?.(event);
@@ -170,14 +167,14 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
     rest.onFocus?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      possibleRoute?.preload();
+      route?.preload();
     }
   };
 
   const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
     rest.onPointerEnter?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      possibleRoute?.preload();
+      route?.preload();
     }
   };
 

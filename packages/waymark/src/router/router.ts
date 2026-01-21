@@ -51,20 +51,20 @@ export class Router {
     return path;
   }
 
-  getRoute<P extends Patterns>(pattern: P) {
-    const route = this._.routeMap.get(pattern);
-    if (!route) {
-      throw new Error(`Route not found for pattern: ${pattern}`);
-    }
-    return route as PatternRoute<P>;
-  }
-
-  getRouteMatch(path: string): Routes | undefined {
+  matchPath(path: string): Routes | undefined {
     const cpath = this.getCanonicalPath(path);
     return this.routes.find(route => route._.regex.test(cpath));
   }
 
-  resolvePath<P extends Patterns>(options: NavigateOptions<P>) {
+  getRoute<P extends Patterns>(pattern: P) {
+    const route = this._.routeMap.get(pattern);
+    if (!route) {
+      throw new Error(`[Waymark] Route not found for pattern: ${pattern}`);
+    }
+    return route as PatternRoute<P>;
+  }
+
+  composePath<P extends Patterns>(options: NavigateOptions<P>) {
     const { to, params, search } = options;
     let cpath: string = to;
     params && (cpath = inject(cpath, params));
@@ -74,21 +74,23 @@ export class Router {
     return path;
   }
 
-  resolveParams<R extends Routes>(route: R, path: string) {
+  decomposePath<R extends Routes>(
+    route: R,
+    path: string,
+    searchString: string
+  ) {
+    const { keys, looseRegex, mapSearch } = route._;
     const cpath = this.getCanonicalPath(path);
-    const { looseRegex, keys } = route._;
-    return extract(cpath, looseRegex, keys) as RouteParams<R>;
-  }
-
-  resolveSearch<R extends Routes>(route: R, search: string) {
-    return route._.mapSearch(parseSearch(search)) as RouteSearch<R>;
+    const params: RouteParams<R> = extract(cpath, looseRegex, keys);
+    const search: RouteSearch<R> = mapSearch(parseSearch(searchString));
+    return { params, search };
   }
 
   navigate<P extends Patterns>(options: NavigateOptions<P> | number) {
     if (typeof options === "number") {
       this.history.go(options);
     } else {
-      const path = this.resolvePath(options);
+      const path = this.composePath(options);
       this.history.push(path, options.replace, options.data);
     }
   }

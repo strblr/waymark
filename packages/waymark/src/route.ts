@@ -12,15 +12,15 @@ import {
 export class Route<P extends string, Ps extends {}, S extends {}> {
   _: {
     pattern: P;
+    _params?: Ps;
+    _search?: S;
+    keys: string[];
+    regex: RegExp;
+    looseRegex: RegExp;
     mapSearch: (search: Record<string, unknown>) => S;
     components: ComponentType[];
     preloaded: boolean;
     preloaders: (() => Promise<any>)[];
-    keys: string[];
-    regex: RegExp;
-    looseRegex: RegExp;
-    _params?: Ps;
-    _search?: S;
   };
 
   constructor(
@@ -33,13 +33,13 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
     const looseRegex = parse(pattern, true).pattern;
     this._ = {
       pattern,
+      keys,
+      regex,
+      looseRegex,
       mapSearch,
       components,
       preloaded: false,
-      preloaders,
-      keys,
-      regex,
-      looseRegex
+      preloaders
     };
   }
 
