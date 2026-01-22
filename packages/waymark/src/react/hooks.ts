@@ -1,7 +1,12 @@
 import { useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import { outletContext, routerContext } from "./contexts";
 import type { Router } from "../router";
-import type { Routes, RouteSearch, Updater } from "../utils";
+import {
+  parseSearch,
+  type Routes,
+  type RouteSearch,
+  type Updater
+} from "../utils";
 
 // useRouter
 
@@ -27,7 +32,7 @@ export function useLocation() {
   const search = _useSubscribe(router, router.history.getSearch);
   const state = _useSubscribe(router, router.history.getState);
   return useMemo(
-    () => ({ path, search: new URLSearchParams(search), state }),
+    () => ({ path, search: parseSearch(search), state }),
     [path, search, state]
   );
 }

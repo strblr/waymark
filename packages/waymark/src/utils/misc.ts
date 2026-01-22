@@ -2,7 +2,7 @@ import type { Simplify, EmptyObject } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export type MaybeKey<K extends string, T> = T extends EmptyObject
-  ? { [P in K]?: undefined } // EmptyObject ?
+  ? { [P in K]?: EmptyObject }
   : {} extends T
   ? { [P in K]?: T }
   : { [P in K]: T };

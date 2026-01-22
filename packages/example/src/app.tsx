@@ -35,9 +35,9 @@ export function App() {
 
 // Layout
 
-const ultraroot = route("").component(Outlet);
-const ultraroot2 = ultraroot.route("").component(Outlet);
-const layout = ultraroot2.route("").component(Layout).error(ErrorBoundary);
+const ultraroot = route("/").component(Outlet);
+const ultraroot2 = ultraroot.route("/").component(Outlet);
+const layout = ultraroot2.route("/").component(Layout).error(ErrorBoundary);
 
 function Layout() {
   const [counter, setCounter] = useState(0);
@@ -51,7 +51,7 @@ function Layout() {
       <div className="location-display">
         <div className="location-path">Path: {location.path}</div>
         <div className="location-search">
-          Search: {location.search.toString()}
+          Search: {JSON.stringify(location.search)}
         </div>
       </div>
       <nav className="nav">
@@ -94,7 +94,7 @@ function ErrorBoundary({ error }: { error: unknown }) {
 
 // Simple page
 
-const simplePage = layout.route("simple").component(SimplePage);
+const simplePage = layout.route("/simple").component(SimplePage);
 
 function SimplePage() {
   return (
@@ -109,9 +109,9 @@ function SimplePage() {
 
 // Lazy page
 
-const lazyPage = layout.route("lazy").lazy(() => import("./lazy"));
-const lazySection1 = lazyPage.route("section1").component(LazySection1);
-const lazySection2 = lazyPage.route("section2").component(LazySection2);
+const lazyPage = layout.route("/lazy").lazy(() => import("./lazy"));
+const lazySection1 = lazyPage.route("/section1").component(LazySection1);
+const lazySection2 = lazyPage.route("/section2").component(LazySection2);
 
 function LazySection1() {
   return (
@@ -137,10 +137,10 @@ function LazySection2() {
 
 // Param
 
-const param = layout.route("param/:id").component(Param);
+const param = layout.route("/param/:id").component(Param);
 
 const paramDetail = param
-  .route("detail")
+  .route("/detail")
   .search(z.object({ name: z.string().catch("") }))
   .component(ParamDetail);
 
@@ -184,7 +184,7 @@ function ParamDetail() {
 
 // Faulty
 
-const faulty = layout.route("faulty").component(Faulty);
+const faulty = layout.route("/faulty").component(Faulty);
 
 function Faulty(): never {
   throw new Error("Faulty");
@@ -192,7 +192,7 @@ function Faulty(): never {
 
 // Catch all
 
-const catchAll = layout.route("*").component(CatchAll);
+const catchAll = layout.route("/*").component(CatchAll);
 
 function CatchAll() {
   const params = useParams(catchAll);
