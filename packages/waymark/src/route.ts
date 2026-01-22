@@ -12,6 +12,17 @@ import {
   type OptionalOnUndefined
 } from "./utils";
 
+export function route<P extends string>(pattern: P) {
+  type Pattern = NormalizePath<P>;
+  type Params = ParsePattern<Pattern>;
+  return new Route<Pattern, Params, {}>(
+    normalizePath(pattern),
+    search => search,
+    [],
+    []
+  );
+}
+
 export class Route<P extends string, Ps extends {}, S extends {}> {
   _: {
     pattern: P;
@@ -89,14 +100,14 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
 
   lazy(loader: ComponentLoader) {
     const { pattern, mapSearch, components, preloaders } = this._;
-    const lazyLoader = async () => {
+    const component = lazy(async () => {
       const result = await loader();
       return "default" in result ? result : { default: result };
-    };
+    });
     return new Route<P, Ps, S>(
       pattern,
       mapSearch,
-      [...components, lazy(lazyLoader)],
+      [...components, component],
       [...preloaders, loader]
     );
   }
@@ -111,15 +122,4 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
     this._.preloaded = true;
     await Promise.all(preloaders.map(loader => loader()));
   }
-}
-
-export function route<P extends string>(pattern: P) {
-  type Pattern = NormalizePath<P>;
-  type Params = ParsePattern<Pattern>;
-  return new Route<Pattern, Params, {}>(
-    normalizePath(pattern),
-    search => search,
-    [],
-    []
-  );
 }
