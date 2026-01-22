@@ -1,6 +1,11 @@
-import { createElement, Component, type ComponentType, type Ref } from "react";
-import { _useSubscribe, Outlet, useRouter } from "../react";
-import { getHref } from "./misc";
+import {
+  createElement,
+  Component,
+  type Ref,
+  type ReactNode,
+  type ComponentType
+} from "react";
+import { useOutlet } from "../react";
 
 export type Updater<T extends object> = Partial<T> | ((prev: T) => Partial<T>);
 
@@ -38,13 +43,13 @@ function assignRef<T>(ref: Ref<T>, value: T) {
 export function errorBoundary(
   component: ComponentType<{ error: unknown }>
 ): ComponentType {
-  type Props = { href: string };
-  type State = { href: string; error: null | [unknown] };
+  type Props = { children: ReactNode };
+  type State = { children: ReactNode; error: null | [unknown] };
 
-  class ErrorBoundary extends Component<Props, State> {
+  class Catch extends Component<Props, State> {
     constructor(props: Props) {
       super(props);
-      this.state = { href: props.href, error: null };
+      this.state = { children: props.children, error: null };
     }
 
     static getDerivedStateFromError(error: unknown) {
@@ -52,26 +57,18 @@ export function errorBoundary(
     }
 
     static getDerivedStateFromProps(props: Props, state: State) {
-      return {
-        href: props.href,
-        error: props.href === state.href ? state.error : null
-      };
+      if (props.children !== state.children) {
+        return { children: props.children, error: null };
+      }
+      return state;
     }
 
     render() {
       return this.state.error
         ? createElement(component, { error: this.state.error[0] })
-        : createElement(Outlet);
+        : this.props.children;
     }
   }
 
-  return () => {
-    const router = useRouter();
-    const href = _useSubscribe(router, () => {
-      const path = router.history.getPath();
-      const search = router.history.getSearch();
-      return getHref(path, search);
-    });
-    return createElement(ErrorBoundary, { href });
-  };
+  return () => createElement(Catch, { children: useOutlet() });
 }
