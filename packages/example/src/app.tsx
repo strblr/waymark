@@ -7,7 +7,8 @@ import {
   useRouter,
   useParams,
   useSearch,
-  useLocation
+  useLocation,
+  useNavigate
 } from "waymark";
 import { z } from "zod";
 
@@ -43,6 +44,7 @@ function Layout() {
   const [counter, setCounter] = useState(0);
   const router = useRouter();
   const location = useLocation();
+  const navigate = useNavigate();
   const navigateToParam2 = () =>
     router.navigate({ to: "/param/:id", params: { id: "2" } });
 
@@ -66,8 +68,8 @@ function Layout() {
           Catch all
         </a>
         <span>|</span>
-        <a onClick={() => router.navigate(-1)}>Back</a>
-        <a onClick={() => router.navigate(1)}>Forward</a>
+        <a onClick={() => navigate(-1)}>Back</a>
+        <a onClick={() => navigate(1)}>Forward</a>
       </nav>
       <div className="counter-section">
         <button onClick={() => setCounter(c => c + 1)}>
