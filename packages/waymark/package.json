@@ -1,6 +1,6 @@
 {
   "name": "waymark",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simplest strongly typed router for React",
   "type": "module",
   "main": "dist/index.js",

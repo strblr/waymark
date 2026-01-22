@@ -41,6 +41,30 @@ body {
   margin-bottom: 2rem;
 }
 
+.location-display {
+  background: var(--color-bg-secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.9rem;
+}
+
+.location-path {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.location-search {
+  color: var(--color-text-accent);
+  font-weight: 500;
+}
+
 .nav {
   background: var(--color-bg-secondary);
   border-radius: 12px;

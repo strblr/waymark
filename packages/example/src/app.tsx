@@ -6,7 +6,8 @@ import {
   Link,
   useRouter,
   useParams,
-  useSearch
+  useSearch,
+  useLocation
 } from "waymark";
 import { z } from "zod";
 
@@ -41,11 +42,18 @@ const layout = ultraroot2.route("").component(Layout).error(ErrorBoundary);
 function Layout() {
   const [counter, setCounter] = useState(0);
   const router = useRouter();
+  const location = useLocation();
   const navigateToParam2 = () =>
     router.navigate({ to: "/param/:id", params: { id: "2" } });
 
   return (
     <div className="layout">
+      <div className="location-display">
+        <div className="location-path">Path: {location.path}</div>
+        <div className="location-search">
+          Search: {location.search.toString()}
+        </div>
+      </div>
       <nav className="nav">
         <Link to="/simple">Simple page</Link>
         <Link to="/lazy">Lazy page</Link>
@@ -57,6 +65,7 @@ function Layout() {
         <a onClick={() => router.navigate<any>({ to: "/unknown" })}>
           Catch all
         </a>
+        <span>|</span>
         <a onClick={() => router.navigate(-1)}>Back</a>
         <a onClick={() => router.navigate(1)}>Forward</a>
       </nav>
