@@ -64,7 +64,7 @@ export class Router {
     return route as PatternRoute<P>;
   }
 
-  composePath<P extends Patterns>(options: NavigateOptions<P>) {
+  compose<P extends Patterns>(options: NavigateOptions<P>) {
     const { to, params, search } = options;
     return {
       path: this.getPath(params ? inject(to, params) : to),
@@ -72,7 +72,7 @@ export class Router {
     };
   }
 
-  decomposePath<R extends Routes>(route: R, path: string, search: string) {
+  decompose<R extends Routes>(route: R, path: string, search: string) {
     const { keys, looseRegex, mapSearch } = route._;
     const cpath = this.getCanonicalPath(path);
     return {
@@ -85,7 +85,7 @@ export class Router {
     if (typeof options === "number") {
       this.history.go(options);
     } else {
-      const { path, search } = this.composePath(options);
+      const { path, search } = this.compose(options);
       const { replace, state } = options;
       this.history.push({ path, search, replace, state });
     }

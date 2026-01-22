@@ -89,7 +89,7 @@ export interface LinkOptions {
 export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  const { path, search } = router.composePath(props);
+  const { path, search } = router.compose(props);
   const currentPath = useSubscribe(router, router.history.getPath);
   const route = useMemo(() => router.matchPath(path), [router, path]);
 

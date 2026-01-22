@@ -60,7 +60,7 @@ export function useParams<R extends Routes>(route: R) {
   const router = useRouter();
   const path = useSubscribe(router, router.history.getPath);
   return useMemo(
-    () => router.decomposePath(route, path, router.history.getSearch()).params,
+    () => router.decompose(route, path, router.history.getSearch()).params,
     [router, route, path]
   );
 }
@@ -71,13 +71,13 @@ export function useSearch<R extends Routes>(route: R) {
   const router = useRouter();
   const search = useSubscribe(router, router.history.getSearch);
   const parsed = useMemo(
-    () => router.decomposePath(route, router.history.getPath(), search).search,
+    () => router.decompose(route, router.history.getPath(), search).search,
     [router, route, search]
   );
 
   const setSearch = useCallback(
     (update: Updater<RouteSearch<R>>, replace?: boolean) => {
-      const { params, search } = router.decomposePath(
+      const { params, search } = router.decompose(
         route,
         router.history.getPath(),
         router.history.getSearch()
