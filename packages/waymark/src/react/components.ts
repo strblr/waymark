@@ -16,7 +16,7 @@ import {
   type RefAttributes
 } from "react";
 import { routerContext, outletContext } from "./contexts";
-import { useRouter, useOutlet, _useSubscribe } from "./hooks";
+import { useRouter, useOutlet, useSubscribe } from "./hooks";
 import { Router, type RouterOptions } from "../router";
 import {
   getHref,
@@ -34,7 +34,7 @@ export function RouterRoot(props: RouterRootProps) {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
-  const path = _useSubscribe(router, router.history.getPath);
+  const path = useSubscribe(router, router.history.getPath);
   const route = useMemo(() => router.matchPath(path), [router, path]);
   if (!route) {
     console.error("[Waymark] No route found for path:", path);
@@ -90,7 +90,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
   const { path, search } = router.composePath(props);
-  const currentPath = _useSubscribe(router, router.history.getPath);
+  const currentPath = useSubscribe(router, router.history.getPath);
   const route = useMemo(() => router.matchPath(path), [router, path]);
 
   const {

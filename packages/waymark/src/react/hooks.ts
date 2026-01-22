@@ -28,9 +28,9 @@ export function useOutlet() {
 
 export function useLocation() {
   const router = useRouter();
-  const path = _useSubscribe(router, router.history.getPath);
-  const search = _useSubscribe(router, router.history.getSearch);
-  const state = _useSubscribe(router, router.history.getState);
+  const path = useSubscribe(router, router.history.getPath);
+  const search = useSubscribe(router, router.history.getSearch);
+  const state = useSubscribe(router, router.history.getState);
   return useMemo(
     () => ({ path, search: parseSearch(search), state }),
     [path, search, state]
@@ -48,7 +48,7 @@ export function useNavigate() {
 
 export function useParams<R extends Routes>(route: R) {
   const router = useRouter();
-  const path = _useSubscribe(router, router.history.getPath);
+  const path = useSubscribe(router, router.history.getPath);
   return useMemo(
     () => router.decomposePath(route, path, router.history.getSearch()).params,
     [router, route, path]
@@ -59,7 +59,7 @@ export function useParams<R extends Routes>(route: R) {
 
 export function useSearch<R extends Routes>(route: R) {
   const router = useRouter();
-  const search = _useSubscribe(router, router.history.getSearch);
+  const search = useSubscribe(router, router.history.getSearch);
   const parsed = useMemo(
     () => router.decomposePath(route, router.history.getPath(), search).search,
     [router, route, search]
@@ -86,9 +86,9 @@ export function useSearch<R extends Routes>(route: R) {
   return [parsed, setSearch] as const;
 }
 
-// _useSubscribe
+// useSubscribe
 
-export function _useSubscribe<T>(router: Router, getSnapshot: () => T) {
+export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
   return useSyncExternalStore(
     router.history.subscribe,
     getSnapshot,
