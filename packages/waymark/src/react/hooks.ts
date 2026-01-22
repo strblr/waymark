@@ -24,6 +24,23 @@ export function useOutlet() {
   return useContext(outletContext);
 }
 
+// useSubscribe
+
+export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
+  return useSyncExternalStore(
+    router.history.subscribe,
+    getSnapshot,
+    getSnapshot
+  );
+}
+
+// useNavigate
+
+export function useNavigate() {
+  const router = useRouter();
+  return useMemo(() => router.navigate.bind(router), [router]);
+}
+
 // useLocation
 
 export function useLocation() {
@@ -35,13 +52,6 @@ export function useLocation() {
     () => ({ path, search: parseSearch(search), state }),
     [path, search, state]
   );
-}
-
-// useNavigate
-
-export function useNavigate() {
-  const router = useRouter();
-  return useMemo(() => router.navigate.bind(router), [router]);
 }
 
 // useParams
@@ -84,14 +94,4 @@ export function useSearch<R extends Routes>(route: R) {
   );
 
   return [parsed, setSearch] as const;
-}
-
-// useSubscribe
-
-export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
-  return useSyncExternalStore(
-    router.history.subscribe,
-    getSnapshot,
-    getSnapshot
-  );
 }
