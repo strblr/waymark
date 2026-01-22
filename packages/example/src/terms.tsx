@@ -1,13 +1,6 @@
-import { useEffect } from "react";
 import { Link, Outlet } from "waymark";
 
-export function Terms() {
-  useEffect(
-    () => () => {
-      console.log("unmount Terms");
-    },
-    []
-  );
+export default function Terms() {
   return (
     <div>
       <div>

@@ -1,4 +1,5 @@
 import {
+  getHref,
   normalizeSearch,
   type HistoryLike,
   type HistoryPushOptions
@@ -38,7 +39,7 @@ export class BrowserHistory implements HistoryLike {
 
   push = (options: HistoryPushOptions) => {
     const { path, search, replace, state } = options;
-    const href = `${path}${search ? `?${search}` : ""}`;
+    const href = getHref(path, search);
     history[replace ? replaceStateEvent : pushStateEvent](state, "", href);
   };
 

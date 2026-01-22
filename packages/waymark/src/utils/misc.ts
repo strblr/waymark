@@ -13,6 +13,10 @@ export type OptionalOnUndefined<T extends object> = Simplify<
   }
 >;
 
+export function getHref(path: string, search?: string) {
+  return `${path}${search ? `?${search}` : ""}`;
+}
+
 export function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(value, max));
 }

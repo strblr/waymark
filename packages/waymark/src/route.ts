@@ -5,6 +5,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
   normalizePath,
   validator,
+  errorBoundary,
   type ParsePattern,
   type NormalizePath,
   type ComponentLoader,
@@ -98,6 +99,10 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
       [...components, lazy(lazyLoader)],
       [...preloaders, loader]
     );
+  }
+
+  error(component: ComponentType<{ error: unknown }>) {
+    return this.component(errorBoundary(component));
   }
 
   async preload() {

@@ -1,4 +1,6 @@
-import type { ComponentType, Ref } from "react";
+import { createElement, Component, type ComponentType, type Ref } from "react";
+import { _useSubscribe, Outlet, useRouter } from "../react";
+import { getHref } from "./misc";
 
 export type Updater<T extends object> = Partial<T> | ((prev: T) => Partial<T>);
 
@@ -31,4 +33,45 @@ function assignRef<T>(ref: Ref<T>, value: T) {
   } else if (ref) {
     ref.current = value;
   }
+}
+
+export function errorBoundary(
+  component: ComponentType<{ error: unknown }>
+): ComponentType {
+  type Props = { href: string };
+  type State = { href: string; error: null | [unknown] };
+
+  class ErrorBoundary extends Component<Props, State> {
+    constructor(props: Props) {
+      super(props);
+      this.state = { href: props.href, error: null };
+    }
+
+    static getDerivedStateFromError(error: unknown) {
+      return { error: [error] };
+    }
+
+    static getDerivedStateFromProps(props: Props, state: State) {
+      return {
+        href: props.href,
+        error: props.href === state.href ? state.error : null
+      };
+    }
+
+    render() {
+      return this.state.error
+        ? createElement(component, { error: this.state.error[0] })
+        : createElement(Outlet);
+    }
+  }
+
+  return () => {
+    const router = useRouter();
+    const href = _useSubscribe(router, () => {
+      const path = router.history.getPath();
+      const search = router.history.getSearch();
+      return getHref(path, search);
+    });
+    return createElement(ErrorBoundary, { href });
+  };
 }

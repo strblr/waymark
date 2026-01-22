@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   RouterRoot,
   route,
@@ -12,13 +11,11 @@ import { z } from "zod";
 
 const ultraroot = route("").component(Outlet);
 
-const layout = ultraroot.route("").component(Layout);
+const layout = ultraroot.route("").component(Layout).error(ErrorBoundary);
 
 const about = layout.route("about").component(About);
 
-const tos = layout
-  .route("terms")
-  .lazy(() => import("./terms").then(m => m.Terms));
+const tos = layout.route("terms").lazy(() => import("./terms"));
 
 const tos1 = tos.route("section1").component(Section1);
 
@@ -63,13 +60,6 @@ function Layout() {
   const navigateToUser2 = () =>
     router.navigate({ to: "/user/:id", params: { id: "2" } });
 
-  useEffect(
-    () => () => {
-      console.log("unmount Layout");
-    },
-    []
-  );
-
   return (
     <div style={{ paddingTop: 0 }}>
       <Link to="/about">About</Link> <Link to="/terms">Terms</Link>{" "}
@@ -84,6 +74,10 @@ function Layout() {
       <Outlet />
     </div>
   );
+}
+
+function ErrorBoundary({ error }: { error: unknown }) {
+  return <div>Caught error: {String(error)}</div>;
 }
 
 function About() {
