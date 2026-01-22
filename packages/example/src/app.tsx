@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   RouterRoot,
   route,
@@ -9,122 +10,208 @@ import {
 } from "waymark";
 import { z } from "zod";
 
-const ultraroot = route("").component(Outlet);
-
-const layout = ultraroot.route("").component(Layout).error(ErrorBoundary);
-
-const about = layout.route("about").component(About);
-
-const tos = layout.route("terms").lazy(() => import("./terms"));
-
-const tos1 = tos.route("section1").component(Section1);
-
-const tos2 = tos.route("section2").component(Section2);
-
-const faulty = layout.route("faulty").component(Faulty);
-
-const user = layout.route("user/:id").component(User);
-
-const userBio = user
-  .route("bio")
-  .search(z.object({ name: z.string().catch("") }))
-  .component(UserBio);
-
-const notFound = layout.route("*").component(NotFound);
-
-// Only register routes that should be reachable
-const routes = [about, tos, tos1, tos2, faulty, user, userBio, notFound];
-
-declare module "waymark" {
-  interface RegisterRoutes {
-    routes: typeof routes;
-  }
-}
+// App
 
 export function App() {
+  const [counter, setCounter] = useState(0);
   return (
-    <div>
+    <div className="app-container">
+      <div className="app-header">
+        <button onClick={() => setCounter(c => c + 1)}>
+          App counter {counter}
+        </button>
+      </div>
       <RouterRoot
         routes={routes}
         defaultLinkOptions={{
           preload: "intent",
-          activeStyle: { color: "yellow" }
+          activeClassName: "active-link"
         }}
       />
     </div>
   );
 }
 
+// Layout
+
+const ultraroot = route("").component(Outlet);
+const ultraroot2 = ultraroot.route("").component(Outlet);
+const layout = ultraroot2.route("").component(Layout).error(ErrorBoundary);
+
 function Layout() {
+  const [counter, setCounter] = useState(0);
   const router = useRouter();
-  const navigateToUser2 = () =>
-    router.navigate({ to: "/user/:id", params: { id: "2" } });
+  const navigateToParam2 = () =>
+    router.navigate({ to: "/param/:id", params: { id: "2" } });
 
   return (
-    <div style={{ paddingTop: 0 }}>
-      <Link to="/about">About</Link> <Link to="/terms">Terms</Link>{" "}
-      <Link to="/faulty">Faulty</Link>{" "}
-      <Link to="/user/:id" params={{ id: "1" }}>
-        User 1
-      </Link>{" "}
-      <a onClick={navigateToUser2}>User 2</a>{" "}
-      <a onClick={() => router.navigate<any>({ to: "/unknown" })}>Unknown</a>{" "}
-      <a onClick={() => router.navigate(-1)}>Back</a>{" "}
-      <a onClick={() => router.navigate(1)}>Forward</a>
-      <Outlet />
+    <div className="layout">
+      <nav className="nav">
+        <Link to="/simple">Simple page</Link>
+        <Link to="/lazy">Lazy page</Link>
+        <Link to="/faulty">Faulty</Link>
+        <Link to="/param/:id" params={{ id: "1" }}>
+          Param 1
+        </Link>
+        <a onClick={navigateToParam2}>Param 2</a>
+        <a onClick={() => router.navigate<any>({ to: "/unknown" })}>
+          Catch all
+        </a>
+        <a onClick={() => router.navigate(-1)}>Back</a>
+        <a onClick={() => router.navigate(1)}>Forward</a>
+      </nav>
+      <div className="counter-section">
+        <button onClick={() => setCounter(c => c + 1)}>
+          Layout counter {counter}
+        </button>
+      </div>
+      <div className="content">
+        <Outlet />
+      </div>
     </div>
   );
 }
 
 function ErrorBoundary({ error }: { error: unknown }) {
-  return <div>Caught error: {String(error)}</div>;
-}
-
-function About() {
-  return <div>About</div>;
-}
-
-function User() {
-  const { id } = useParams(user);
   return (
-    <div>
-      <Link to="/user/:id" params={{ id }}>
-        User
-      </Link>{" "}
-      <Link to="/user/:id/bio" params={{ id }} search={{ name: "John" }}>
-        Bio
-      </Link>
-      <div>User {JSON.stringify({ id, type: typeof id })}</div>
-      <Outlet />
+    <div className="section">
+      <h1 className="section-title">Error</h1>
+      <div className="section-content">
+        <div className="error-message">{String(error)}</div>
+      </div>
     </div>
   );
 }
 
-function UserBio() {
-  const [search, setSearch] = useSearch(userBio);
+// Simple page
+
+const simplePage = layout.route("simple").component(SimplePage);
+
+function SimplePage() {
   return (
-    <div>
-      User Bio {JSON.stringify(search)}{" "}
-      <button onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}>
-        Set Name
-      </button>
+    <div className="section">
+      <h1 className="section-title">Simple page</h1>
+      <div className="section-content">
+        This is a simple page demonstrating basic routing.
+      </div>
     </div>
   );
 }
 
-function NotFound() {
-  const params = useParams(notFound);
-  return <div>Not Found {JSON.stringify(params)}</div>;
+// Lazy page
+
+const lazyPage = layout.route("lazy").lazy(() => import("./lazy"));
+const lazySection1 = lazyPage.route("section1").component(LazySection1);
+const lazySection2 = lazyPage.route("section2").component(LazySection2);
+
+function LazySection1() {
+  return (
+    <div className="section">
+      <h2 className="section-title">Section 1</h2>
+      <div className="section-content">
+        Content for section 1 of the lazy loaded page.
+      </div>
+    </div>
+  );
 }
+
+function LazySection2() {
+  return (
+    <div className="section">
+      <h2 className="section-title">Section 2</h2>
+      <div className="section-content">
+        Content for section 2 of the lazy loaded page.
+      </div>
+    </div>
+  );
+}
+
+// Param
+
+const param = layout.route("param/:id").component(Param);
+
+const paramDetail = param
+  .route("detail")
+  .search(z.object({ name: z.string().catch("") }))
+  .component(ParamDetail);
+
+function Param() {
+  const { id } = useParams(param);
+  return (
+    <div className="section">
+      <h1 className="section-title">Param</h1>
+      <nav className="nav">
+        <Link to="/param/:id" params={{ id }}>
+          Param
+        </Link>
+        <Link to="/param/:id/detail" params={{ id }} search={{ name: "John" }}>
+          Detail
+        </Link>
+      </nav>
+      <div className="section-content">
+        <div className="data-display">
+          Param {JSON.stringify({ id, type: typeof id })}
+        </div>
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
+function ParamDetail() {
+  const [search, setSearch] = useSearch(paramDetail);
+  return (
+    <div className="section">
+      <h2 className="section-title">Detail</h2>
+      <div className="section-content">
+        <div className="data-display">{JSON.stringify(search)}</div>
+        <button onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}>
+          Set Name
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Faulty
+
+const faulty = layout.route("faulty").component(Faulty);
 
 function Faulty(): never {
   throw new Error("Faulty");
 }
 
-function Section1() {
-  return <div>Section 1</div>;
+// Catch all
+
+const catchAll = layout.route("*").component(CatchAll);
+
+function CatchAll() {
+  const params = useParams(catchAll);
+  return (
+    <div className="section">
+      <h1 className="section-title">Catch all</h1>
+      <div className="section-content">
+        <div className="data-display">{JSON.stringify(params)}</div>
+      </div>
+    </div>
+  );
 }
 
-function Section2() {
-  return <div>Section 2</div>;
+// Routes
+
+const routes = [
+  simplePage,
+  lazyPage,
+  lazySection1,
+  lazySection2,
+  faulty,
+  param,
+  paramDetail,
+  catchAll
+];
+
+declare module "waymark" {
+  interface RegisterRoutes {
+    routes: typeof routes;
+  }
 }
