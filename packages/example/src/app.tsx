@@ -48,7 +48,7 @@ function Layout() {
   const handles = useHandles();
   const navigate = useNavigate();
   const navigateToParam2 = () =>
-    router.navigate({ to: "/param/:id", params: { id: "2" } });
+    router.navigate({ to: param, params: { id: "2" } });
 
   return (
     <div className="layout">
@@ -183,10 +183,10 @@ function Param() {
     <div className="section">
       <h1 className="section-title">Param</h1>
       <nav className="nav">
-        <Link to="/param/:id" params={{ id }}>
+        <Link to={param} params={{ id }}>
           Param
         </Link>
-        <Link to="/param/:id/detail" params={{ id }} search={{ name: "John" }}>
+        <Link to={paramDetail} params={{ id }} search={{ name: "John" }}>
           Detail
         </Link>
       </nav>

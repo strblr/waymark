@@ -29,7 +29,7 @@ export type PatternSearch<P extends Patterns> = RouteSearch<PatternRoute<P>>;
 export type PatternRoute<P extends Patterns> = Extract<Routes, { pattern: P }>;
 
 export type NavigateOptions<P extends Patterns> = {
-  to: P;
+  to: P | PatternRoute<P>;
   replace?: boolean;
   state?: any;
 } & MaybeKey<"params", PatternParams<P>> &

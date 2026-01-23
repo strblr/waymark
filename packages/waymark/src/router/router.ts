@@ -70,8 +70,9 @@ export class Router {
 
   compose<P extends Patterns>(options: NavigateOptions<P>) {
     const { to, params, search } = options;
+    const pattern = typeof to === "string" ? to : to.pattern;
     return {
-      path: this.getPath(params ? inject(to, params) : to),
+      path: this.getPath(params ? inject(pattern, params) : pattern),
       search: search ? stringifySearch(search) : ""
     };
   }
