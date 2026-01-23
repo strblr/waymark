@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, use } from "react";
 import {
   RouterRoot,
   route,
@@ -59,6 +59,7 @@ function Layout() {
       <nav className="nav">
         <Link to="/simple">Simple page</Link>
         <Link to="/lazy">Lazy page</Link>
+        <Link to="/suspended">Suspended</Link>
         <Link to="/faulty">Faulty</Link>
         <Link to="/param/:id" params={{ id: "1" }}>
           Param 1
@@ -184,6 +185,35 @@ function ParamDetail() {
   );
 }
 
+// Suspended
+
+const suspendedPage = layout
+  .route("/suspended")
+  .suspense(SuspenseFallback)
+  .component(SuspendedPage);
+
+function SuspenseFallback() {
+  return (
+    <div className="section">
+      <div className="section-content">Loading...</div>
+    </div>
+  );
+}
+
+const dataPromise = new Promise<string>(resolve => {
+  setTimeout(() => resolve("Data loaded!"), 2000);
+});
+
+function SuspendedPage() {
+  const data = use(dataPromise);
+  return (
+    <div className="section">
+      <h1 className="section-title">Suspended Page</h1>
+      <div className="section-content">{data}</div>
+    </div>
+  );
+}
+
 // Faulty
 
 const faulty = layout.route("/faulty").component(Faulty);
@@ -215,6 +245,7 @@ const routes = [
   lazyPage,
   paramDetail,
   simplePage,
+  suspendedPage,
   faulty,
   catchAll,
   lazySection2,

@@ -1,15 +1,47 @@
 # waymark
 
-To install dependencies:
+Simple, lightweight, strongly typed router for React
 
-```bash
-bun install
+```ts
+const routes = [
+  "/a/:b/c",
+  "/:a/:b/*",
+  "/a/b/:c",
+  "/:a/b/c",
+  "/a/:b/:c",
+  "/:a/:b/c",
+  "/a/b/c",
+  "/a/*",
+  "/a/b/*",
+  "/:a/b/*",
+  "/*",
+  "/a/:b/*",
+  "/:a/:b/:c",
+  "/:a/*",
+  "/:a/b/:c"
+];
 ```
 
-To run:
-
-```bash
-bun run index.ts
+```
+┌────┬───────────┬───┬───┬───┐
+│    │ route     │ 0 │ 1 │ 2 │
+├────┼───────────┼───┼───┼───┤
+│  0 │ /a/b/c    │ 2 │ 2 │ 2 │
+│  1 │ /a/b/:c   │ 2 │ 2 │ 1 │
+│  2 │ /a/b/*    │ 2 │ 2 │ 0 │
+│  3 │ /a/:b/c   │ 2 │ 1 │ 2 │
+│  4 │ /a/:b/:c  │ 2 │ 1 │ 1 │
+│  5 │ /a/:b/*   │ 2 │ 1 │ 0 │
+│  6 │ /a/*      │ 2 │ 0 │   │
+│  7 │ /:a/b/c   │ 1 │ 2 │ 2 │
+│  8 │ /:a/b/:c  │ 1 │ 2 │ 1 │
+│  9 │ /:a/b/*   │ 1 │ 2 │ 0 │
+│ 10 │ /:a/:b/c  │ 1 │ 1 │ 2 │
+│ 11 │ /:a/:b/:c │ 1 │ 1 │ 1 │
+│ 12 │ /:a/:b/*  │ 1 │ 1 │ 0 │
+│ 13 │ /:a/*     │ 1 │ 0 │   │
+│ 14 │ /*        │ 0 │   │   │
+└────┴───────────┴───┴───┴───┘
 ```
 
-This project was created using `bun init` in bun v1.2.19. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Suspense issues: https://github.com/facebook/react/issues/31819

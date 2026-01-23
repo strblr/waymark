@@ -1,4 +1,5 @@
 import {
+  Suspense,
   Component,
   createElement,
   type Ref,
@@ -32,6 +33,15 @@ function assignRef<T>(ref: Ref<T>, value: T) {
   } else if (ref) {
     ref.current = value;
   }
+}
+
+export function suspenseBoundary(component: ComponentType): ComponentType {
+  return () => {
+    return createElement(Suspense, {
+      fallback: createElement(component),
+      children: useOutlet()
+    });
+  };
 }
 
 export function errorBoundary(

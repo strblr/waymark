@@ -6,6 +6,7 @@ import type { ComponentLoader } from "./types";
 import {
   normalizePath,
   patternWeights,
+  suspenseBoundary,
   errorBoundary,
   validator,
   type ParsePattern,
@@ -114,6 +115,10 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
       [...components, component],
       [...preloaders, loader]
     );
+  }
+
+  suspense(component: ComponentType) {
+    return this.component(suspenseBoundary(component));
   }
 
   error(component: ComponentType<{ error: unknown }>) {
