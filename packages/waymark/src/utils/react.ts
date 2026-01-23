@@ -8,10 +8,6 @@ import {
 } from "react";
 import { useOutlet } from "../react";
 
-export function defaultLinkActive(currentPath: string, targetPath: string) {
-  return currentPath.startsWith(targetPath);
-}
-
 export function mergeRefs<T>(...inputRefs: (Ref<T> | undefined)[]): Ref<T> {
   const filtered = inputRefs.filter(r => !!r);
   if (filtered.length <= 1) {

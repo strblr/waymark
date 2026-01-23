@@ -18,7 +18,7 @@ import {
 import { routerContext, routeContext, outletContext } from "./contexts";
 import { useRouter, useOutlet, useSubscribe } from "./hooks";
 import { Router, type RouterOptions } from "../router";
-import { joinHref, mergeRefs, defaultLinkActive } from "../utils";
+import { joinHref, mergeRefs } from "../utils";
 import type { Patterns, NavigateOptions } from "../types";
 
 // RouterRoot
@@ -80,7 +80,7 @@ export type LinkProps<P extends Patterns> = NavigateOptions<P> &
 
 export interface LinkOptions {
   preload?: "intent" | "render" | "viewport" | false;
-  active?: (currentPath: string, targetPath: string) => boolean;
+  activeStrict?: boolean;
   activeStyle?: CSSProperties;
   activeClassName?: string;
 }
@@ -99,7 +99,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     params,
     search: search_,
     preload,
-    active,
+    activeStrict,
     activeStyle,
     activeClassName,
     asChild,
@@ -108,26 +108,27 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     children,
     ...rest
   } = {
-    active: defaultLinkActive,
     ...router.defaultLinkOptions,
     ...props
   };
 
   const activeProps = useMemo(() => {
-    const isActive = active(currentPath, path);
+    const active = activeStrict
+      ? currentPath === path
+      : currentPath.startsWith(path);
     return {
-      ["data-active"]: isActive,
-      style: { ...style, ...(isActive && activeStyle) },
+      ["data-active"]: active,
+      style: { ...style, ...(active && activeStyle) },
       className:
-        [className, isActive && activeClassName].filter(Boolean).join(" ") ||
+        [className, active && activeClassName].filter(Boolean).join(" ") ||
         undefined
     };
   }, [
-    active,
     path,
     currentPath,
     style,
     className,
+    activeStrict,
     activeStyle,
     activeClassName
   ]);

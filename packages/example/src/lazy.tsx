@@ -5,7 +5,7 @@ export default function LazyPage() {
     <div className="section">
       <h1 className="section-title">Lazy page</h1>
       <nav className="nav">
-        <Link to="/lazy" active={Object.is}>
+        <Link to="/lazy" activeStrict>
           Lazy page
         </Link>
         <Link to="/lazy/section1">Section 1</Link>
