@@ -211,14 +211,14 @@ function CatchAll() {
 // Routes
 
 const routes = [
-  simplePage,
-  lazyPage,
-  lazySection1,
-  lazySection2,
-  faulty,
   param,
+  lazyPage,
   paramDetail,
-  catchAll
+  simplePage,
+  faulty,
+  catchAll,
+  lazySection2,
+  lazySection1
 ];
 
 declare module "waymark" {

@@ -4,6 +4,7 @@ import type { LinkOptions } from "../react";
 import {
   normalizePath,
   extract,
+  rankRoutes,
   stringifySearch,
   parseSearch,
   type Routes,
@@ -53,7 +54,8 @@ export class Router {
 
   matchPath(path: string): Routes | undefined {
     const cpath = this.getCanonicalPath(path);
-    return this.routes.find(route => route._.regex.test(cpath));
+    const matches = this.routes.filter(route => route._.regex.test(cpath));
+    return rankRoutes(matches)[0];
   }
 
   getRoute<P extends Patterns>(pattern: P) {

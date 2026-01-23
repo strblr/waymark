@@ -4,6 +4,7 @@ import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
   normalizePath,
+  patternWeights,
   validator,
   errorBoundary,
   type ParsePattern,
@@ -31,6 +32,7 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
     keys: string[];
     regex: RegExp;
     looseRegex: RegExp;
+    weights: number[];
     mapSearch: (search: Record<string, unknown>) => S;
     components: ComponentType[];
     preloaded: boolean;
@@ -45,11 +47,13 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
   ) {
     const { keys, pattern: regex } = parse(pattern);
     const looseRegex = parse(pattern, true).pattern;
+    const weights = patternWeights(pattern);
     this._ = {
       pattern,
       keys,
       regex,
       looseRegex,
+      weights,
       mapSearch,
       components,
       preloaded: false,

@@ -24,6 +24,13 @@ export function normalizePath<P extends string>(path: P) {
   return normalized as NormalizePath<P>;
 }
 
+export function patternWeights(pattern: string): number[] {
+  return pattern
+    .split("/")
+    .slice(1)
+    .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
+}
+
 export function extract(cpath: string, looseRegex: RegExp, keys: string[]) {
   const out: Record<string, string> = {};
   const matches = looseRegex.exec(cpath);

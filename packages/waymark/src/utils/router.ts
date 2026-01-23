@@ -48,3 +48,17 @@ export interface HistoryLike {
   push: (options: HistoryPushOptions) => void;
   subscribe: (listener: () => void) => () => void;
 }
+
+export function rankRoutes(routes: Route<string, any, any>[]) {
+  return [...routes].sort((a, b) => {
+    const length = Math.max(a._.weights.length, b._.weights.length);
+    for (let i = 0; i < length; i++) {
+      const wa = a._.weights[i] ?? -1;
+      const wb = b._.weights[i] ?? -1;
+      if (wa !== wb) {
+        return wb - wa;
+      }
+    }
+    return 0;
+  });
+}
