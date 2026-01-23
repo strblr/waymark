@@ -1,17 +1,11 @@
 import {
-  createElement,
   Component,
+  createElement,
   type Ref,
   type ReactNode,
   type ComponentType
 } from "react";
 import { useOutlet } from "../react";
-
-export type Updater<T extends object> = Partial<T> | ((prev: T) => Partial<T>);
-
-export type ComponentLoader = () => Promise<
-  ComponentType | { default: ComponentType }
->;
 
 export function defaultLinkActive(currentPath: string, targetPath: string) {
   return currentPath.startsWith(targetPath);

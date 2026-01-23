@@ -1,9 +1,5 @@
-import {
-  getHref,
-  normalizeSearch,
-  type HistoryLike,
-  type HistoryPushOptions
-} from "../utils";
+import { joinHref, normalizeSearch } from "../utils";
+import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export class BrowserHistory implements HistoryLike {
   private static patchKey = Symbol.for("waymark_history_patch_v01");
@@ -39,7 +35,7 @@ export class BrowserHistory implements HistoryLike {
 
   push = (options: HistoryPushOptions) => {
     const { path, search, replace, state } = options;
-    const href = getHref(path, search);
+    const href = joinHref(path, search);
     history[replace ? replaceStateEvent : pushStateEvent](state, "", href);
   };
 

@@ -1,9 +1,5 @@
-import {
-  clamp,
-  normalizeSearch,
-  type HistoryLike,
-  type HistoryPushOptions
-} from "../utils";
+import { clamp, normalizeSearch } from "../utils";
+import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export interface MemoryLocation {
   path: string;

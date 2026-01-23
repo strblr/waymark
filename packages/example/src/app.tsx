@@ -222,7 +222,7 @@ const routes = [
 ];
 
 declare module "waymark" {
-  interface RegisterRoutes {
+  interface Register {
     routes: typeof routes;
   }
 }

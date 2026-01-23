@@ -1,52 +1,36 @@
 import type { Route } from "../route";
-import type { MaybeKey } from "./misc";
+import type { NormalizePath } from "./types";
 
-export interface RegisterRoutes {}
-
-export type RouteList = RegisterRoutes extends {
-  routes: infer RouteList extends ReadonlyArray<Route<string, any, any>>;
-}
-  ? RouteList
-  : ReadonlyArray<Route<string, any, any>>;
-
-export type Routes = RouteList[number];
-
-export type Patterns = Routes["_"]["pattern"];
-
-export type RouteParams<R extends Routes> = NonNullable<R["_"]["_params"]>;
-
-export type RouteSearch<R extends Routes> = NonNullable<R["_"]["_search"]>;
-
-export type PatternParams<P extends Patterns> = RouteParams<PatternRoute<P>>;
-
-export type PatternSearch<P extends Patterns> = RouteSearch<PatternRoute<P>>;
-
-export type PatternRoute<P extends Patterns> = Extract<
-  Routes,
-  { _: { pattern: P } }
->;
-
-export type NavigateOptions<P extends Patterns> = {
-  to: P;
-  replace?: boolean;
-  state?: any;
-} & MaybeKey<"params", PatternParams<P>> &
-  MaybeKey<"search", PatternSearch<P>>;
-
-export interface HistoryPushOptions {
-  path: string;
-  search?: string;
-  replace?: boolean;
-  state?: any;
+export function normalizePath<P extends string>(path: P) {
+  const normalized = `/${path}`
+    .replaceAll(/\/+/g, "/")
+    .replace(/(.+)\/$/, "$1");
+  return normalized as NormalizePath<P>;
 }
 
-export interface HistoryLike {
-  getPath: () => string;
-  getSearch: () => string;
-  getState: () => any;
-  go: (delta: number) => void;
-  push: (options: HistoryPushOptions) => void;
-  subscribe: (listener: () => void) => () => void;
+export function patternWeights(pattern: string): number[] {
+  return pattern
+    .split("/")
+    .slice(1)
+    .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
+}
+
+export function joinHref(path: string, search?: string) {
+  return `${path}${search ? `?${search}` : ""}`;
+}
+
+export function extract(cpath: string, looseRegex: RegExp, keys: string[]) {
+  const out: Record<string, string> = {};
+  const matches = looseRegex.exec(cpath);
+  if (matches) {
+    keys.forEach((key, i) => {
+      const match = matches[i + 1];
+      if (match) {
+        out[key] = match;
+      }
+    });
+  }
+  return out;
 }
 
 export function rankRoutes(routes: Route<string, any, any>[]) {

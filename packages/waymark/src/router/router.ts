@@ -6,16 +6,18 @@ import {
   extract,
   rankRoutes,
   stringifySearch,
-  parseSearch,
-  type Routes,
-  type PatternRoute,
-  type RouteList,
-  type Patterns,
-  type NavigateOptions,
-  type HistoryLike,
-  type RouteParams,
-  type RouteSearch
+  parseSearch
 } from "../utils";
+import type {
+  Routes,
+  PatternRoute,
+  RouteList,
+  Patterns,
+  NavigateOptions,
+  HistoryLike,
+  RouteParams,
+  RouteSearch
+} from "../types";
 
 export interface RouterOptions {
   history?: HistoryLike;

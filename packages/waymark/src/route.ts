@@ -2,14 +2,14 @@ import { lazy, type ComponentType } from "react";
 import { parse } from "regexparam";
 import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { ComponentLoader } from "./types";
 import {
   normalizePath,
   patternWeights,
-  validator,
   errorBoundary,
+  validator,
   type ParsePattern,
   type NormalizePath,
-  type ComponentLoader,
   type OptionalOnUndefined
 } from "./utils";
 

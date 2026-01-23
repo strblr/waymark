@@ -18,13 +18,8 @@ import {
 import { routerContext, outletContext } from "./contexts";
 import { useRouter, useOutlet, useSubscribe } from "./hooks";
 import { Router, type RouterOptions } from "../router";
-import {
-  getHref,
-  mergeRefs,
-  defaultLinkActive,
-  type Patterns,
-  type NavigateOptions
-} from "../utils";
+import { joinHref, mergeRefs, defaultLinkActive } from "../utils";
+import type { Patterns, NavigateOptions } from "../types";
 
 // RouterRoot
 
@@ -183,7 +178,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     ...rest,
     ...activeProps,
     ref: mergeRefs(rest.ref, ref),
-    href: getHref(path, search),
+    href: joinHref(path, search),
     onClick,
     onFocus,
     onPointerEnter
