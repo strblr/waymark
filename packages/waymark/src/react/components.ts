@@ -16,7 +16,7 @@ import {
   type RefAttributes
 } from "react";
 import { routerContext, routeContext, outletContext } from "./contexts";
-import { useRouter, useOutlet, useSubscribe } from "./hooks";
+import { useRouter, useOutlet, useSubscribe, useNavigate } from "./hooks";
 import { Router, type RouterOptions } from "../router";
 import { joinHref, mergeRefs } from "../utils";
 import type { Patterns, NavigateOptions } from "../types";
@@ -66,8 +66,8 @@ export function Outlet() {
 export type NavigateProps<P extends Patterns> = NavigateOptions<P>;
 
 export function Navigate<P extends Patterns>(props: NavigateProps<P>) {
-  const router = useRouter();
-  useLayoutEffect(() => router.navigate(props), []);
+  const navigate = useNavigate();
+  useLayoutEffect(() => navigate(props), []);
   return null;
 }
 
