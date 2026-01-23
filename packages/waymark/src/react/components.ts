@@ -15,7 +15,7 @@ import {
   type CSSProperties,
   type RefAttributes
 } from "react";
-import { routerContext, outletContext } from "./contexts";
+import { routerContext, routeContext, outletContext } from "./contexts";
 import { useRouter, useOutlet, useSubscribe } from "./hooks";
 import { Router, type RouterOptions } from "../router";
 import { joinHref, mergeRefs, defaultLinkActive } from "../utils";
@@ -38,14 +38,18 @@ export function RouterRoot(props: RouterRootProps) {
     return createElement(
       routerContext.Provider,
       { value: router },
-      route?._.components.reduceRight<ReactNode>(
-        (acc, comp) =>
-          createElement(
-            outletContext.Provider,
-            { value: acc },
-            createElement(comp)
-          ),
-        null
+      createElement(
+        routeContext,
+        { value: route },
+        route?._.components.reduceRight<ReactNode>(
+          (acc, comp) =>
+            createElement(
+              outletContext.Provider,
+              { value: acc },
+              createElement(comp)
+            ),
+          null
+        )
       )
     );
   }, [router, route]);

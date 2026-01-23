@@ -8,7 +8,8 @@ import {
   useParams,
   useSearch,
   useLocation,
-  useNavigate
+  useNavigate,
+  useHandles
 } from "waymark";
 import { z } from "zod";
 
@@ -36,14 +37,15 @@ export function App() {
 
 // Layout
 
-const ultraroot = route("/").component(Outlet);
-const ultraroot2 = ultraroot.route("/").component(Outlet);
-const layout = ultraroot2.route("/").component(Layout).error(ErrorBoundary);
+const root = route("/").handle({ breadcrumb: "Home" }).component(Outlet);
+const root2 = root.route("/").component(Outlet);
+const layout = root2.route("/").component(Layout).error(ErrorBoundary);
 
 function Layout() {
   const [counter, setCounter] = useState(0);
   const router = useRouter();
   const location = useLocation();
+  const handles = useHandles();
   const navigate = useNavigate();
   const navigateToParam2 = () =>
     router.navigate({ to: "/param/:id", params: { id: "2" } });
@@ -56,17 +58,27 @@ function Layout() {
           Search: {JSON.stringify(location.search)}
         </div>
       </div>
+      <div className="breadcrumbs">
+        {handles.map((handle, i) => (
+          <span key={i} className="breadcrumb-item">
+            {handle.breadcrumb}
+            {i < handles.length - 1 && (
+              <span className="breadcrumb-separator">/</span>
+            )}
+          </span>
+        ))}
+      </div>
       <nav className="nav">
         <Link to="/simple">Simple page</Link>
-        <Link to="/lazy">Lazy page</Link>
+        <Link to="/lazy">Lazy</Link>
         <Link to="/suspended">Suspended</Link>
         <Link to="/faulty">Faulty</Link>
         <Link to="/param/:id" params={{ id: "1" }}>
           Param 1
         </Link>
         <a onClick={navigateToParam2}>Param 2</a>
-        <a onClick={() => router.navigate<any>({ to: "/unknown" })}>
-          Catch all
+        <a onClick={() => router.navigate<any>({ to: "/unknown/path" })}>
+          Wildcard
         </a>
         <span>|</span>
         <a onClick={() => navigate(-1)}>Back</a>
@@ -97,7 +109,10 @@ function ErrorBoundary({ error }: { error: unknown }) {
 
 // Simple page
 
-const simplePage = layout.route("/simple").component(SimplePage);
+const simplePage = layout
+  .route("/simple")
+  .handle({ breadcrumb: "Simple" })
+  .component(SimplePage);
 
 function SimplePage() {
   return (
@@ -112,9 +127,20 @@ function SimplePage() {
 
 // Lazy page
 
-const lazyPage = layout.route("/lazy").lazy(() => import("./lazy"));
-const lazySection1 = lazyPage.route("/section1").component(LazySection1);
-const lazySection2 = lazyPage.route("/section2").component(LazySection2);
+const lazyPage = layout
+  .route("/lazy")
+  .handle({ breadcrumb: "Lazy" })
+  .lazy(() => import("./lazy"));
+
+const lazySection1 = lazyPage
+  .route("/section1")
+  .handle({ breadcrumb: "Section 1" })
+  .component(LazySection1);
+
+const lazySection2 = lazyPage
+  .route("/section2")
+  .handle({ breadcrumb: "Section 2" })
+  .component(LazySection2);
 
 function LazySection1() {
   return (
@@ -140,10 +166,14 @@ function LazySection2() {
 
 // Param
 
-const param = layout.route("/param/:id").component(Param);
+const param = layout
+  .route("/param/:id")
+  .handle({ breadcrumb: "Param" })
+  .component(Param);
 
 const paramDetail = param
   .route("/detail")
+  .handle({ breadcrumb: "Detail" })
   .search(z.object({ name: z.string().catch("") }))
   .component(ParamDetail);
 
@@ -189,6 +219,7 @@ function ParamDetail() {
 
 const suspendedPage = layout
   .route("/suspended")
+  .handle({ breadcrumb: "Suspended" })
   .suspense(SuspenseFallback)
   .component(SuspendedPage);
 
@@ -200,12 +231,16 @@ function SuspenseFallback() {
   );
 }
 
-const dataPromise = new Promise<string>(resolve => {
-  setTimeout(() => resolve("Data loaded!"), 2000);
-});
+let dataPromise: Promise<string>;
+
+function getDataPromise() {
+  return (dataPromise ??= new Promise<string>(resolve => {
+    setTimeout(() => resolve("Data loaded!"), 2000);
+  }));
+}
 
 function SuspendedPage() {
-  const data = use(dataPromise);
+  const data = use(getDataPromise());
   return (
     <div className="section">
       <h1 className="section-title">Suspended Page</h1>
@@ -216,21 +251,27 @@ function SuspendedPage() {
 
 // Faulty
 
-const faulty = layout.route("/faulty").component(Faulty);
+const faulty = layout
+  .route("/faulty")
+  .handle({ breadcrumb: "Faulty" })
+  .component(Faulty);
 
 function Faulty(): never {
   throw new Error("Faulty");
 }
 
-// Catch all
+// Wildcard
 
-const catchAll = layout.route("/*").component(CatchAll);
+const wildcard = layout
+  .route("/*")
+  .handle({ breadcrumb: "Wildcard" })
+  .component(Wildcard);
 
-function CatchAll() {
-  const params = useParams(catchAll);
+function Wildcard() {
+  const params = useParams(wildcard);
   return (
     <div className="section">
-      <h1 className="section-title">Catch all</h1>
+      <h1 className="section-title">Wildcard</h1>
       <div className="section-content">
         <div className="data-display">{JSON.stringify(params)}</div>
       </div>
@@ -245,9 +286,9 @@ const routes = [
   lazyPage,
   paramDetail,
   simplePage,
+  wildcard,
   suspendedPage,
   faulty,
-  catchAll,
   lazySection2,
   lazySection1
 ];
@@ -255,5 +296,6 @@ const routes = [
 declare module "waymark" {
   interface Register {
     routes: typeof routes;
+    handle: { breadcrumb: string };
   }
 }

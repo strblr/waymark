@@ -12,6 +12,10 @@ export type RouteList = Register extends {
   ? RouteList
   : ReadonlyArray<Route<string, any, any>>;
 
+export type Handle = Register extends { handle: infer Handle } ? Handle : any;
+
+export type AnyRoute = Route<string, any, any>;
+
 export type Routes = RouteList[number];
 
 export type Patterns = Routes["pattern"];
