@@ -26,7 +26,11 @@ export function route<P extends string>(pattern: P) {
   );
 }
 
-export class Route<P extends string, Ps extends {}, S extends {}> {
+export class Route<
+  P extends string = string,
+  Ps extends {} = any,
+  S extends {} = any
+> {
   pattern: P;
   _: {
     _params?: Ps;

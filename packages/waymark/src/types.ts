@@ -7,14 +7,12 @@ export interface Register {}
 // Router
 
 export type RouteList = Register extends {
-  routes: infer RouteList extends ReadonlyArray<Route<string, any, any>>;
+  routes: infer RouteList extends ReadonlyArray<Route>;
 }
   ? RouteList
-  : ReadonlyArray<Route<string, any, any>>;
+  : ReadonlyArray<Route>;
 
 export type Handle = Register extends { handle: infer Handle } ? Handle : any;
-
-export type AnyRoute = Route<string, any, any>;
 
 export type Routes = RouteList[number];
 

@@ -33,7 +33,7 @@ export function extract(cpath: string, looseRegex: RegExp, keys: string[]) {
   return out;
 }
 
-export function rankRoutes(routes: Route<string, any, any>[]) {
+export function rankRoutes(routes: Route[]) {
   return [...routes].sort((a, b) => {
     const length = Math.max(a._.weights.length, b._.weights.length);
     for (let i = 0; i < length; i++) {
