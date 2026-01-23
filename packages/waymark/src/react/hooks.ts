@@ -80,7 +80,7 @@ export function useSearch<R extends Routes>(route: R) {
       );
       update = typeof update === "function" ? update(search) : update;
       router.navigate({
-        to: route._.pattern,
+        to: route.pattern,
         params,
         search: { ...search, ...update },
         replace

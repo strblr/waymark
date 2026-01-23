@@ -25,8 +25,8 @@ export function route<P extends string>(pattern: P) {
 }
 
 export class Route<P extends string, Ps extends {}, S extends {}> {
+  pattern: P;
   _: {
-    pattern: P;
     _params?: Ps;
     _search?: S;
     keys: string[];
@@ -48,8 +48,8 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
     const { keys, pattern: regex } = parse(pattern);
     const looseRegex = parse(pattern, true).pattern;
     const weights = patternWeights(pattern);
+    this.pattern = pattern;
     this._ = {
-      pattern,
       keys,
       regex,
       looseRegex,
@@ -64,9 +64,9 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
   route<P2 extends string>(subPattern: P2) {
     type Pattern = NormalizePath<`${P}/${P2}`>;
     type Params = ParsePattern<Pattern>;
-    const { pattern, mapSearch, components, preloaders } = this._;
+    const { mapSearch, components, preloaders } = this._;
     return new Route<Pattern, Params, S>(
-      normalizePath(`${pattern}/${subPattern}`),
+      normalizePath(`${this.pattern}/${subPattern}`),
       mapSearch,
       components,
       preloaders
@@ -79,10 +79,10 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
       | StandardSchemaV1<S & Record<string, unknown>, S2>
   ) {
     type Search = Merge<S, OptionalOnUndefined<S2>>;
-    const { pattern, mapSearch, components, preloaders } = this._;
+    const { mapSearch, components, preloaders } = this._;
     mapper = validator(mapper);
     return new Route<P, Ps, Search>(
-      pattern,
+      this.pattern,
       search => {
         const mapped = mapSearch(search);
         return { ...mapped, ...mapper(mapped) };
@@ -93,9 +93,9 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
   }
 
   component(component: ComponentType) {
-    const { pattern, mapSearch, components, preloaders } = this._;
+    const { mapSearch, components, preloaders } = this._;
     return new Route<P, Ps, S>(
-      pattern,
+      this.pattern,
       mapSearch,
       [...components, component],
       preloaders
@@ -103,13 +103,13 @@ export class Route<P extends string, Ps extends {}, S extends {}> {
   }
 
   lazy(loader: ComponentLoader) {
-    const { pattern, mapSearch, components, preloaders } = this._;
+    const { mapSearch, components, preloaders } = this._;
     const component = lazy(async () => {
       const result = await loader();
       return "default" in result ? result : { default: result };
     });
     return new Route<P, Ps, S>(
-      pattern,
+      this.pattern,
       mapSearch,
       [...components, component],
       [...preloaders, loader]

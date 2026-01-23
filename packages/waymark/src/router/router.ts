@@ -39,7 +39,7 @@ export class Router {
     this.routes = options.routes;
     this.defaultLinkOptions = options.defaultLinkOptions;
     this._ = {
-      routeMap: new Map(options.routes.map(route => [route._.pattern, route]))
+      routeMap: new Map(options.routes.map(route => [route.pattern, route]))
     };
   }
 
