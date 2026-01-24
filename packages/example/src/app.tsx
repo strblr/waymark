@@ -74,7 +74,7 @@ function Layout() {
         ))}
       </div>
       <nav className="nav">
-        <Link to="/" activeStrict>
+        <Link strict to="/">
           Index
         </Link>
         <Link to="/simple">Simple page</Link>

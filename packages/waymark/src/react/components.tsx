@@ -82,10 +82,10 @@ export type LinkProps<P extends Pattern> = NavigateOptions<P> &
   RefAttributes<HTMLAnchorElement> & { asChild?: boolean };
 
 export interface LinkOptions {
+  strict?: boolean;
   preload?: "intent" | "render" | "viewport" | false;
   style?: CSSProperties;
   className?: string;
-  activeStrict?: boolean;
   activeStyle?: CSSProperties;
   activeClassName?: string;
 }
@@ -98,14 +98,13 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     state,
     params,
     search: _search,
+    strict,
     preload,
     style,
     className,
-    activeStrict,
     activeStyle,
     activeClassName,
     asChild,
-
     children,
     ...rest
   } = {
@@ -116,7 +115,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const url = router.createUrl(props);
   const route = useMemo(() => router.getRoute(props.to), [router, props.to]);
-  const active = !!useMatch({ from: route, strict: activeStrict, params });
+  const active = !!useMatch({ from: route, strict, params });
 
   const activeProps = useMemo(() => {
     return {
@@ -130,12 +129,12 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
 
   useEffect(() => {
     if (preload === "render") {
-      route?.preload();
+      route.preload();
     } else if (preload === "viewport" && ref.current) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            route?.preload();
+            route.preload();
             observer.disconnect();
           }
         });
@@ -163,14 +162,14 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
     rest.onFocus?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      route?.preload();
+      route.preload();
     }
   };
 
   const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
     rest.onPointerEnter?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      route?.preload();
+      route.preload();
     }
   };
 
