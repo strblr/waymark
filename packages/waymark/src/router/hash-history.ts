@@ -9,8 +9,6 @@ export class HashHistory extends BrowserHistory {
 
   getSearch = () => splitUrl(this.getHashUrl()).search;
 
-  getState = () => history.state;
-
   push = (options: HistoryPushOptions) => {
     const { url, replace, state } = options;
     history[replace ? "replaceState" : "pushState"](state, "", `#${url}`);
