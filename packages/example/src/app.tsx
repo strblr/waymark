@@ -69,6 +69,9 @@ function Layout() {
         ))}
       </div>
       <nav className="nav">
+        <Link to="/" activeStrict>
+          Index
+        </Link>
         <Link to="/simple">Simple page</Link>
         <Link to="/lazy">Lazy</Link>
         <Link to="/suspended">Suspended</Link>
@@ -103,6 +106,21 @@ function ErrorBoundary({ error }: { error: unknown }) {
       <div className="section-content">
         <div className="error-message">{String(error)}</div>
       </div>
+    </div>
+  );
+}
+
+// Index
+
+const index = layout
+  .route("/")
+  .handle({ breadcrumb: "Index" })
+  .component(Index);
+
+function Index() {
+  return (
+    <div className="section">
+      <h1 className="section-title">Index</h1>
     </div>
   );
 }
@@ -288,6 +306,7 @@ const routes = [
   simplePage,
   wildcard,
   suspendedPage,
+  index,
   faulty,
   lazySection2,
   lazySection1
