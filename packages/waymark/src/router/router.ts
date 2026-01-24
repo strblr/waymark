@@ -16,7 +16,8 @@ import type {
   MatchOptions,
   Match,
   NavigateOptions,
-  HistoryLike
+  HistoryLike,
+  HistoryPushOptions
 } from "../types";
 
 export interface RouterOptions {
@@ -85,11 +86,13 @@ export class Router {
     return mergeUrl(path, search);
   }
 
-  navigate<P extends Pattern>(options: NavigateOptions<P> | number | string) {
+  navigate<P extends Pattern>(
+    options: NavigateOptions<P> | HistoryPushOptions | number
+  ) {
     if (typeof options === "number") {
       this.history.go(options);
-    } else if (typeof options === "string") {
-      this.history.push({ url: options });
+    } else if ("url" in options) {
+      this.history.push(options);
     } else {
       this.history.push({ url: this.createUrl(options), ...options });
     }

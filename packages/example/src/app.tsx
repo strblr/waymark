@@ -85,7 +85,9 @@ function Layout() {
           Param 1
         </Link>
         <a onClick={navigateToParam2}>Param 2</a>
-        <a onClick={() => router.navigate("/unknown/path")}>Wildcard</a>
+        <a onClick={() => router.navigate({ url: "/unknown/path" })}>
+          Wildcard
+        </a>
         <span>|</span>
         <a onClick={() => navigate(-1)}>Back</a>
         <a onClick={() => navigate(1)}>Forward</a>
