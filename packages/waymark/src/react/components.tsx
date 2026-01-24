@@ -1,10 +1,9 @@
 import {
+  useRef,
   useMemo,
   useState,
   useLayoutEffect,
-  useRef,
   useEffect,
-  createElement,
   isValidElement,
   cloneElement,
   type ReactNode,
@@ -22,7 +21,7 @@ import {
   useNavigate,
   useSubscribe
 } from "./hooks";
-import { routerContext, matchContext, outletContext } from "./contexts";
+import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import { Router, type RouterOptions } from "../router";
 import { mergeRefs } from "../utils";
 import type { Pattern, NavigateOptions } from "../types";
@@ -40,25 +39,23 @@ export function RouterRoot(props: RouterRootProps) {
   if (!match) {
     console.error("[Waymark] No matching route found for path:", path);
   }
-  return useMemo<ReactNode>(() => {
-    return createElement(
-      routerContext.Provider,
-      { value: router },
-      createElement(
-        matchContext,
-        { value: match },
-        match?.route._.components.reduceRight<ReactNode>(
-          (acc, comp) =>
-            createElement(
-              outletContext.Provider,
-              { value: acc },
-              createElement(comp)
+  return useMemo<ReactNode>(
+    () => (
+      <RouterContext.Provider value={router}>
+        <MatchContext.Provider value={match}>
+          {match?.route._.components.reduceRight<ReactNode>(
+            (acc, Comp) => (
+              <OutletContext.Provider value={acc}>
+                <Comp />
+              </OutletContext.Provider>
             ),
-          null
-        )
-      )
-    );
-  }, [router, match]);
+            null
+          )}
+        </MatchContext.Provider>
+      </RouterContext.Provider>
+    ),
+    [router, match]
+  );
 }
 
 // Outlet
@@ -184,7 +181,9 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     onPointerEnter
   };
 
-  return asChild && isValidElement(children)
-    ? cloneElement(children, anchorProps)
-    : createElement("a", { ...anchorProps, children });
+  return asChild && isValidElement(children) ? (
+    cloneElement(children, anchorProps)
+  ) : (
+    <a {...anchorProps}>{children}</a>
+  );
 }

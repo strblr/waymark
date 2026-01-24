@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useContext, useSyncExternalStore } from "react";
-import { routerContext, matchContext, outletContext } from "./contexts";
+import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import type { Router } from "../router";
 import { mergeUrl, parseSearch } from "../utils";
 import type {
@@ -14,7 +14,7 @@ import type {
 // useRouter
 
 export function useRouter() {
-  const router = useContext(routerContext);
+  const router = useContext(RouterContext);
   if (!router) {
     throw new Error("[Waymark] useRouter must be used within a router context");
   }
@@ -24,14 +24,14 @@ export function useRouter() {
 // useHandles
 
 export function useHandles(): Handle[] {
-  const match = useContext(matchContext);
+  const match = useContext(MatchContext);
   return useMemo(() => match?.route._.handles ?? [], [match]);
 }
 
 // useOutlet
 
 export function useOutlet() {
-  return useContext(outletContext);
+  return useContext(OutletContext);
 }
 
 // useSubscribe

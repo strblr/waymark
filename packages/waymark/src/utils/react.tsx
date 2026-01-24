@@ -1,7 +1,6 @@
 import {
   Suspense,
   Component,
-  createElement,
   type Ref,
   type ReactNode,
   type ComponentType
@@ -31,17 +30,12 @@ function assignRef<T>(ref: Ref<T>, value: T) {
   }
 }
 
-export function suspenseBoundary(component: ComponentType): ComponentType {
-  return () => {
-    return createElement(Suspense, {
-      fallback: createElement(component),
-      children: useOutlet()
-    });
-  };
+export function suspenseBoundary(Comp: ComponentType): ComponentType {
+  return () => <Suspense fallback={<Comp />}>{useOutlet()}</Suspense>;
 }
 
 export function errorBoundary(
-  component: ComponentType<{ error: unknown }>
+  Comp: ComponentType<{ error: unknown }>
 ): ComponentType {
   type Props = { children: ReactNode };
   type State = { children: ReactNode; error: null | [unknown] };
@@ -64,11 +58,13 @@ export function errorBoundary(
     }
 
     render() {
-      return this.state.error
-        ? createElement(component, { error: this.state.error[0] })
-        : this.props.children;
+      return this.state.error ? (
+        <Comp error={this.state.error[0]} />
+      ) : (
+        this.props.children
+      );
     }
   }
 
-  return () => createElement(Catch, { children: useOutlet() });
+  return () => <Catch>{useOutlet()}</Catch>;
 }
