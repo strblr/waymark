@@ -1,4 +1,4 @@
-import { joinHref, normalizeSearch } from "../utils";
+import { normalizeSearch } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export class BrowserHistory implements HistoryLike {
@@ -34,9 +34,8 @@ export class BrowserHistory implements HistoryLike {
   go = (delta: number) => history.go(delta);
 
   push = (options: HistoryPushOptions) => {
-    const { path, search, replace, state } = options;
-    const href = joinHref(path, search);
-    history[replace ? replaceStateEvent : pushStateEvent](state, "", href);
+    const { url, replace, state } = options;
+    history[replace ? replaceStateEvent : pushStateEvent](state, "", url);
   };
 
   subscribe = (listener: () => void) => {

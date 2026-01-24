@@ -1,4 +1,4 @@
-import { clamp, normalizeSearch } from "../utils";
+import { clamp, splitUrl } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export interface MemoryLocation {
@@ -12,9 +12,8 @@ export class MemoryHistory implements HistoryLike {
   private index: number = 0;
   private listeners = new Set<() => void>();
 
-  constructor(initial: Partial<MemoryLocation> = {}) {
-    const { path = "/", search = "", state } = initial;
-    this.stack.push({ path, search: normalizeSearch(search), state });
+  constructor(url = "/") {
+    this.stack.push({ ...splitUrl(url), state: undefined });
   }
 
   getPath = () => this.stack[this.index].path;
@@ -29,12 +28,8 @@ export class MemoryHistory implements HistoryLike {
   };
 
   push = (options: HistoryPushOptions) => {
-    const { path, search = "", replace, state } = options;
-    const location: MemoryLocation = {
-      path,
-      search: normalizeSearch(search),
-      state
-    };
+    const { url, replace, state } = options;
+    const location: MemoryLocation = { ...splitUrl(url), state };
     this.stack = this.stack.slice(0, this.index + 1);
     if (replace) {
       this.stack[this.index] = location;

@@ -2,9 +2,9 @@ import type { ComponentType } from "react";
 import type { Route } from "./route";
 import type { MaybeKey } from "./utils";
 
-export interface Register {}
+// Register
 
-// Router
+export interface Register {}
 
 export type RouteList = Register extends {
   routes: infer RouteList extends ReadonlyArray<Route>;
@@ -14,32 +14,45 @@ export type RouteList = Register extends {
 
 export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 
-export type Routes = RouteList[number];
+// Router
 
-export type Patterns = Routes["pattern"];
+export type Pattern = RouteList[number]["pattern"];
 
-export type RouteParams<R extends Routes> = NonNullable<R["_"]["_params"]>;
+export type GetRoute<P extends Pattern> = Extract<
+  RouteList[number],
+  { pattern: P }
+>;
 
-export type RouteSearch<R extends Routes> = NonNullable<R["_"]["_search"]>;
+export type Params<P extends Pattern> = NonNullable<
+  GetRoute<P>["_"]["_params"]
+>;
 
-export type PatternParams<P extends Patterns> = RouteParams<PatternRoute<P>>;
+export type Search<P extends Pattern> = NonNullable<
+  GetRoute<P>["_"]["_search"]
+>;
 
-export type PatternSearch<P extends Patterns> = RouteSearch<PatternRoute<P>>;
+export type MatchOptions<P extends Pattern> = {
+  from: P | GetRoute<P>;
+  strict?: boolean;
+  params?: Partial<Params<P>>;
+};
 
-export type PatternRoute<P extends Patterns> = Extract<Routes, { pattern: P }>;
+export type Match<P extends Pattern = Pattern> = {
+  route: GetRoute<P>;
+  params: Params<P>;
+};
 
-export type NavigateOptions<P extends Patterns> = {
-  to: P | PatternRoute<P>;
+export type NavigateOptions<P extends Pattern> = {
+  to: P | GetRoute<P>;
   replace?: boolean;
   state?: any;
-} & MaybeKey<"params", PatternParams<P>> &
-  MaybeKey<"search", PatternSearch<P>>;
+} & MaybeKey<"params", Params<P>> &
+  MaybeKey<"search", Search<P>>;
 
 // History
 
 export interface HistoryPushOptions {
-  path: string;
-  search?: string;
+  url: string;
   replace?: boolean;
   state?: any;
 }

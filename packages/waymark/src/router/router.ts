@@ -1,22 +1,16 @@
 import { inject } from "regexparam";
 import { BrowserHistory } from "./browser-history";
+import type { Route } from "../route";
 import type { LinkOptions } from "../react";
-import {
-  normalizePath,
-  extract,
-  rankRoutes,
-  stringifySearch,
-  parseSearch
-} from "../utils";
+import { normalizePath, matchRegex, rankMatches, mergeUrl } from "../utils";
 import type {
-  Routes,
-  PatternRoute,
   RouteList,
-  Patterns,
+  Pattern,
+  GetRoute,
+  MatchOptions,
+  Match,
   NavigateOptions,
-  HistoryLike,
-  RouteParams,
-  RouteSearch
+  HistoryLike
 } from "../types";
 
 export interface RouterOptions {
@@ -31,7 +25,7 @@ export class Router {
   basePath: string;
   routes: RouteList;
   defaultLinkOptions?: LinkOptions;
-  _: { routeMap: Map<string, Routes> };
+  _: { routeMap: Map<string, Route> };
 
   constructor(options: RouterOptions) {
     this.history = options.history ?? new BrowserHistory();
@@ -54,45 +48,56 @@ export class Router {
     return path;
   }
 
-  matchPath(path: string): Routes | undefined {
-    const cpath = this.getCanonicalPath(path);
-    const matches = this.routes.filter(route => route._.regex.test(cpath));
-    return rankRoutes(matches)[0];
-  }
-
-  getRoute<P extends Patterns>(pattern: P) {
+  getRoute<P extends Pattern>(pattern: P | GetRoute<P>) {
+    if (typeof pattern !== "string") {
+      return pattern;
+    }
     const route = this._.routeMap.get(pattern);
     if (!route) {
       throw new Error(`[Waymark] Route not found for pattern: ${pattern}`);
     }
-    return route as PatternRoute<P>;
+    return route as GetRoute<P>;
   }
 
-  compose<P extends Patterns>(options: NavigateOptions<P>) {
-    const { to, params, search } = options;
-    const pattern = typeof to === "string" ? to : to.pattern;
-    return {
-      path: this.getPath(params ? inject(pattern, params) : pattern),
-      search: search ? stringifySearch(search) : ""
-    };
-  }
-
-  decompose<R extends Routes>(route: R, path: string, search: string) {
-    const { keys, looseRegex, mapSearch } = route._;
+  match<P extends Pattern>(
+    path: string,
+    options: MatchOptions<P>
+  ): Match<P> | null {
+    const { from, strict, params: filter } = options;
+    const route = this.getRoute(from);
+    const regex = strict ? route._.regex : route._.looseRegex;
     const cpath = this.getCanonicalPath(path);
-    return {
-      params: extract(cpath, looseRegex, keys) as RouteParams<R>,
-      search: mapSearch(parseSearch(search)) as RouteSearch<R>
-    };
+    const params = matchRegex(regex, route._.keys, cpath);
+    if (
+      !params ||
+      (filter && Object.keys(filter).some(key => filter[key] !== params[key]))
+    ) {
+      return null;
+    }
+    return { route, params };
   }
 
-  navigate<P extends Patterns>(options: NavigateOptions<P> | number) {
+  matchAll(path: string): Match | null {
+    const matches = this.routes
+      .map(route => this.match(path, { from: route, strict: true }))
+      .filter(m => !!m);
+    return rankMatches(matches)[0] ?? null;
+  }
+
+  createUrl<P extends Pattern>(options: NavigateOptions<P>) {
+    const { to, params = {}, search = {} } = options;
+    const { pattern } = this.getRoute(to);
+    const path = this.getPath(inject(pattern, params));
+    return mergeUrl(path, search);
+  }
+
+  navigate<P extends Pattern>(options: NavigateOptions<P> | number | string) {
     if (typeof options === "number") {
       this.history.go(options);
+    } else if (typeof options === "string") {
+      this.history.push({ url: options });
     } else {
-      const { path, search } = this.compose(options);
-      const { replace, state } = options;
-      this.history.push({ path, search, replace, state });
+      this.history.push({ url: this.createUrl(options), ...options });
     }
   }
 }

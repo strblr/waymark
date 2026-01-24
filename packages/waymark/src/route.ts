@@ -15,9 +15,9 @@ import {
 } from "./utils";
 
 export function route<P extends string>(pattern: P) {
-  type Pattern = NormalizePath<P>;
-  type Params = ParsePattern<Pattern>;
-  return new Route<Pattern, Params, {}>(
+  type P_ = NormalizePath<P>;
+  type Ps = ParsePattern<P_>;
+  return new Route<P_, Ps, {}>(
     normalizePath(pattern),
     search => search,
     [],
@@ -71,10 +71,10 @@ export class Route<
   }
 
   route<P2 extends string>(subPattern: P2) {
-    type Pattern = NormalizePath<`${P}/${P2}`>;
-    type Params = ParsePattern<Pattern>;
+    type P_ = NormalizePath<`${P}/${P2}`>;
+    type Ps = ParsePattern<P_>;
     const { mapSearch, handles, components, preloaders } = this._;
-    return new Route<Pattern, Params, S>(
+    return new Route<P_, Ps, S>(
       normalizePath(`${this.pattern}/${subPattern}`),
       mapSearch,
       handles,
@@ -88,10 +88,10 @@ export class Route<
       | ((search: S & Record<string, unknown>) => S2)
       | StandardSchemaV1<S & Record<string, unknown>, S2>
   ) {
-    type Search = Merge<S, OptionalOnUndefined<S2>>;
+    type S_ = Merge<S, OptionalOnUndefined<S2>>;
     const { mapSearch, handles, components, preloaders } = this._;
     mapper = validator(mapper);
-    return new Route<P, Ps, Search>(
+    return new Route<P, Ps, S_>(
       this.pattern,
       search => {
         const mapped = mapSearch(search);
@@ -153,5 +153,9 @@ export class Route<
     if (preloaded) return;
     this._.preloaded = true;
     await Promise.all(preloaders.map(loader => loader()));
+  }
+
+  toString() {
+    return this.pattern;
   }
 }

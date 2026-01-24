@@ -1,9 +1,9 @@
 import { createContext, type ReactNode } from "react";
 import type { Router } from "../router";
-import type { Route } from "../route";
+import type { Match } from "../types";
 
-export const routerContext = createContext<Router | undefined>(undefined);
+export const routerContext = createContext<Router | null>(null);
 
-export const routeContext = createContext<Route | undefined>(undefined);
+export const matchContext = createContext<Match | null>(null);
 
 export const outletContext = createContext<ReactNode>(null);

@@ -15,11 +15,17 @@ import {
   type CSSProperties,
   type RefAttributes
 } from "react";
-import { routerContext, routeContext, outletContext } from "./contexts";
-import { useRouter, useOutlet, useSubscribe, useNavigate } from "./hooks";
+import {
+  useRouter,
+  useOutlet,
+  useMatch,
+  useNavigate,
+  useSubscribe
+} from "./hooks";
+import { routerContext, matchContext, outletContext } from "./contexts";
 import { Router, type RouterOptions } from "../router";
-import { joinHref, mergeRefs } from "../utils";
-import type { Patterns, NavigateOptions } from "../types";
+import { mergeRefs } from "../utils";
+import type { Pattern, NavigateOptions } from "../types";
 
 // RouterRoot
 
@@ -30,18 +36,18 @@ export function RouterRoot(props: RouterRootProps) {
     "router" in props ? props.router : new Router(props)
   );
   const path = useSubscribe(router, router.history.getPath);
-  const route = useMemo(() => router.matchPath(path), [router, path]);
-  if (!route) {
-    console.error("[Waymark] No route found for path:", path);
+  const match = useMemo(() => router.matchAll(path), [router, path]);
+  if (!match) {
+    console.error("[Waymark] No matching route found for path:", path);
   }
   return useMemo<ReactNode>(() => {
     return createElement(
       routerContext.Provider,
       { value: router },
       createElement(
-        routeContext,
-        { value: route },
-        route?._.components.reduceRight<ReactNode>(
+        matchContext,
+        { value: match },
+        match?.route._.components.reduceRight<ReactNode>(
           (acc, comp) =>
             createElement(
               outletContext.Provider,
@@ -52,7 +58,7 @@ export function RouterRoot(props: RouterRootProps) {
         )
       )
     );
-  }, [router, route]);
+  }, [router, match]);
 }
 
 // Outlet
@@ -63,9 +69,9 @@ export function Outlet() {
 
 // Navigate
 
-export type NavigateProps<P extends Patterns> = NavigateOptions<P>;
+export type NavigateProps<P extends Pattern> = NavigateOptions<P>;
 
-export function Navigate<P extends Patterns>(props: NavigateProps<P>) {
+export function Navigate<P extends Pattern>(props: NavigateProps<P>) {
   const navigate = useNavigate();
   useLayoutEffect(() => navigate(props), []);
   return null;
@@ -73,7 +79,7 @@ export function Navigate<P extends Patterns>(props: NavigateProps<P>) {
 
 // Link
 
-export type LinkProps<P extends Patterns> = NavigateOptions<P> &
+export type LinkProps<P extends Pattern> = NavigateOptions<P> &
   LinkOptions &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   RefAttributes<HTMLAnchorElement> & { asChild?: boolean };
@@ -85,19 +91,14 @@ export interface LinkOptions {
   activeClassName?: string;
 }
 
-export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
-  const ref = useRef<HTMLAnchorElement>(null);
+export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const router = useRouter();
-  const { path, search } = router.compose(props);
-  const currentPath = useSubscribe(router, router.history.getPath);
-  const route = useMemo(() => router.matchPath(path), [router, path]);
-
   const {
     to,
     replace,
     state,
     params,
-    search: search_,
+    search: _search,
     preload,
     activeStrict,
     activeStyle,
@@ -112,10 +113,12 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     ...props
   };
 
+  const ref = useRef<HTMLAnchorElement>(null);
+  const url = router.createUrl(props);
+  const route = useMemo(() => router.getRoute(props.to), [router, props.to]);
+  const active = !!useMatch({ from: route, strict: activeStrict, params });
+
   const activeProps = useMemo(() => {
-    const active = activeStrict
-      ? currentPath === path
-      : currentPath.startsWith(path);
     return {
       ["data-active"]: active,
       style: { ...style, ...(active && activeStyle) },
@@ -123,15 +126,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
         [className, active && activeClassName].filter(Boolean).join(" ") ||
         undefined
     };
-  }, [
-    path,
-    currentPath,
-    style,
-    className,
-    activeStrict,
-    activeStyle,
-    activeClassName
-  ]);
+  }, [active, style, className, activeStyle, activeClassName]);
 
   useEffect(() => {
     if (preload === "render") {
@@ -162,7 +157,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     )
       return;
     event.preventDefault();
-    router.history.push({ path, search, replace, state });
+    router.history.push({ url, replace, state });
   };
 
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
@@ -183,7 +178,7 @@ export function Link<P extends Patterns>(props: LinkProps<P>): ReactNode {
     ...rest,
     ...activeProps,
     ref: mergeRefs(rest.ref, ref),
-    href: joinHref(path, search),
+    href: url,
     onClick,
     onFocus,
     onPointerEnter
