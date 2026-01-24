@@ -110,7 +110,7 @@ export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
       const parsed = parse(router.history.getSearch());
       update = typeof update === "function" ? update(parsed) : update;
       const url = mergeUrl(router.history.getPath(), { ...parsed, ...update });
-      router.history.push({ url, replace });
+      router.navigate({ url, replace });
     },
     [router, parse]
   );

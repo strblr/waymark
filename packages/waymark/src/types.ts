@@ -66,6 +66,8 @@ export interface HistoryLike {
   subscribe: (listener: () => void) => () => void;
 }
 
+export type HistoryMiddleware = (history: HistoryLike) => Partial<HistoryLike>;
+
 // React
 
 export type Updater<T extends object> = Partial<T> | ((prev: T) => Partial<T>);

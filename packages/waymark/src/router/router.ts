@@ -17,30 +17,42 @@ import type {
   Match,
   NavigateOptions,
   HistoryLike,
-  HistoryPushOptions
+  HistoryPushOptions,
+  HistoryMiddleware
 } from "../types";
 
 export interface RouterOptions {
-  history?: HistoryLike;
   basePath?: string;
   routes: RouteList;
+  history?: HistoryLike;
   defaultLinkOptions?: LinkOptions;
+  middlewares?: HistoryMiddleware[];
 }
 
 export class Router {
-  history: HistoryLike;
   basePath: string;
   routes: RouteList;
+  history: HistoryLike;
   defaultLinkOptions?: LinkOptions;
   _: { routeMap: Map<string, Route> };
 
   constructor(options: RouterOptions) {
-    this.history = options.history ?? new BrowserHistory();
-    this.basePath = normalizePath(options.basePath ?? "/");
-    this.routes = options.routes;
-    this.defaultLinkOptions = options.defaultLinkOptions;
+    const {
+      basePath = "/",
+      routes,
+      history,
+      defaultLinkOptions,
+      middlewares = []
+    } = options;
+    this.basePath = normalizePath(basePath);
+    this.routes = routes;
+    this.history = middlewares.reduce(
+      (history, middleware) => ({ ...history, ...middleware(history) }),
+      history ?? new BrowserHistory()
+    );
+    this.defaultLinkOptions = defaultLinkOptions;
     this._ = {
-      routeMap: new Map(options.routes.map(route => [route.pattern, route]))
+      routeMap: new Map(routes.map(route => [route.pattern, route]))
     };
   }
 
@@ -94,7 +106,8 @@ export class Router {
     } else if ("url" in options) {
       this.history.push(options);
     } else {
-      this.history.push({ url: this.createUrl(options), ...options });
+      const { replace, state } = options;
+      this.history.push({ url: this.createUrl(options), replace, state });
     }
   }
 }

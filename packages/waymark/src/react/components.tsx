@@ -156,7 +156,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     )
       return;
     event.preventDefault();
-    router.history.push({ url, replace, state });
+    router.navigate({ url, replace, state });
   };
 
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {

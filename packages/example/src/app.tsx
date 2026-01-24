@@ -1,4 +1,5 @@
 import { useState, use } from "react";
+import { flushSync } from "react-dom";
 import { z } from "zod";
 import {
   RouterRoot,
@@ -11,10 +12,41 @@ import {
   useLocation,
   useNavigate,
   useHandles,
-  useMatch
+  useMatch,
+  type HistoryMiddleware
 } from "waymark";
 
 // App
+
+const logMiddleware: HistoryMiddleware = history => {
+  const { go, push } = history;
+  return {
+    go: delta => {
+      console.log("go", delta);
+      go(delta);
+    },
+    push: options => {
+      console.group("push", options.url);
+      console.table(options);
+      console.groupEnd();
+      push(options);
+    }
+  };
+};
+
+const transitionMiddleware: HistoryMiddleware = history => {
+  const { go, push } = history;
+  const wrap = (fn: () => void) => {
+    if (!document.startViewTransition) {
+      return fn();
+    }
+    document.startViewTransition(() => flushSync(fn));
+  };
+  return {
+    go: delta => wrap(() => go(delta)),
+    push: options => wrap(() => push(options))
+  };
+};
 
 export function App() {
   const [counter, setCounter] = useState(0);
@@ -27,6 +59,7 @@ export function App() {
       </div>
       <RouterRoot
         routes={routes}
+        middlewares={[logMiddleware, transitionMiddleware]}
         defaultLinkOptions={{
           preload: "intent",
           activeClassName: "active-link"
