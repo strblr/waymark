@@ -83,6 +83,8 @@ export type LinkProps<P extends Pattern> = NavigateOptions<P> &
 
 export interface LinkOptions {
   preload?: "intent" | "render" | "viewport" | false;
+  style?: CSSProperties;
+  className?: string;
   activeStrict?: boolean;
   activeStyle?: CSSProperties;
   activeClassName?: string;
@@ -97,12 +99,13 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     params,
     search: _search,
     preload,
+    style,
+    className,
     activeStrict,
     activeStyle,
     activeClassName,
     asChild,
-    style,
-    className,
+
     children,
     ...rest
   } = {
