@@ -2,7 +2,13 @@ import { inject } from "regexparam";
 import { BrowserHistory } from "./browser-history";
 import type { Route } from "../route";
 import type { LinkOptions } from "../react";
-import { normalizePath, matchRegex, rankMatches, mergeUrl } from "../utils";
+import {
+  normalizePath,
+  mergeUrl,
+  matchRegex,
+  rankMatches,
+  absolutePath
+} from "../utils";
 import type {
   RouteList,
   Pattern,
@@ -37,17 +43,6 @@ export class Router {
     };
   }
 
-  getPath(cpath: string): string {
-    return normalizePath(`${this.basePath}/${cpath}`);
-  }
-
-  getCanonicalPath(path: string) {
-    if (path === this.basePath || path.startsWith(`${this.basePath}/`)) {
-      path = path.slice(this.basePath.length) || "/";
-    }
-    return path;
-  }
-
   getRoute<P extends Pattern>(pattern: P | GetRoute<P>) {
     if (typeof pattern !== "string") {
       return pattern;
@@ -66,8 +61,7 @@ export class Router {
     const { from, strict, params: filter } = options;
     const route = this.getRoute(from);
     const regex = strict ? route._.regex : route._.looseRegex;
-    const cpath = this.getCanonicalPath(path);
-    const params = matchRegex(regex, route._.keys, cpath);
+    const params = matchRegex(regex, route._.keys, path, this.basePath);
     if (
       !params ||
       (filter && Object.keys(filter).some(key => filter[key] !== params[key]))
@@ -87,7 +81,7 @@ export class Router {
   createUrl<P extends Pattern>(options: NavigateOptions<P>) {
     const { to, params = {}, search = {} } = options;
     const { pattern } = this.getRoute(to);
-    const path = this.getPath(inject(pattern, params));
+    const path = absolutePath(inject(pattern, params), this.basePath);
     return mergeUrl(path, search);
   }
 

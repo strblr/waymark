@@ -9,6 +9,17 @@ export function normalizePath<P extends string>(path: P) {
   return normalized as NormalizePath<P>;
 }
 
+export function absolutePath(rpath: string, basePath: string) {
+  return normalizePath(`${basePath}/${rpath}`);
+}
+
+export function relativePath(path: string, basePath: string) {
+  if (path === basePath || path.startsWith(`${basePath}/`)) {
+    path = path.slice(basePath.length) || "/";
+  }
+  return path;
+}
+
 export function mergeUrl(path: string, search: Record<string, unknown>) {
   return [path, stringifySearch(search)].filter(Boolean).join("?");
 }
@@ -25,8 +36,13 @@ export function patternWeights(pattern: string): number[] {
     .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
 }
 
-export function matchRegex(regex: RegExp, keys: string[], cpath: string) {
-  const matches = regex.exec(cpath);
+export function matchRegex(
+  regex: RegExp,
+  keys: string[],
+  path: string,
+  basePath: string
+) {
+  const matches = regex.exec(relativePath(path, basePath));
   if (!matches) return null;
   const out: Record<string, string> = {};
   keys.forEach((key, i) => {
