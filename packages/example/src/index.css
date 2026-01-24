@@ -65,6 +65,12 @@ body {
   font-weight: 500;
 }
 
+.location-match {
+  color: var(--color-text-accent);
+  font-weight: 500;
+  margin-left: auto;
+}
+
 .breadcrumbs {
   background: var(--color-bg-secondary);
   border-radius: 8px;

@@ -10,7 +10,8 @@ import {
   useSearch,
   useLocation,
   useNavigate,
-  useHandles
+  useHandles,
+  useMatch
 } from "waymark";
 
 // App
@@ -49,6 +50,7 @@ function Layout() {
   const navigate = useNavigate();
   const navigateToParam2 = () =>
     router.navigate({ to: param, params: { id: "2" } });
+  const lazyMatch = useMatch({ from: "/lazy" });
 
   return (
     <div className="layout">
@@ -56,6 +58,9 @@ function Layout() {
         <div className="location-path">Path: {location.path}</div>
         <div className="location-search">
           Search: {JSON.stringify(location.search)}
+        </div>
+        <div className="location-match">
+          Matched lazy: {!!lazyMatch ? "✅" : "❌"}
         </div>
       </div>
       <div className="breadcrumbs">
