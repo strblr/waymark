@@ -233,6 +233,9 @@ function ParamDetail() {
         <button onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}>
           Set Name
         </button>
+        <button onClick={() => setSearch({ name: undefined })}>
+          Clear Name
+        </button>
       </div>
     </div>
   );
