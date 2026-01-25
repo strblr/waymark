@@ -29,20 +29,21 @@
     "react-router-dom"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsdown --minify --platform browser",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
-    "@standard-schema/spec": "^1.1.0",
-    "@types/bun": "latest",
-    "@types/react": "^19.2.8",
-    "type-fest": "^5.4.1",
+    "@types/bun": "^1.3.6",
+    "@types/react": "^19.2.9",
+    "tsdown": "^0.20.1",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "react": ">=18"
   },
   "dependencies": {
-    "regexparam": "^3.0.0"
+    "@standard-schema/spec": "^1.1.0",
+    "regexparam": "^3.0.0",
+    "type-fest": "^5.4.1"
   }
 }
