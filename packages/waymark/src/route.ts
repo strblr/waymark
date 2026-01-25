@@ -31,8 +31,8 @@ export class Route<
   Ps extends {} = any,
   S extends {} = any
 > {
-  pattern: P;
-  _: {
+  readonly pattern: P;
+  readonly _: {
     _params?: Ps;
     _search?: S;
     keys: string[];

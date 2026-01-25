@@ -1,5 +1,4 @@
 import { useState, use } from "react";
-import { flushSync } from "react-dom";
 import { z } from "zod";
 import {
   RouterRoot,
@@ -13,40 +12,38 @@ import {
   useNavigate,
   useHandles,
   useMatch,
-  type HistoryMiddleware
+  BrowserHistory,
+  type HistoryLike
 } from "waymark";
 
 // App
 
-const logMiddleware: HistoryMiddleware = history => {
+const logMiddleware = (history: HistoryLike) => {
   const { go, push } = history;
-  return {
-    go: delta => {
-      console.log("go", delta);
-      go(delta);
-    },
-    push: options => {
-      console.group("push", options.url);
-      console.table(options);
-      console.groupEnd();
-      push(options);
-    }
+  history.go = delta => {
+    console.log("go", delta);
+    go(delta);
   };
+  history.push = options => {
+    console.group("push", options.url);
+    console.table(options);
+    console.groupEnd();
+    push(options);
+  };
+  return history;
 };
 
-const transitionMiddleware: HistoryMiddleware = history => {
-  const { go, push } = history;
-  const wrap = (fn: () => void) => {
-    if (!document.startViewTransition) {
-      return fn();
-    }
-    document.startViewTransition(() => flushSync(fn));
-  };
-  return {
-    go: delta => wrap(() => go(delta)),
-    push: options => wrap(() => push(options))
-  };
-};
+// const transitionMiddleware = (history: HistoryLike) => {
+//   const { go, push } = history;
+//   const wrap = (fn: () => void) => {
+//     return !document.startViewTransition
+//       ? fn()
+//       : document.startViewTransition(() => flushSync(fn));
+//   };
+//   history.go = delta => wrap(() => go(delta));
+//   history.push = options => wrap(() => push(options));
+//   return history;
+// };
 
 export function App() {
   const [counter, setCounter] = useState(0);
@@ -59,9 +56,10 @@ export function App() {
       </div>
       <RouterRoot
         routes={routes}
-        middlewares={[logMiddleware, transitionMiddleware]}
+        history={logMiddleware(new BrowserHistory())}
         defaultLinkOptions={{
           preload: "intent",
+          className: "waymark-link",
           activeClassName: "active-link"
         }}
       />

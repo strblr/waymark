@@ -17,8 +17,7 @@ import type {
   Match,
   NavigateOptions,
   HistoryLike,
-  HistoryPushOptions,
-  HistoryMiddleware
+  HistoryPushOptions
 } from "../types";
 
 export interface RouterOptions {
@@ -26,30 +25,20 @@ export interface RouterOptions {
   routes: RouteList;
   history?: HistoryLike;
   defaultLinkOptions?: LinkOptions;
-  middlewares?: HistoryMiddleware[];
 }
 
 export class Router {
-  basePath: string;
-  routes: RouteList;
-  history: HistoryLike;
-  defaultLinkOptions?: LinkOptions;
-  _: { routeMap: Map<string, Route> };
+  readonly basePath: string;
+  readonly routes: RouteList;
+  readonly history: HistoryLike;
+  readonly defaultLinkOptions?: LinkOptions;
+  readonly _: { routeMap: Map<string, Route> };
 
   constructor(options: RouterOptions) {
-    const {
-      basePath = "/",
-      routes,
-      history,
-      defaultLinkOptions,
-      middlewares = []
-    } = options;
+    const { basePath = "/", routes, history, defaultLinkOptions } = options;
     this.basePath = normalizePath(basePath);
     this.routes = routes;
-    this.history = middlewares.reduce(
-      (history, middleware) => ({ ...history, ...middleware(history) }),
-      history ?? new BrowserHistory()
-    );
+    this.history = history ?? new BrowserHistory();
     this.defaultLinkOptions = defaultLinkOptions;
     this._ = {
       routeMap: new Map(routes.map(route => [route.pattern, route]))
