@@ -1,13 +1,6 @@
+import { normalizePath } from "./route";
 import { normalizeSearch, stringifySearch } from "./search";
-import type { NormalizePath } from "./types";
 import type { Match } from "../types";
-
-export function normalizePath<P extends string>(path: P) {
-  const normalized = `/${path}`
-    .replaceAll(/\/+/g, "/")
-    .replace(/(.+)\/$/, "$1");
-  return normalized as NormalizePath<P>;
-}
 
 export function absolutePath(rpath: string, basePath: string) {
   return normalizePath(`${basePath}/${rpath}`);
@@ -27,13 +20,6 @@ export function mergeUrl(path: string, search: Record<string, unknown>) {
 export function splitUrl(url: string) {
   const { pathname, search } = new URL(url, "http://w");
   return { path: pathname, search: normalizeSearch(search) };
-}
-
-export function patternWeights(pattern: string): number[] {
-  return pattern
-    .split("/")
-    .slice(1)
-    .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
 }
 
 export function matchRegex(

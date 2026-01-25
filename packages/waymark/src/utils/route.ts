@@ -1,7 +1,18 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { NormalizePath } from "./types";
 
-export function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(value, max));
+export function normalizePath<P extends string>(path: P) {
+  const normalized = `/${path}`
+    .replaceAll(/\/+/g, "/")
+    .replace(/(.+)\/$/, "$1");
+  return normalized as NormalizePath<P>;
+}
+
+export function patternWeights(pattern: string): number[] {
+  return pattern
+    .split("/")
+    .slice(1)
+    .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
 }
 
 export function validator<Input, Output>(

@@ -1,4 +1,4 @@
-import { clamp, splitUrl } from "../utils";
+import { splitUrl } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export interface MemoryLocation {
@@ -16,15 +16,20 @@ export class MemoryHistory implements HistoryLike {
     this.stack.push({ ...splitUrl(url), state: undefined });
   }
 
-  getPath = () => this.stack[this.index].path;
+  private getCurrent = () => this.stack[this.index];
 
-  getSearch = () => this.stack[this.index].search;
+  getPath = () => this.getCurrent().path;
 
-  getState = () => this.stack[this.index].state;
+  getSearch = () => this.getCurrent().search;
+
+  getState = () => this.getCurrent().state;
 
   go = (delta: number) => {
-    this.index = clamp(this.index + delta, 0, this.stack.length - 1);
-    this.listeners.forEach(listener => listener());
+    const index = this.index + delta;
+    if (this.stack[index]) {
+      this.index = index;
+      this.listeners.forEach(listener => listener());
+    }
   };
 
   push = (options: HistoryPushOptions) => {
