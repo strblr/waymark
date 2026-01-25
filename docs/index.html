@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="description" content="Lightweight type-safe router for React" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>"
+    />
+    <title>Waymark</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Inter"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-okaidia.min.css"
+    />
+    <style>
+      :root {
+        --theme-color: #6c90f6;
+        --color-title: #fff;
+        --color-text: #d9d9d9;
+        --color-code: #f3f3f3;
+        --color-bg: #1e212a;
+        --color-code-bg: #303446;
+        --color-border: #797979;
+        --max-width: 896px;
+        --font-family: "Inter", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-family);
+      }
+
+      p > img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      body,
+      blockquote,
+      .sidebar,
+      .sidebar ul li a {
+        color: var(--color-text);
+        background-color: var(--color-bg);
+      }
+
+      .sidebar-toggle {
+        background-color: hsl(223deg 18% 19% / 80%) !important;
+      }
+
+      .markdown-section {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .markdown-section h2 {
+        padding: 40px 0px 10px 0px;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .markdown-section pre {
+        border-radius: 8px;
+      }
+
+      .markdown-section pre {
+        background-color: var(--color-code-bg);
+      }
+
+      .markdown-section code {
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        color: var(--theme-color);
+      }
+
+      .markdown-section pre > code,
+      .token.punctuation,
+      .token.property {
+        color: var(--color-code);
+      }
+
+      .markdown-section pre > code {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) var(--color-code-bg);
+      }
+
+      .markdown-section h1,
+      .markdown-section h2,
+      .markdown-section h3,
+      .markdown-section h4,
+      .markdown-section strong,
+      .anchor span {
+        color: var(--color-title);
+      }
+
+      .markdown-section em {
+        color: inherit;
+      }
+
+      .markdown-section thead > tr {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+
+      .markdown-section tr {
+        border-color: var(--color-border) !important;
+        background-color: transparent !important;
+      }
+
+      .markdown-section tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+
+      .markdown-section td,
+      .markdown-section th {
+        border-color: var(--color-border) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      window.$docsify = {
+        name: "Waymark",
+        repo: "strblr/waymark",
+        maxLevel: 3,
+        auto2top: true,
+        homepage:
+          "https://raw.githubusercontent.com/strblr/waymark/master/README.md"
+      };
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  </body>
+</html>

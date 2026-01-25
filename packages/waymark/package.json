@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "license": "MIT",
   "author": "strblr",
-  "description": "Simplest strongly typed router for React",
+  "description": "Lightweight type-safe router for React",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,6 +26,7 @@
     "type",
     "typed",
     "strongly-typed",
+    "type-safe",
     "navigate",
     "navigation",
     "route",
@@ -39,7 +40,8 @@
   ],
   "scripts": {
     "build": "tsdown --minify --platform browser",
-    "prepublishOnly": "bun run build"
+    "copy-readme": "cp ../../README.md README.md",
+    "prepublishOnly": "bun run build && bun run copy-readme"
   },
   "devDependencies": {
     "@types/bun": "^1.3.6",
