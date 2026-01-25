@@ -25,7 +25,7 @@ const logMiddleware = (history: HistoryLike) => {
     go(delta);
   };
   history.push = options => {
-    console.group("push", options.url);
+    console.groupCollapsed("push", options.url);
     console.table(options);
     console.groupEnd();
     push(options);
