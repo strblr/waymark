@@ -22,17 +22,20 @@
   "keywords": [
     "react",
     "router",
-    "wouter",
     "typescript",
     "type",
     "typed",
+    "strongly-typed",
     "navigate",
     "navigation",
+    "route",
+    "history",
     "search",
     "params",
-    "strongly-typed",
-    "react-router",
-    "react-router-dom"
+    "simple",
+    "tiny",
+    "lightweight",
+    "minimal"
   ],
   "scripts": {
     "build": "tsdown --minify --platform browser",
