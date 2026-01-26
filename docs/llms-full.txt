@@ -1152,7 +1152,7 @@ The `History` interface defines how Waymark interacts with navigation. All histo
 ```tsx
 interface HistoryLike {
   getPath: () => string;
-  getSearch: () => string;
+  getSearch: () => Record<string, unknown>;
   getState: () => any;
   go: (delta: number) => void;
   push: (options: HistoryPushOptions) => void;
@@ -1169,11 +1169,11 @@ const path = history.getPath();
 // Returns "/users/42"
 ```
 
-`history.getSearch()` returns the current search string (without `?`):
+`history.getSearch()` returns the current search parameters as a parsed object:
 
 ```tsx
 const search = history.getSearch();
-// Returns "tab=posts&page=2"
+// Returns { tab: "posts", page: 2 }
 ```
 
 `history.getState()` returns the current history state:
