@@ -1,1 +1,0 @@
-import{u as r,j as e}from"./index-iLdTrOOB.js";import s from"./readme-_oMXe9ut.js";const f={title:"Waymark – Lightweight type-safe router for React",showLogo:!1};function n(t){return e.jsx(s,{})}function i(t={}){const{wrapper:o}={...r(),...t.components};return o?e.jsx(o,{...t,children:e.jsx(n,{...t})}):n()}export{i as default,f as frontmatter};

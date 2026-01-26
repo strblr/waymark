@@ -9,5 +9,8 @@ console.log("✓ Deleted old /docs folder");
 await $`cp -r ${sourceDir.pathname} ${targetDir.pathname}`;
 console.log("✓ Copied dist to /docs");
 
+await $`touch ${targetDir.pathname}/.nojekyll`;
+console.log("✓ Created .nojekyll file");
+
 await $`rm -rf ${sourceDir.pathname}`;
 console.log("✓ Deleted packages/docs/docs/dist");

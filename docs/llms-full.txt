@@ -46,61 +46,34 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 ### Showcase
 
-To start things off, an example might be worth a thousand words. Here's a very simple two-page app with a common app shell containing nav links. In the following code, **everything** is fully type-safe and works out of the box:
+Here's what a small routing setup looks like. Define some routes, render them, and get full type safety:
 
 ```tsx
-import { route, RouterRoot, Link, Outlet, useParams, useSearch } from "waymark";
-import { z } from "zod";
+import { route, RouterRoot, Link, useParams } from "waymark";
 
-// Layout route
-const layout = route("/").component(Layout);
+// Define routes
+const home = route("/").component(() => <h1>Home</h1>);
 
-function Layout() {
+const user = route("/users/:id").component(UserPage);
+
+function UserPage() {
+  const { id } = useParams(user); // Fully typed
   return (
     <div>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/users/:id" params={{ id: "42" }} search={{ tab: "posts" }}>
-          Profile
-        </Link>
-      </nav>
-      <Outlet />
+      <h1>User {id}</h1>
+      <Link to="/">Back to home</Link> {/* Also fully typed */}
     </div>
   );
 }
 
-// Home route
-const home = layout.route("/").component(Home);
-
-function Home() {
-  return <div>Home</div>;
-}
-
-// User route with search params
-const user = layout
-  .route("/users/:id")
-  .search(z.object({ tab: z.enum(["posts", "comments"]).catch("posts") }))
-  .component(UserProfile);
-
-function UserProfile() {
-  const { id } = useParams(user); // string
-  const [{ tab }, setSearch] = useSearch(user); // "posts" | "comments"
-  return (
-    <div>
-      User {id} - {tab}
-    </div>
-  );
-}
-
-// Routes array
+// Render
 const routes = [home, user];
 
-// App component
 function App() {
   return <RouterRoot routes={routes} />;
 }
 
-// Type registration
+// Register for type safety
 declare module "waymark" {
   interface Register {
     routes: typeof routes;
@@ -108,7 +81,7 @@ declare module "waymark" {
 }
 ```
 
-That's it. No config file, no CLI, no bundler plugins.
+Links, navigation, params, search queries - everything autocompletes and type-checks automatically. That's it. No config files, no build plugins, no CLI.
 
 ***
 
@@ -124,7 +97,9 @@ Waymark requires React 18 or higher.
 
 ### Defining routes
 
-Routes are created using the `route()` function, following the [builder pattern](https://dev.to/superviz/design-pattern-7-builder-pattern-10j4). You pass it a path and chain methods to configure the route:
+Routes are created using the `route()` function, following the [builder pattern](https://dev.to/superviz/design-pattern-7-builder-pattern-10j4). You pass it a path and chain methods to configure the route.
+
+The `.component()` method tells the route what to render when the path matches. It takes a React component and returns a new route instance with that component attached:
 
 ```tsx
 import { route } from "waymark";
@@ -277,7 +252,60 @@ declare module "waymark" {
 }
 ```
 
-With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs will know exactly which routes exist and what input they expect.
+With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs will know exactly which routes exist and what input they expect, and you're good to go.
+
+***
+
+### Code organization
+
+There's no prescribed way to organize your routing code. Since Waymark isn't file-based routing, the structure is entirely up to you.
+
+That said, here's a pattern that tends to work well: define each route and its component in the same file, then export the route. This keeps everything related to that page in one place:
+
+```tsx
+// pages/home.tsx
+import { route } from "waymark";
+
+export const home = route("/").component(Home);
+
+function Home() {
+  return <div>Home page</div>;
+}
+```
+
+```tsx
+// pages/about.tsx
+import { route } from "waymark";
+
+export const about = route("/about").component(About);
+
+function About() {
+  return <div>About page</div>;
+}
+```
+
+Then in your root app component file, import all the routes, register them with module augmentation, and render `RouterRoot`:
+
+```tsx
+// app.tsx
+import { RouterRoot } from "waymark";
+import { home } from "./pages/home";
+import { about } from "./pages/about";
+
+const routes = [home, about];
+
+export function App() {
+  return <RouterRoot routes={routes} />;
+}
+
+declare module "waymark" {
+  interface Register {
+    routes: typeof routes;
+  }
+}
+```
+
+But again, this is just one approach. You could keep all routes in a single file, split them by feature, organize them by route depth, whatever fits your project. Waymark doesn't care where the route objects come from or how you structure your files.
 
 ***
 
