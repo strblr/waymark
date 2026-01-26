@@ -1,4 +1,4 @@
-import { lazy, type ComponentType } from "react";
+import { lazy, memo, type ComponentType } from "react";
 import { parse } from "regexparam";
 import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -120,7 +120,7 @@ export class Route<
       this.pattern,
       mapSearch,
       handles,
-      [...components, component],
+      [...components, memo(component)],
       preloaders
     );
   }
@@ -129,7 +129,7 @@ export class Route<
     const { mapSearch, handles, components, preloaders } = this._;
     const component = lazy(async () => {
       const result = await loader();
-      return "default" in result ? result : { default: result };
+      return { default: memo("default" in result ? result.default : result) };
     });
     return new Route<P, Ps, S>(
       this.pattern,
