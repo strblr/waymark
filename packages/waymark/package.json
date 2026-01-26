@@ -1,6 +1,6 @@
 {
   "name": "waymark",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "author": "strblr",
   "description": "Lightweight type-safe router for React",
@@ -41,7 +41,8 @@
   "scripts": {
     "build": "tsc --noEmit && tsdown --minify --platform browser",
     "copy-readme": "cp ../../README.md README.md",
-    "prepublishOnly": "bun run build && bun run copy-readme"
+    "prepublishOnly": "bun run build && bun run copy-readme",
+    "postpublish": "rm -f README.md"
   },
   "devDependencies": {
     "@types/bun": "^1.3.6",
