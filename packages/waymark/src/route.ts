@@ -141,12 +141,12 @@ export class Route<
     return this.preloader(loader).component(component);
   }
 
-  suspense(component: ComponentType) {
-    return this.component(suspenseBoundary(component));
+  suspense(fallback: ComponentType) {
+    return this.component(suspenseBoundary(fallback));
   }
 
-  error(component: ComponentType<{ error: unknown }>) {
-    return this.component(errorBoundary(component));
+  error(fallback: ComponentType<{ error: unknown }>) {
+    return this.component(errorBoundary(fallback));
   }
 
   async preload() {
