@@ -1,0 +1,5 @@
+# Waymark
+
+> Lightweight type-safe router for React
+
+## Docs

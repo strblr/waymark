@@ -1,0 +1,20 @@
+{
+  "name": "docs",
+  "private": true,
+  "scripts": {
+    "copy-readme": "bun run scripts/copy-readme",
+    "copy-dist": "bun run scripts/copy-dist",
+    "dev": "bun run copy-readme && vocs dev",
+    "build": "bun run copy-readme && vocs build && bun run copy-dist",
+    "preview": "vocs preview"
+  },
+  "dependencies": {
+    "react": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.6",
+    "@types/react": "^19.2.9",
+    "typescript": "^5.9.3",
+    "vocs": "^1.4.1"
+  }
+}
