@@ -3,9 +3,8 @@
   "private": true,
   "scripts": {
     "copy-readme": "bun run scripts/copy-readme",
-    "copy-dist": "bun run scripts/copy-dist",
     "dev": "bun run copy-readme && vocs dev",
-    "build": "bun run copy-readme && vocs build && bun run copy-dist",
+    "build": "bun run copy-readme && vocs build",
     "preview": "vocs preview"
   },
   "dependencies": {

@@ -1,1 +1,0 @@
-import{u as r,j as n}from"./index-CtOOZadP.js";import s from"./readme-uLnltiFG.js";const u={title:"Waymark",showLogo:!1};function e(t){return n.jsx(s,{})}function c(t={}){const{wrapper:o}={...r(),...t.components};return o?n.jsx(o,{...t,children:n.jsx(e,{...t})}):e()}export{c as default,u as frontmatter};
