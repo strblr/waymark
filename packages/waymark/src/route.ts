@@ -114,6 +114,14 @@ export class Route<
     );
   }
 
+  preloader(preloader: () => Promise<any>) {
+    const { mapSearch, handles, components, preloaders } = this._;
+    return new Route<P, Ps, S>(this.pattern, mapSearch, handles, components, [
+      ...preloaders,
+      preloader
+    ]);
+  }
+
   component(component: ComponentType) {
     const { mapSearch, handles, components, preloaders } = this._;
     return new Route<P, Ps, S>(
@@ -126,18 +134,11 @@ export class Route<
   }
 
   lazy(loader: ComponentLoader) {
-    const { mapSearch, handles, components, preloaders } = this._;
     const component = lazy(async () => {
       const result = await loader();
       return { default: memo("default" in result ? result.default : result) };
     });
-    return new Route<P, Ps, S>(
-      this.pattern,
-      mapSearch,
-      handles,
-      [...components, component],
-      [...preloaders, loader]
-    );
+    return this.preloader(loader).component(component);
   }
 
   suspense(component: ComponentType) {
