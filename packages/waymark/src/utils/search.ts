@@ -1,7 +1,3 @@
-export function normalizeSearch(search: string) {
-  return search.startsWith("?") ? search.slice(1) : search;
-}
-
 export function stringifySearch(search: Record<string, unknown>) {
   return Object.entries(search)
     .filter(([_, value]) => value !== undefined)

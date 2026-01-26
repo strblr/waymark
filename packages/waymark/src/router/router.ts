@@ -32,7 +32,7 @@ export class Router {
   readonly routes: RouteList;
   readonly history: HistoryLike;
   readonly defaultLinkOptions?: LinkOptions;
-  readonly _: { routeMap: Map<string, Route> };
+  private readonly _: { routeMap: Map<string, Route> };
 
   constructor(options: RouterOptions) {
     const { basePath = "/", routes, history, defaultLinkOptions } = options;

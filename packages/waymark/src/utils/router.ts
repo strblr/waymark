@@ -1,5 +1,5 @@
 import { normalizePath } from "./route";
-import { normalizeSearch, stringifySearch } from "./search";
+import { parseSearch, stringifySearch } from "./search";
 import type { Match } from "../types";
 
 export function absolutePath(rpath: string, basePath: string) {
@@ -17,9 +17,9 @@ export function mergeUrl(path: string, search: Record<string, unknown>) {
   return [path, stringifySearch(search)].filter(Boolean).join("?");
 }
 
-export function splitUrl(url: string) {
+export function parseUrl(url: string) {
   const { pathname, search } = new URL(url, "http://w");
-  return { path: pathname, search: normalizeSearch(search) };
+  return { path: pathname, search: parseSearch(search) };
 }
 
 export function matchRegex(

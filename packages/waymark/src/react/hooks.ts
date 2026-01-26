@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useContext, useSyncExternalStore } from "react";
 import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import type { Router } from "../router";
-import { mergeUrl, parseSearch } from "../utils";
+import { mergeUrl } from "../utils";
 import type {
   Handle,
   Pattern,
@@ -58,10 +58,7 @@ export function useLocation() {
   const path = useSubscribe(router, router.history.getPath);
   const search = useSubscribe(router, router.history.getSearch);
   const state = useSubscribe(router, router.history.getState);
-  return useMemo(
-    () => ({ path, search: parseSearch(search), state }),
-    [path, search, state]
-  );
+  return useMemo(() => ({ path, search, state }), [path, search, state]);
 }
 
 // useMatch
@@ -91,29 +88,24 @@ export function useParams<P extends Pattern>(from: P | GetRoute<P>) {
 // useSearch
 
 export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
-  const match = useMatch({ from });
-  if (!match) {
-    throw new Error(
-      `[Waymark] Can't read search for non-matching route: ${from}`
-    );
-  }
-  const parse = useCallback(
-    (search: string): Search<P> => match.route._.mapSearch(parseSearch(search)),
-    [match.route]
-  );
   const router = useRouter();
+  const route = router.getRoute(from);
+  const map = useCallback(
+    (search: Record<string, unknown>): Search<P> => route._.mapSearch(search),
+    [route]
+  );
   const search = useSubscribe(router, router.history.getSearch);
-  const parsed = useMemo(() => parse(search), [parse, search]);
+  const mapped = useMemo(() => map(search), [map, search]);
 
   const setSearch = useCallback(
     (update: Updater<Search<P>>, replace?: boolean) => {
-      const parsed = parse(router.history.getSearch());
-      update = typeof update === "function" ? update(parsed) : update;
-      const url = mergeUrl(router.history.getPath(), { ...parsed, ...update });
+      const mapped = map(router.history.getSearch());
+      update = typeof update === "function" ? update(mapped) : update;
+      const url = mergeUrl(router.history.getPath(), { ...mapped, ...update });
       router.navigate({ url, replace });
     },
-    [router, parse]
+    [router, map]
   );
 
-  return [parsed, setSearch] as const;
+  return [mapped, setSearch] as const;
 }

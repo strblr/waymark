@@ -1,13 +1,12 @@
 import { BrowserHistory } from "./browser-history";
-import { splitUrl } from "../utils";
 import type { HistoryPushOptions } from "../types";
 
 export class HashHistory extends BrowserHistory {
-  private getHashUrl = () => location.hash.slice(1) || "/";
+  private getHashUrl = () => new URL(location.hash.slice(1), "http://w");
 
-  getPath = () => splitUrl(this.getHashUrl()).path;
+  getPath = () => this.getHashUrl().pathname;
 
-  getSearch = () => splitUrl(this.getHashUrl()).search;
+  getSearch = () => this.getSearchMemo(this.getHashUrl().search);
 
   push = (options: HistoryPushOptions) => {
     const { url, replace, state } = options;

@@ -1,13 +1,14 @@
-import { normalizeSearch } from "../utils";
+import { parseSearch } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export class BrowserHistory implements HistoryLike {
   private static patchKey = Symbol.for("waymark_history_patch_v01");
+  private memo?: { search: string; parsed: Record<string, unknown> };
 
   constructor() {
     if (
       typeof history !== "undefined" &&
-      !Object.hasOwn(window, BrowserHistory.patchKey)
+      !(BrowserHistory.patchKey in window)
     ) {
       for (const type of [pushStateEvent, replaceStateEvent] as const) {
         const original = history[type];
@@ -19,15 +20,19 @@ export class BrowserHistory implements HistoryLike {
           return result;
         };
       }
-      Object.assign(window, {
-        [BrowserHistory.patchKey]: true
-      });
+      (window as any)[BrowserHistory.patchKey] = true;
     }
   }
 
+  protected getSearchMemo = (search: string) => {
+    return this.memo?.search === search
+      ? this.memo.parsed
+      : (this.memo = { search, parsed: parseSearch(search) }).parsed;
+  };
+
   getPath = () => location.pathname;
 
-  getSearch = () => normalizeSearch(location.search);
+  getSearch = () => this.getSearchMemo(location.search);
 
   getState = () => history.state;
 

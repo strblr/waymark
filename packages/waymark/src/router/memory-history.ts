@@ -1,9 +1,9 @@
-import { splitUrl } from "../utils";
+import { parseUrl } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export interface MemoryLocation {
   path: string;
-  search: string;
+  search: Record<string, unknown>;
   state: any;
 }
 
@@ -13,7 +13,7 @@ export class MemoryHistory implements HistoryLike {
   private listeners = new Set<() => void>();
 
   constructor(url = "/") {
-    this.stack.push({ ...splitUrl(url), state: undefined });
+    this.stack.push({ ...parseUrl(url), state: undefined });
   }
 
   private getCurrent = () => this.stack[this.index];
@@ -34,7 +34,7 @@ export class MemoryHistory implements HistoryLike {
 
   push = (options: HistoryPushOptions) => {
     const { url, replace, state } = options;
-    const location: MemoryLocation = { ...splitUrl(url), state };
+    const location: MemoryLocation = { ...parseUrl(url), state };
     this.stack = this.stack.slice(0, this.index + 1);
     if (replace) {
       this.stack[this.index] = location;

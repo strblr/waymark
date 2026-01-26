@@ -59,7 +59,7 @@ export interface HistoryPushOptions {
 
 export interface HistoryLike {
   getPath: () => string;
-  getSearch: () => string;
+  getSearch: () => Record<string, unknown>;
   getState: () => any;
   go: (delta: number) => void;
   push: (options: HistoryPushOptions) => void;
