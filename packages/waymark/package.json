@@ -15,9 +15,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/strblr/waymark"
+    "url": "git+https://github.com/strblr/waymark.git"
   },
-  "homepage": "https://github.com/strblr/waymark",
+  "homepage": "https://strblr.github.io/waymark",
   "bugs": "https://github.com/strblr/waymark/issues",
   "keywords": [
     "react",
