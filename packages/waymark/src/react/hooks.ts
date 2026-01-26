@@ -90,21 +90,20 @@ export function useParams<P extends Pattern>(from: P | GetRoute<P>) {
 export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
   const router = useRouter();
   const route = router.getRoute(from);
-  const map = useCallback(
-    (search: Record<string, unknown>): Search<P> => route._.mapSearch(search),
-    [route]
-  );
   const search = useSubscribe(router, router.history.getSearch);
-  const mapped = useMemo(() => map(search), [map, search]);
+  const mapped = useMemo<Search<P>>(
+    () => route._.mapSearch(search),
+    [route, search]
+  );
 
   const setSearch = useCallback(
     (update: Updater<Search<P>>, replace?: boolean) => {
-      const mapped = map(router.history.getSearch());
+      const mapped = route._.mapSearch(router.history.getSearch());
       update = typeof update === "function" ? update(mapped) : update;
       const url = mergeUrl(router.history.getPath(), { ...mapped, ...update });
       router.navigate({ url, replace });
     },
-    [router, map]
+    [router, route]
   );
 
   return [mapped, setSearch] as const;
