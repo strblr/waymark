@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/waymark"><img src="https://img.shields.io/npm/v/waymark?style=flat-square&color=000&labelColor=000" alt="npm version" /></a>
-  <a href="https://bundlephobia.com/package/waymark"><img src="https://img.shields.io/bundlephobia/minzip/waymark?style=flat-square&color=000&labelColor=000" alt="bundle size" /></a>
+  <a href="https://www.npmjs.com/package/waymark"><img src="https://img.badgesize.io/https://unpkg.com/waymark/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=000&labelColor=000" alt="gzip size" /></a>
   <a href="https://www.npmjs.com/package/waymark"><img src="https://img.shields.io/npm/dm/waymark?style=flat-square&color=000&labelColor=000" alt="downloads" /></a>
   <a href="https://github.com/strblr/waymark/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/waymark?style=flat-square&color=000&labelColor=000" alt="license" /></a>
   <a href="https://github.com/sponsors/strblr"><img src="https://img.shields.io/github/sponsors/strblr?style=flat-square&color=000&labelColor=000" alt="sponsors" /></a>
