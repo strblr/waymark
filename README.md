@@ -942,9 +942,7 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 ## Server-side rendering (SSR)
 
-Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client.
-
-On the server, create a router with `MemoryHistory` initialized to the request URL:
+Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
 
 ```tsx
 // server.tsx
