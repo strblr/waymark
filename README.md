@@ -37,8 +37,12 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Nested routes and layouts](#nested-routes-and-layouts)
 - [Setting up the router](#setting-up-the-router)
 - [Code organization](#code-organization)
-- [Path parameters](#path-parameters)
-- [Search queries](#search-queries)
+- [Path params](#path-params)
+- [Search params](#search-params)
+  - [Basic usage](#basic-usage)
+  - [Inheritance](#inheritance)
+  - [JSON-first approach](#json-first-approach)
+  - [Idempotency requirement](#idempotency-requirement)
 - [Navigation](#navigation)
   - [The Link component](#the-link-component)
   - [Active state detection](#active-state-detection)
@@ -334,9 +338,9 @@ But again, this is just one approach. You could keep all routes in a single file
 
 ---
 
-## Path parameters
+## Path params
 
-Dynamic segments in route patterns become typed path parameters. Define them with a colon prefix. They can also be made optional.
+Dynamic segments in route patterns become typed path params. Define them with a colon prefix. They can also be made optional.
 
 ```tsx
 const post = route("/posts/:id").component(PostPage);
@@ -376,9 +380,11 @@ function FileBrowser() {
 
 ---
 
-## Search queries
+## Search params
 
-Search parameters (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://github.com/standard-schema/standard-schema) validator like Zod, or a plain mapping function.
+### Basic usage
+
+Search params (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://standardschema.dev/schema#what-schema-libraries-implement-the-spec) validator like Zod, or a plain mapping function.
 
 With Zod:
 
@@ -429,9 +435,57 @@ Pass `true` as the second argument to replace the history entry instead of pushi
 setSearch({ page: 1 }, true);
 ```
 
-**JSON-first search params**
+### Inheritance
 
-Waymark uses a JSON-first approach for search parameters, similar to TanStack Router. When serializing and deserializing values from the URL:
+When you define search params with a validator on a route, all child routes automatically inherit that validator along with its typing.
+
+Here's how it works. Start with a parent route that defines a search param:
+
+```tsx
+const dashboard = route("/dashboard")
+  .search(
+    z.object({
+      view: z.enum(["grid", "list"]).catch("grid")
+    })
+  )
+  .component(DashboardLayout);
+```
+
+Any child route created from `dashboard` inherits the `view` search param and its validation:
+
+```tsx
+const projects = dashboard.route("/projects").component(ProjectsPage);
+
+function ProjectsPage() {
+  const [search] = useSearch(projects);
+  // search.view is typed as "grid" | "list"
+}
+```
+
+If a child route needs additional search params, define a new validator with `.search()`. Your validator receives the raw params from the URL along with the parent's already-validated params. After validation, your result is combined with the parent's validated params to produce the final search params object.
+
+In practice, this means you only need to validate the new params you're adding - the parent's params are automatically included in the final result:
+
+```tsx
+const projects = dashboard
+  .route("/projects")
+  .search(
+    z.object({
+      status: z.enum(["active", "archived"]).catch("active")
+    })
+  )
+  .component(ProjectsPage);
+
+function ProjectsPage() {
+  const [search] = useSearch(projects);
+  // search.view: "grid" | "list" (from parent)
+  // search.status: "active" | "archived" (from child)
+}
+```
+
+### JSON-first approach
+
+Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
 
 - Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
 - Everything else is JSON-encoded (and URL-encoded):
@@ -444,9 +498,9 @@ This means you can store complex data structures like arrays and objects in sear
 
 The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
 
-**Idempotency requirement**
+### Idempotency requirement
 
-Your search validation or transform function must be **idempotent**, meaning `fn(fn(x))` should equal `fn(x)`.
+The validation function or schema you pass to `.search()` must be **idempotent**, meaning `fn(fn(x))` should equal `fn(x)`.
 
 When you read search params, the values are passed through your validator. When you update search params, the navigation APIs expect values in that same validated format, which are then JSON-encoded back into the URL. On the next read, those encoded values are decoded and passed through your validator again - meaning your validator may receive its own output as input.
 
@@ -639,7 +693,7 @@ function ProtectedPage() {
 }
 ```
 
-The `Navigate` component accepts the same navigation props as the `Link` component. You can pass route patterns, params, search parameters, and state:
+The `Navigate` component accepts the same navigation props as the `Link` component. You can pass route patterns, path params, search params, and state:
 
 ```tsx
 <Navigate to="/users/:id" params={{ id: "42" }} search={{ tab: "posts" }} />
@@ -1198,7 +1252,7 @@ const path = history.getPath();
 // Returns "/users/42"
 ```
 
-`history.getSearch()` returns the current search parameters as a parsed object:
+`history.getSearch()` returns the current search params as a parsed object:
 
 ```tsx
 const search = history.getSearch();

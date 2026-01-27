@@ -95,7 +95,7 @@ export class Route<
       this.pattern,
       search => {
         const mapped = mapSearch(search);
-        return { ...mapped, ...mapper(mapped) };
+        return { ...mapped, ...mapper({ ...search, ...mapped }) };
       },
       handles,
       components,
