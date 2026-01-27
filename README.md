@@ -26,6 +26,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - **Zero config** - No build plugins, no CLI tools, no configuration files, very low boilerplate
 - **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
 - **3.5kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so less than 4kB total
+- **Not vibe-coded** - Built with careful design and attention to detail by a human
 - **Just works** - Define routes, get autocomplete everywhere
 
 ---
@@ -56,6 +57,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Route handles](#route-handles)
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
+- [Server-side rendering (SSR)](#server-side-rendering-ssr)
 - [Cookbook](#cookbook)
   - [Scroll to top on navigation](#scroll-to-top-on-navigation)
   - [Global link configuration](#global-link-configuration)
@@ -938,6 +940,41 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 ---
 
+## Server-side rendering (SSR)
+
+Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client.
+
+On the server, create a router with `MemoryHistory` initialized to the request URL:
+
+```tsx
+// server.tsx
+import { renderToString } from "react-dom/server";
+import { RouterRoot, MemoryHistory } from "waymark";
+import { routes } from "./routes";
+
+function handleRequest(req: Request) {
+  const html = renderToString(
+    <RouterRoot routes={routes} history={new MemoryHistory(req.url)} />
+  );
+  return new Response(html, {
+    headers: { "Content-Type": "text/html" }
+  });
+}
+```
+
+On the client, use the default (`BrowserHistory`) for hydration:
+
+```tsx
+// client.tsx
+import { hydrateRoot } from "react-dom/client";
+import { RouterRoot } from "waymark";
+import { routes } from "./routes";
+
+hydrateRoot(document.getElementById("root")!, <RouterRoot routes={routes} />);
+```
+
+---
+
 ## Cookbook
 
 ### Scroll to top on navigation
@@ -1136,7 +1173,7 @@ interface HistoryPushOptions {
 type MatchOptions<P extends Pattern> = {
   from: P | Route<P>; // Route to match against
   strict?: boolean; // Require exact match (not just prefix)
-  params?: Partial<Params<P>>; // Filter by specific param values
+  params?: Partial<Params<P>>; // Match by specific param values
 };
 ```
 
@@ -1462,7 +1499,7 @@ function Layout() {
 Future improvements planned for Waymark:
 
 - **Preloader context** - Pass path params and search params to preloader functions, enabling loading logic based on the target route's dynamic data
-- **Server-side rendering guide** - Add documentation for using Waymark in SSR environments
+- **Server-side redirects** - Might be useful to add support for server-side redirects when using SSR
 
 ---
 
