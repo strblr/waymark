@@ -14,10 +14,10 @@
     Type-safe routing for React
   </text>
   <g transform="translate(280, 190)" fill="none" stroke="#666" stroke-width="6" stroke-linecap="round">
-    <circle cx="0" cy="0" r="12" fill="#fedc43"/>
-    <path d="M 12 0 L 60 0 L 84 -24"/>
+    <path d="M 12 0 L 60 0 L 96 -36"/>
+    <path d="M 60 0 L 96 36"/>
+    <circle cx="0" cy="0" r="15" fill="#fedc43" stroke="none"/>
     <circle cx="96" cy="-36" r="12" fill="#666"/>
-    <path d="M 60 0 L 84 24"/>
     <circle cx="96" cy="36" r="12" fill="#666"/>
   </g>
 </svg>
