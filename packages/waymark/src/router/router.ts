@@ -1,7 +1,6 @@
 import { inject } from "regexparam";
 import { BrowserHistory } from "./browser-history";
 import type { Route } from "../route";
-import type { LinkOptions } from "../react";
 import {
   normalizePath,
   mergeUrl,
@@ -11,6 +10,7 @@ import {
 } from "../utils";
 import type {
   RouteList,
+  RouterOptions,
   Pattern,
   GetRoute,
   MatchOptions,
@@ -18,16 +18,9 @@ import type {
   NavigateOptions,
   HistoryLike,
   HistoryPushOptions,
+  LinkOptions,
   SSRContext
 } from "../types";
-
-export interface RouterOptions {
-  basePath?: string;
-  routes: RouteList;
-  history?: HistoryLike;
-  ssrContext?: SSRContext;
-  defaultLinkOptions?: LinkOptions;
-}
 
 export class Router {
   readonly basePath: string;
@@ -55,7 +48,7 @@ export class Router {
     };
   }
 
-  getRoute<P extends Pattern>(pattern: P | GetRoute<P>) {
+  getRoute = <P extends Pattern>(pattern: P | GetRoute<P>) => {
     if (typeof pattern !== "string") {
       return pattern;
     }
@@ -64,12 +57,12 @@ export class Router {
       throw new Error(`[Waymark] Route not found for pattern: ${pattern}`);
     }
     return route as GetRoute<P>;
-  }
+  };
 
-  match<P extends Pattern>(
+  match = <P extends Pattern>(
     path: string,
     options: MatchOptions<P>
-  ): Match<P> | null {
+  ): Match<P> | null => {
     const { from, strict, params: filter } = options;
     const route = this.getRoute(from);
     const regex = strict ? route._.regex : route._.looseRegex;
@@ -81,25 +74,25 @@ export class Router {
       return null;
     }
     return { route, params };
-  }
+  };
 
-  matchAll(path: string): Match | null {
+  matchAll = (path: string): Match | null => {
     const matches = this.routes
       .map(route => this.match(path, { from: route, strict: true }))
       .filter(m => !!m);
     return rankMatches(matches)[0] ?? null;
-  }
+  };
 
-  createUrl<P extends Pattern>(options: NavigateOptions<P>) {
+  createUrl = <P extends Pattern>(options: NavigateOptions<P>) => {
     const { to, params = {}, search = {} } = options;
     const { pattern } = this.getRoute(to);
     const path = absolutePath(inject(pattern, params), this.basePath);
     return mergeUrl(path, search);
-  }
+  };
 
-  navigate<P extends Pattern>(
+  navigate = <P extends Pattern>(
     options: NavigateOptions<P> | HistoryPushOptions | number
-  ) {
+  ) => {
     if (typeof options === "number") {
       this.history.go(options);
     } else if ("url" in options) {
@@ -108,5 +101,5 @@ export class Router {
       const { replace, state } = options;
       this.history.push({ url: this.createUrl(options), replace, state });
     }
-  }
+  };
 }

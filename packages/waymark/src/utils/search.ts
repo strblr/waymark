@@ -16,10 +16,9 @@ export function parseSearch(search: string): Record<string, unknown> {
 }
 
 function toValueString(value: unknown) {
-  if (typeof value === "string" && !isJSONString(value)) {
-    return value;
-  }
-  return JSON.stringify(value);
+  return typeof value === "string" && !isJSONString(value)
+    ? value
+    : JSON.stringify(value);
 }
 
 function isJSONString(value: string) {

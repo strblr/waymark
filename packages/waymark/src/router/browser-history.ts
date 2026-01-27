@@ -2,14 +2,11 @@ import { parseSearch } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
 export class BrowserHistory implements HistoryLike {
-  private static patchKey = Symbol.for("waymark_history_patch_v01");
+  private static patch = Symbol.for("wmbhp01");
   private memo?: { search: string; parsed: Record<string, unknown> };
 
   constructor() {
-    if (
-      typeof history !== "undefined" &&
-      !(BrowserHistory.patchKey in window)
-    ) {
+    if (typeof history !== "undefined" && !(BrowserHistory.patch in window)) {
       for (const type of [pushStateEvent, replaceStateEvent] as const) {
         const original = history[type];
         history[type] = function (...args) {
@@ -20,7 +17,7 @@ export class BrowserHistory implements HistoryLike {
           return result;
         };
       }
-      (window as any)[BrowserHistory.patchKey] = true;
+      (window as any)[BrowserHistory.patch] = true;
     }
   }
 

@@ -1,7 +1,7 @@
 import { parseUrl } from "../utils";
 import type { HistoryLike, HistoryPushOptions } from "../types";
 
-export interface MemoryLocation {
+interface MemoryLocation {
   path: string;
   search: Record<string, unknown>;
   state: any;

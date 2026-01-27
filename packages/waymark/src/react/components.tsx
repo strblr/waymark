@@ -10,15 +10,19 @@ import {
   type MouseEvent,
   type FocusEvent,
   type PointerEvent,
-  type AnchorHTMLAttributes,
-  type CSSProperties,
-  type RefAttributes
+  type RefAttributes,
+  type AnchorHTMLAttributes
 } from "react";
 import { useRouter, useOutlet, useMatch, useSubscribe } from "./hooks";
 import { RouterContext, MatchContext, OutletContext } from "./contexts";
-import { Router, type RouterOptions } from "../router";
+import { Router } from "../router";
 import { mergeRefs } from "../utils";
-import type { Pattern, NavigateOptions } from "../types";
+import type {
+  RouterOptions,
+  Pattern,
+  NavigateOptions,
+  LinkOptions
+} from "../types";
 
 // RouterRoot
 
@@ -78,15 +82,6 @@ export type LinkProps<P extends Pattern> = NavigateOptions<P> &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   RefAttributes<HTMLAnchorElement> & { asChild?: boolean };
 
-export interface LinkOptions {
-  strict?: boolean;
-  preload?: "intent" | "render" | "viewport" | false;
-  style?: CSSProperties;
-  className?: string;
-  activeStyle?: CSSProperties;
-  activeClassName?: string;
-}
-
 export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const router = useRouter();
   const {
@@ -111,7 +106,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
 
   const ref = useRef<HTMLAnchorElement>(null);
   const url = router.createUrl(props);
-  const route = useMemo(() => router.getRoute(props.to), [router, props.to]);
+  const route = router.getRoute(props.to);
   const active = !!useMatch({ from: route, strict, params });
 
   const activeProps = useMemo(() => {

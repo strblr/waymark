@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, CSSProperties } from "react";
 import type { Route } from "./route";
 import type { MaybeKey } from "./utils";
 
@@ -15,6 +15,14 @@ export type RouteList = Register extends {
 export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 
 // Router
+
+export interface RouterOptions {
+  basePath?: string;
+  routes: RouteList;
+  history?: HistoryLike;
+  ssrContext?: SSRContext;
+  defaultLinkOptions?: LinkOptions;
+}
 
 export type Pattern = RouteList[number]["pattern"];
 
@@ -48,6 +56,15 @@ export type NavigateOptions<P extends Pattern> = {
   state?: any;
 } & MaybeKey<"params", Params<P>> &
   MaybeKey<"search", Search<P>>;
+
+export interface LinkOptions {
+  strict?: boolean;
+  preload?: "intent" | "render" | "viewport" | false;
+  style?: CSSProperties;
+  className?: string;
+  activeStyle?: CSSProperties;
+  activeClassName?: string;
+}
 
 export type SSRContext = {
   redirect?: string;

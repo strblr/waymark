@@ -442,8 +442,8 @@ setSearch({ page: 1 }, true);
 
 Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
 
-- Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
-- Everything else is JSON-encoded (and URL-encoded):
+- Plain strings that aren't valid JSON are kept as-is (and URL-encoded): `"John"` → `?name=John` → `"John"`
+- Everything else is JSON-encoded (then URL-encoded):
   - `true` → `?enabled=true` → `true`
   - `"true"` → `?enabled=%22true%22` → `"true"`
   - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
@@ -451,7 +451,7 @@ Waymark uses a JSON-first approach for search params, similar to TanStack Router
 
 This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
 
-The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
+The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
 
 ### Inheritance
 
@@ -596,9 +596,11 @@ Or use the `activeClassName` and `activeStyle` props directly:
 
 ### Link preloading
 
-When a route has preloaders, e.g. when using lazy-loaded routes, you can preload them before the user actually navigates. This makes the subsequent navigation instant. The `preload` prop controls when preloading happens:
+Links can optionally trigger route preloading before navigation occurs. When preloading is enabled, any lazy-loaded components (defined with `.lazy()`) and custom preload functions (defined with `.preloader()`) are called early. This improves perceived performance by loading component bundles and running preparation logic like prefetching data ahead of time.
 
-**`preload="intent"`** triggers preloading when the user shows intent to navigate by hovering over the link or focusing it. This is the most common choice as it balances eager loading with not wasting bandwidth:
+The `preload` prop controls when preloading happens:
+
+**`preload="intent"`** preloads when the user shows intent to navigate by hovering or focusing the link. This is the most common choice as it balances eager loading with not wasting bandwidth:
 
 ```tsx
 <Link to="/heavy-page" preload="intent">
@@ -624,15 +626,17 @@ When a route has preloaders, e.g. when using lazy-loaded routes, you can preload
 
 **`preload={false}`** disables preloading entirely. This is the default.
 
-You can also preload routes programmatically by calling the route's `.preload()` method:
+You can also preload programmatically by calling the route's `.preload()` method:
 
 ```tsx
 userProfile.preload();
 ```
 
+To set a preload strategy globally for all links in your app, see [Global link configuration](#global-link-configuration).
+
 ### Programmatic navigation
 
-For navigation triggered by code rather than user clicks, use the `useNavigate` hook (or `router.navigate`):
+For navigation triggered by code rather than user clicks, use the `useNavigate` hook:
 
 ```tsx
 import { useNavigate } from "waymark";
@@ -665,7 +669,11 @@ navigate(1); // Go forward
 navigate(-2); // Go back two steps
 ```
 
-You can also access the router directly via `useRouter()` (or import the router if created outside of React) and call its `navigate` method, which works the same way.
+You can also access the router directly via `useRouter()` (or import the router if created outside of React) and call its `navigate` method, which works the same way
+
+```tsx
+router.navigate({ to: "/login" });
+```
 
 For unsafe navigation that bypasses type checking, you can pass `url` instead of `to`, `params` and `search`. This is useful when you don't know the target URL statically (e.g. external redirects):
 
@@ -771,7 +779,7 @@ Error boundaries catch errors from all nested content. A common pattern is to pl
 const app = route("/").error(ErrorPage).component(AppLayout);
 ```
 
-The error boundary automatically resets when navigation occurs, giving the new route a fresh start.
+To give new routes a fresh start, the error boundary automatically resets when navigation occurs.
 
 ---
 
@@ -1379,7 +1387,7 @@ const { path, search, state } = useLocation();
 // path: string, search: Record<string, unknown>, state: any
 ```
 
-**`useOutlet()`** returns the nested route content (used internally by `Outlet`):
+**`useOutlet()`** returns the child route content (used internally by `Outlet`):
 
 ```tsx
 const outlet = useOutlet();

@@ -21,34 +21,10 @@ export function useRouter() {
   return router;
 }
 
-// useHandles
-
-export function useHandles(): Handle[] {
-  const match = useContext(MatchContext);
-  return useMemo(() => match?.route._.handles ?? [], [match]);
-}
-
-// useOutlet
-
-export function useOutlet() {
-  return useContext(OutletContext);
-}
-
-// useSubscribe
-
-export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
-  return useSyncExternalStore(
-    router.history.subscribe,
-    getSnapshot,
-    getSnapshot
-  );
-}
-
 // useNavigate
 
 export function useNavigate() {
-  const router = useRouter();
-  return useMemo(() => router.navigate.bind(router), [router]);
+  return useRouter().navigate;
 }
 
 // useLocation
@@ -61,16 +37,10 @@ export function useLocation() {
   return useMemo(() => ({ path, search, state }), [path, search, state]);
 }
 
-// useMatch
+// useOutlet
 
-export function useMatch<P extends Pattern>(options: MatchOptions<P>) {
-  const router = useRouter();
-  const path = useSubscribe(router, router.history.getPath);
-  const match = useMemo(
-    () => router.match(path, options),
-    [router, path, options]
-  );
-  return match;
+export function useOutlet() {
+  return useContext(OutletContext);
 }
 
 // useParams
@@ -107,4 +77,33 @@ export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
   );
 
   return [mapped, setSearch] as const;
+}
+
+// useMatch
+
+export function useMatch<P extends Pattern>(options: MatchOptions<P>) {
+  const router = useRouter();
+  const path = useSubscribe(router, router.history.getPath);
+  const match = useMemo(
+    () => router.match(path, options),
+    [router, path, options]
+  );
+  return match;
+}
+
+// useHandles
+
+export function useHandles(): Handle[] {
+  const match = useContext(MatchContext);
+  return useMemo(() => match?.route._.handles ?? [], [match]);
+}
+
+// useSubscribe
+
+export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
+  return useSyncExternalStore(
+    router.history.subscribe,
+    getSnapshot,
+    getSnapshot
+  );
 }
