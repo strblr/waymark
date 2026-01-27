@@ -1,6 +1,6 @@
 {
   "name": "waymark",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "author": "strblr",
   "description": "Lightweight type-safe router for React",
@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/strblr/waymark.git"
   },
-  "homepage": "https://strblr.github.io/waymark",
+  "homepage": "https://waymark.strblr.workers.dev",
   "bugs": "https://github.com/strblr/waymark/issues",
   "keywords": [
     "react",
@@ -40,8 +40,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit && tsdown --minify --platform browser",
-    "copy-readme": "cp ../../README.md README.md",
-    "prepublishOnly": "bun run build && bun run copy-readme",
+    "prepublishOnly": "bun run build && cp ../../README.md README.md",
     "postpublish": "rm -f README.md"
   },
   "devDependencies": {

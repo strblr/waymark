@@ -3,6 +3,7 @@ import { defineConfig } from "vocs";
 export default defineConfig({
   title: "Waymark",
   description: "Lightweight type-safe router for React",
+  baseUrl: "https://waymark.strblr.workers.dev",
   font: {
     google: "Inter"
   },
@@ -29,6 +30,10 @@ export default defineConfig({
     {
       text: "GitHub",
       link: "https://github.com/strblr/waymark"
+    },
+    {
+      text: "Sponsor",
+      link: "https://github.com/sponsors/strblr"
     }
   ]
 });

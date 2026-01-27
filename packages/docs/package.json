@@ -4,7 +4,7 @@
   "scripts": {
     "copy-readme": "bun run scripts/copy-readme",
     "dev": "bun run copy-readme && vocs dev",
-    "build": "bun run copy-readme && vocs build",
+    "build": "bun run copy-readme && vocs build && rm -f docs/pages/readme.mdx",
     "preview": "vocs preview"
   },
   "dependencies": {

@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://strblr.github.io/waymark">📖 Documentation</a>
+  <a href="https://waymark.strblr.workers.dev">📖 Documentation</a>
 </p>
 
 ---
@@ -37,14 +37,14 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Nested routes and layouts](#nested-routes-and-layouts)
 - [Setting up the router](#setting-up-the-router)
 - [Code organization](#code-organization)
+- [Path parameters](#path-parameters)
+- [Search queries](#search-queries)
 - [Navigation](#navigation)
   - [The Link component](#the-link-component)
   - [Active state detection](#active-state-detection)
   - [Link preloading](#link-preloading)
   - [Programmatic navigation](#programmatic-navigation)
   - [Declarative navigation](#declarative-navigation)
-- [Path parameters](#path-parameters)
-- [Search queries](#search-queries)
 - [Lazy loading](#lazy-loading)
 - [Error boundaries](#error-boundaries)
 - [Suspense boundaries](#suspense-boundaries)
@@ -334,6 +334,124 @@ But again, this is just one approach. You could keep all routes in a single file
 
 ---
 
+## Path parameters
+
+Dynamic segments in route patterns become typed path parameters. Define them with a colon prefix. They can also be made optional.
+
+```tsx
+const post = route("/posts/:id").component(PostPage);
+const comment = route("/posts/:postId/comments/:commentId?").component(
+  CommentPage
+);
+```
+
+Access parameters with `useParams`, passing the route pattern or object as an argument:
+
+```tsx
+function PostPage() {
+  const { id } = useParams(post);
+  // id is typed as string
+
+  const { id } = useParams("/posts/:id");
+  // Also works
+}
+
+function CommentPage() {
+  const { postId, commentId } = useParams(comment);
+  // postId: string
+  // commentId?: string | undefined
+}
+```
+
+Wildcard segments capture everything after a slash. They're defined with `*` and accessed with the key `"*"`:
+
+```tsx
+const files = route("/files/*").component(FileBrowser);
+
+function FileBrowser() {
+  const params = useParams(files);
+  const path = params["*"]; // e.g., "documents/report.pdf"
+}
+```
+
+---
+
+## Search queries
+
+Search parameters (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://github.com/standard-schema/standard-schema) validator like Zod, or a plain mapping function.
+
+With Zod:
+
+```tsx
+import { z } from "zod";
+
+const searchPage = route("/search")
+  .search(
+    z.object({
+      q: z.string().catch(""),
+      page: z.coerce.number().catch(1)
+    })
+  )
+  .component(SearchPage);
+```
+
+With a plain function:
+
+```tsx
+const searchPage = route("/search")
+  .search(raw => ({
+    q: String(raw.q ?? ""),
+    page: Number(raw.page ?? 1)
+  }))
+  .component(SearchPage);
+```
+
+Access search params with `useSearch`, which returns a tuple of the current values and a setter function:
+
+```tsx
+function SearchPage() {
+  const [search, setSearch] = useSearch(searchPage);
+  // search.q: string
+  // search.page: number
+}
+```
+
+The setter merges your updates with existing values:
+
+```tsx
+setSearch({ page: 2 }); // Only updates page
+setSearch(prev => ({ page: prev.page + 1 })); // Increment page
+```
+
+Pass `true` as the second argument to replace the history entry instead of pushing:
+
+```tsx
+setSearch({ page: 1 }, true);
+```
+
+**JSON-first search params**
+
+Waymark uses a JSON-first approach for search parameters, similar to TanStack Router. When serializing and deserializing values from the URL:
+
+- Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
+- Everything else is JSON-encoded (and URL-encoded):
+  - `true` → `?enabled=true` → `true`
+  - `"true"` → `?enabled=%22true%22` → `"true"`
+  - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
+  - `42` → `count=42` → `42`
+
+This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
+
+The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
+
+**Idempotency requirement**
+
+Your search validation or transform function must be **idempotent**, meaning `fn(fn(x))` should equal `fn(x)`.
+
+When you read search params, the values are passed through your validator. When you update search params, the navigation APIs expect values in that same validated format, which are then JSON-encoded back into the URL. On the next read, those encoded values are decoded and passed through your validator again - meaning your validator may receive its own output as input.
+
+---
+
 ## Navigation
 
 ### The Link component
@@ -533,118 +651,6 @@ Note that `Navigate` uses `useLayoutEffect` internally to ensure the navigation 
 
 ---
 
-## Path parameters
-
-Dynamic segments in route patterns become typed path parameters. Define them with a colon prefix. They can also be made optional.
-
-```tsx
-const post = route("/posts/:id").component(PostPage);
-const comment = route("/posts/:postId/comments/:commentId?").component(
-  CommentPage
-);
-```
-
-Access parameters with `useParams`, passing the route pattern or object as an argument:
-
-```tsx
-function PostPage() {
-  const { id } = useParams(post);
-  // id is typed as string
-
-  const { id } = useParams("/posts/:id");
-  // Also works
-}
-
-function CommentPage() {
-  const { postId, commentId } = useParams(comment);
-  // postId: string
-  // commentId?: string | undefined
-}
-```
-
-Wildcard segments capture everything after a slash. They're defined with `*` and accessed with the key `"*"`:
-
-```tsx
-const files = route("/files/*").component(FileBrowser);
-
-function FileBrowser() {
-  const params = useParams(files);
-  const path = params["*"]; // e.g., "documents/report.pdf"
-}
-```
-
----
-
-## Search queries
-
-Search parameters (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://github.com/standard-schema/standard-schema) validator like Zod, or a plain mapping function.
-
-With Zod:
-
-```tsx
-import { z } from "zod";
-
-const searchPage = route("/search")
-  .search(
-    z.object({
-      q: z.string().catch(""),
-      page: z.coerce.number().catch(1)
-    })
-  )
-  .component(SearchPage);
-```
-
-With a plain function:
-
-```tsx
-const searchPage = route("/search")
-  .search(raw => ({
-    q: String(raw.q ?? ""),
-    page: Number(raw.page ?? 1)
-  }))
-  .component(SearchPage);
-```
-
-Access search params with `useSearch`, which returns a tuple of the current values and a setter function:
-
-```tsx
-function SearchPage() {
-  const [search, setSearch] = useSearch(searchPage);
-  // search.q: string
-  // search.page: number
-}
-```
-
-The setter merges your updates with existing values:
-
-```tsx
-setSearch({ page: 2 }); // Only updates page
-setSearch(prev => ({ page: prev.page + 1 })); // Increment page
-```
-
-Pass `true` as the second argument to replace the history entry instead of pushing:
-
-```tsx
-setSearch({ page: 1 }, true);
-```
-
-**JSON-first search params**
-
-Waymark uses a JSON-first approach for search parameters, similar to TanStack Router. When serializing and deserializing values from the URL:
-
-- Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
-- Everything else is JSON-encoded (and URL-encoded):
-  - `true` → `?enabled=true` → `true`
-  - `"true"` → `?enabled=%22true%22` → `"true"`
-  - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
-  - `42` → `count=42` → `42`
-
-This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
-
-The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
-
----
-
 ## Lazy loading
 
 Load route components on demand with `.lazy()`. The function you pass should return a dynamic import:
@@ -671,7 +677,7 @@ const analytics = route("/analytics").lazy(() =>
 export function AnalyticsPage() { ... }
 ```
 
-Lazy routes work seamlessly with nesting. Child routes inherit the lazy-loaded parent's components:
+Lazy routes work like any other route. Child routes inherit the parent's lazy-loaded components:
 
 ```tsx
 const dashboard = route("/dashboard").lazy(() => import("./Dashboard"));
