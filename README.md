@@ -11,6 +11,7 @@
   <a href="https://bundlephobia.com/package/waymark"><img src="https://img.shields.io/bundlephobia/minzip/waymark?style=flat-square&color=000&labelColor=000" alt="bundle size" /></a>
   <a href="https://www.npmjs.com/package/waymark"><img src="https://img.shields.io/npm/dm/waymark?style=flat-square&color=000&labelColor=000" alt="downloads" /></a>
   <a href="https://github.com/strblr/waymark/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/waymark?style=flat-square&color=000&labelColor=000" alt="license" /></a>
+  <a href="https://github.com/sponsors/strblr"><img src="https://img.shields.io/github/sponsors/strblr?style=flat-square&color=000&labelColor=000" alt="sponsors" /></a>
 </p>
 
 <p align="center">
@@ -925,7 +926,7 @@ import { HashHistory } from "waymark";
 <RouterRoot routes={routes} history={new HashHistory()} />;
 ```
 
-**MemoryHistory** keeps the history in memory without touching the URL. It also doesn't rely on any browser API. Perfect for testing, server-side rendering, or embedded applications:
+**MemoryHistory** keeps the history in memory without touching the URL. It also doesn't rely on any browser API. Perfect for testing, server-side rendering (SSR), or embedded applications:
 
 ```tsx
 import { MemoryHistory } from "waymark";
