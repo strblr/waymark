@@ -22,7 +22,7 @@ export function parseUrl(url: string) {
   return { path: pathname, search: parseSearch(search) };
 }
 
-export function matchRegex(
+export function matchPattern(
   regex: RegExp,
   keys: string[],
   path: string,

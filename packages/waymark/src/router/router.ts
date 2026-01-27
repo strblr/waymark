@@ -4,7 +4,7 @@ import type { Route } from "../route";
 import {
   normalizePath,
   mergeUrl,
-  matchRegex,
+  matchPattern,
   rankMatches,
   absolutePath
 } from "../utils";
@@ -66,7 +66,7 @@ export class Router {
     const { from, strict, params: filter } = options;
     const route = this.getRoute(from);
     const regex = strict ? route._.regex : route._.looseRegex;
-    const params = matchRegex(regex, route._.keys, path, this.basePath);
+    const params = matchPattern(regex, route._.keys, path, this.basePath);
     if (
       !params ||
       (filter && Object.keys(filter).some(key => filter[key] !== params[key]))
