@@ -21,7 +21,7 @@
 
 Waymark is a routing library for React built around three core ideas: **type safety**, **simplicity**, and **minimal overhead**.
 
-- **Fully type-safe** - Complete TypeScript inference for routes, params, and search queries
+- **Fully type-safe** - Complete TypeScript inference for routes, path params, and search params
 - **Zero config** - No build plugins, no CLI tools, no configuration files, very low boilerplate
 - **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
 - **3.5kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so less than 4kB total
@@ -40,8 +40,8 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Path params](#path-params)
 - [Search params](#search-params)
   - [Basic usage](#basic-usage)
-  - [Inheritance](#inheritance)
   - [JSON-first approach](#json-first-approach)
+  - [Inheritance](#inheritance)
   - [Idempotency requirement](#idempotency-requirement)
 - [Navigation](#navigation)
   - [The Link component](#the-link-component)
@@ -110,7 +110,7 @@ declare module "waymark" {
 }
 ```
 
-Links, navigation, params, search queries - everything autocompletes and type-checks automatically. That's it. No config files, no build plugins, no CLI.
+Links, navigation, path params, search params - everything autocompletes and type-checks automatically. That's it. No config files, no build plugins, no CLI.
 
 ---
 
@@ -435,6 +435,21 @@ Pass `true` as the second argument to replace the history entry instead of pushi
 setSearch({ page: 1 }, true);
 ```
 
+### JSON-first approach
+
+Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
+
+- Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
+- Everything else is JSON-encoded (and URL-encoded):
+  - `true` → `?enabled=true` → `true`
+  - `"true"` → `?enabled=%22true%22` → `"true"`
+  - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
+  - `42` → `count=42` → `42`
+
+This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
+
+The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
+
 ### Inheritance
 
 When you define search params with a validator on a route, all child routes automatically inherit that validator along with its typing.
@@ -482,21 +497,6 @@ function ProjectsPage() {
   // search.status: "active" | "archived" (from child)
 }
 ```
-
-### JSON-first approach
-
-Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
-
-- Plain strings that aren't valid JSON are kept as-is: `"John"` → `?name=John` → `"John"`
-- Everything else is JSON-encoded (and URL-encoded):
-  - `true` → `?enabled=true` → `true`
-  - `"true"` → `?enabled=%22true%22` → `"true"`
-  - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
-  - `42` → `count=42` → `42`
-
-This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
-
-The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation with Zod or a mapping function is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
 
 ### Idempotency requirement
 
@@ -1460,7 +1460,7 @@ function Layout() {
 
 Future improvements planned for Waymark:
 
-- **Preloader context** - Pass route params and search queries to preloader functions, enabling data fetching based on the target route's dynamic segments
+- **Preloader context** - Pass path params and search params to preloader functions, enabling loading logic based on the target route's dynamic data
 - **Server-side rendering guide** - Add documentation for using Waymark in SSR environments
 
 ---
