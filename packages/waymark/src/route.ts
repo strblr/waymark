@@ -86,7 +86,7 @@ export class Route<
   search<S2 extends {}>(
     mapper:
       | ((search: S & Record<string, unknown>) => S2)
-      | StandardSchemaV1<S & Record<string, unknown>, S2>
+      | StandardSchemaV1<Record<string, unknown>, S2>
   ) {
     type S_ = Merge<S, OptionalOnUndefined<S2>>;
     const { mapSearch, handles, components, preloaders } = this._;

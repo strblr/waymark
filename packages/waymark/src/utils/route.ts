@@ -16,7 +16,9 @@ export function patternWeights(pattern: string): number[] {
 }
 
 export function validator<Input, Output>(
-  validate: ((input: Input) => Output) | StandardSchemaV1<Input, Output>
+  validate:
+    | ((input: Input) => Output)
+    | StandardSchemaV1<Record<string, unknown>, Output>
 ) {
   if (typeof validate === "function") {
     return validate;
