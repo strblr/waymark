@@ -49,6 +49,11 @@ export type NavigateOptions<P extends Pattern> = {
 } & MaybeKey<"params", Params<P>> &
   MaybeKey<"search", Search<P>>;
 
+export type SSRContext = {
+  redirect?: string;
+  statusCode?: number;
+};
+
 // History
 
 export interface HistoryPushOptions {

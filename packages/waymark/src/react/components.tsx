@@ -14,13 +14,7 @@ import {
   type CSSProperties,
   type RefAttributes
 } from "react";
-import {
-  useRouter,
-  useOutlet,
-  useMatch,
-  useNavigate,
-  useSubscribe
-} from "./hooks";
+import { useRouter, useOutlet, useMatch, useSubscribe } from "./hooks";
 import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import { Router, type RouterOptions } from "../router";
 import { mergeRefs } from "../utils";
@@ -69,8 +63,11 @@ export function Outlet() {
 export type NavigateProps<P extends Pattern> = NavigateOptions<P>;
 
 export function Navigate<P extends Pattern>(props: NavigateProps<P>) {
-  const navigate = useNavigate();
-  useLayoutEffect(() => navigate(props), []);
+  const router = useRouter();
+  useLayoutEffect(() => router.navigate(props), []);
+  if (router.ssrContext) {
+    router.ssrContext.redirect = router.createUrl(props);
+  }
   return null;
 }
 

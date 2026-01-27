@@ -25,7 +25,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - **Fully type-safe** - Complete TypeScript inference for routes, path params, and search params
 - **Zero config** - No build plugins, no CLI tools, no configuration files, very low boilerplate
 - **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
-- **3.5kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so less than 4kB total
+- **3.6kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so around 4kB total
 - **Not vibe-coded** - Built with careful design and attention to detail by a human
 - **Just works** - Define routes, get autocomplete everywhere
 
@@ -65,12 +65,12 @@ Waymark is a routing library for React built around three core ideas: **type saf
   - [View transitions](#view-transitions)
   - [Matching a route anywhere](#matching-a-route-anywhere)
 - [API reference](#api-reference)
-  - [Types](#types)
   - [Router class](#router-class)
-  - [History interface](#history-interface)
   - [Route class](#route-class)
+  - [History interface](#history-interface)
   - [Hooks](#hooks)
   - [Components](#components)
+  - [Types](#types)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -949,18 +949,28 @@ On the server, create a router with `MemoryHistory` initialized to the request U
 ```tsx
 // server.tsx
 import { renderToString } from "react-dom/server";
-import { RouterRoot, MemoryHistory } from "waymark";
+import { RouterRoot, MemoryHistory, type SSRContext } from "waymark";
 import { routes } from "./routes";
 
 function handleRequest(req: Request) {
+  const ssrContext: SSRContext = {};
   const html = renderToString(
-    <RouterRoot routes={routes} history={new MemoryHistory(req.url)} />
+    <RouterRoot
+      routes={routes}
+      history={new MemoryHistory(req.url)}
+      ssrContext={ssrContext}
+    />
   );
+  if (ssrContext.redirect) {
+    return Response.redirect(ssrContext.redirect);
+  }
   return new Response(html, {
     headers: { "Content-Type": "text/html" }
   });
 }
 ```
+
+The `ssrContext` object captures information during server rendering. When a `Navigate` component renders on the server (typically from conditional logic), it populates `ssrContext.redirect` with the target URL. Your server can then return an HTTP redirect instead of the rendered HTML.
 
 On the client, use the default (`BrowserHistory`) for hydration:
 
@@ -972,6 +982,8 @@ import { routes } from "./routes";
 
 hydrateRoot(document.getElementById("root")!, <RouterRoot routes={routes} />);
 ```
+
+You can also manually set `ssrContext.statusCode` in your components during SSR to control the response status (like 404 for not found pages).
 
 ---
 
@@ -1004,7 +1016,7 @@ function AppLayout() {
 
 ### Global link configuration
 
-Set defaults for all `Link` components using `defaultLinkOptions` on the router. This is useful for consistent styling and preload behavior across your app:
+Set defaults for all `Link` components using `defaultLinkOptions` on the router. Useful for consistent styling and preload behavior across your app:
 
 ```tsx
 <RouterRoot
@@ -1060,7 +1072,7 @@ const router = new Router({
 
 ### View transitions
 
-Use the View Transitions API for smoother page animations. Create a history middleware that wraps navigation in a view transition:
+You can use the view transitions API for smoother page animations. Create a history middleware that wraps navigation in a view transition:
 
 ```tsx
 import { flushSync } from "react-dom";
@@ -1143,62 +1155,6 @@ if (adminMatch) {
 
 ## API reference
 
-### Types
-
-**`NavigateOptions<P>`** is the main type for type-safe navigation:
-
-```tsx
-type NavigateOptions<P extends Pattern> = {
-  to: P | Route<P>; // Route pattern or route object
-  params?: Params<P>; // Required if route has dynamic segments
-  search?: Search<P>; // Search params if route defines them
-  replace?: boolean; // Replace history instead of push
-  state?: any; // Arbitrary state to pass
-};
-```
-
-**`HistoryPushOptions`** is for untyped navigation:
-
-```tsx
-interface HistoryPushOptions {
-  url: string; // The URL to navigate to
-  replace?: boolean; // Replace history instead of push
-  state?: any; // Arbitrary state to pass
-}
-```
-
-**`MatchOptions<P>`** is used for route matching:
-
-```tsx
-type MatchOptions<P extends Pattern> = {
-  from: P | Route<P>; // Route to match against
-  strict?: boolean; // Require exact match (not just prefix)
-  params?: Partial<Params<P>>; // Match by specific param values
-};
-```
-
-**`Match<P>`** is the result of a successful match:
-
-```tsx
-type Match<P extends Pattern> = {
-  route: Route<P>; // The matched route
-  params: Params<P>; // Extracted parameters
-};
-```
-
-**`LinkOptions`** controls link behavior and styling:
-
-```tsx
-interface LinkOptions {
-  strict?: boolean; // Strict active matching
-  preload?: "intent" | "render" | "viewport" | false;
-  style?: CSSProperties;
-  className?: string;
-  activeStyle?: CSSProperties;
-  activeClassName?: string;
-}
-```
-
 ### Router class
 
 The `Router` class is the core of Waymark. You can create an instance directly or let `RouterRoot` create one.
@@ -1207,9 +1163,10 @@ The `Router` class is the core of Waymark. You can create an instance directly o
 
 ```tsx
 const router = new Router({
-  routes: Route[], // Required: array of routes
   basePath: string, // Optional: base path prefix (default: "/")
+  routes: Route[], // Required: array of routes
   history: HistoryLike, // Optional: history implementation (default: BrowserHistory)
+  ssrContext: SSRContext, // Optional: SSR context
   defaultLinkOptions: LinkOptions // Optional: defaults for all Links
 });
 ```
@@ -1219,6 +1176,7 @@ const router = new Router({
 - `router.basePath` - The configured base path
 - `router.routes` - The array of routes
 - `router.history` - The history instance
+- `router.ssrContext` - The SSR context (if provided)
 - `router.defaultLinkOptions` - Default link options
 
 **Methods:**
@@ -1262,71 +1220,6 @@ const match = router.matchAll("/users/42");
 
 ```tsx
 const route = router.getRoute("/users/:id");
-```
-
-### History interface
-
-The `History` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
-
-**Interface:**
-
-```tsx
-interface HistoryLike {
-  getPath: () => string;
-  getSearch: () => Record<string, unknown>;
-  getState: () => any;
-  go: (delta: number) => void;
-  push: (options: HistoryPushOptions) => void;
-  subscribe: (listener: () => void) => () => void;
-}
-```
-
-**Methods:**
-
-`history.getPath()` returns the current pathname:
-
-```tsx
-const path = history.getPath();
-// Returns "/users/42"
-```
-
-`history.getSearch()` returns the current search params as a parsed object:
-
-```tsx
-const search = history.getSearch();
-// Returns { tab: "posts", page: 2 }
-```
-
-`history.getState()` returns the current history state:
-
-```tsx
-const state = history.getState();
-// Returns any state passed during navigation
-```
-
-`history.go(delta)` navigates forward or back in history:
-
-```tsx
-history.go(-1); // Go back
-history.go(1); // Go forward
-history.go(-2); // Go back two steps
-```
-
-`history.push(options)` pushes or replaces a history entry:
-
-```tsx
-history.push({ url: "/users/42", state: { from: "list" } });
-history.push({ url: "/login", replace: true });
-```
-
-`history.subscribe(listener)` subscribes to navigation events and returns an unsubscribe function:
-
-```tsx
-const unsubscribe = history.subscribe(() => {
-  console.log("Navigation occurred");
-});
-
-// Later: unsubscribe()
 ```
 
 ### Route class
@@ -1398,6 +1291,71 @@ const users = route("/users").preloader(async () => {
 
 ```tsx
 await userProfile.preload();
+```
+
+### History interface
+
+The `History` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
+
+**Interface:**
+
+```tsx
+interface HistoryLike {
+  getPath: () => string;
+  getSearch: () => Record<string, unknown>;
+  getState: () => any;
+  go: (delta: number) => void;
+  push: (options: HistoryPushOptions) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+```
+
+**Methods:**
+
+`history.getPath()` returns the current pathname:
+
+```tsx
+const path = history.getPath();
+// Returns "/users/42"
+```
+
+`history.getSearch()` returns the current search params as a parsed object:
+
+```tsx
+const search = history.getSearch();
+// Returns { tab: "posts", page: 2 }
+```
+
+`history.getState()` returns the current history state:
+
+```tsx
+const state = history.getState();
+// Returns any state passed during navigation
+```
+
+`history.go(delta)` navigates forward or back in history:
+
+```tsx
+history.go(-1); // Go back
+history.go(1); // Go forward
+history.go(-2); // Go back two steps
+```
+
+`history.push(options)` pushes or replaces a history entry:
+
+```tsx
+history.push({ url: "/users/42", state: { from: "list" } });
+history.push({ url: "/login", replace: true });
+```
+
+`history.subscribe(listener)` subscribes to navigation events and returns an unsubscribe function:
+
+```tsx
+const unsubscribe = history.subscribe(() => {
+  console.log("Navigation occurred");
+});
+
+// Later: unsubscribe()
 ```
 
 ### Hooks
@@ -1492,6 +1450,71 @@ function Layout() {
 <Navigate to="/login" replace />
 ```
 
+### Types
+
+**`NavigateOptions<P>`** is the main type for type-safe navigation:
+
+```tsx
+type NavigateOptions<P extends Pattern> = {
+  to: P | Route<P>; // Route pattern or route object
+  params?: Params<P>; // Required if route has dynamic segments
+  search?: Search<P>; // Search params if route defines them
+  replace?: boolean; // Replace history instead of push
+  state?: any; // Arbitrary state to pass
+};
+```
+
+**`HistoryPushOptions`** is for untyped navigation:
+
+```tsx
+interface HistoryPushOptions {
+  url: string; // The URL to navigate to
+  replace?: boolean; // Replace history instead of push
+  state?: any; // Arbitrary state to pass
+}
+```
+
+**`MatchOptions<P>`** is used for route matching:
+
+```tsx
+type MatchOptions<P extends Pattern> = {
+  from: P | Route<P>; // Route to match against
+  strict?: boolean; // Require exact match (not just prefix)
+  params?: Partial<Params<P>>; // Match by specific param values
+};
+```
+
+**`Match<P>`** is the result of a successful match:
+
+```tsx
+type Match<P extends Pattern> = {
+  route: Route<P>; // The matched route
+  params: Params<P>; // Extracted parameters
+};
+```
+
+**`LinkOptions`** controls link behavior and styling:
+
+```tsx
+interface LinkOptions {
+  strict?: boolean; // Strict active matching
+  preload?: "intent" | "render" | "viewport" | false;
+  style?: CSSProperties;
+  className?: string;
+  activeStyle?: CSSProperties;
+  activeClassName?: string;
+}
+```
+
+**`SSRContext`** captures context during SSR (like redirects):
+
+```tsx
+type SSRContext = {
+  redirect?: string; // Set by Navigate component during SSR
+  statusCode?: number; // Can be set manually in your components during SSR
+};
+```
+
 ---
 
 ## Roadmap
@@ -1499,7 +1522,6 @@ function Layout() {
 Future improvements planned for Waymark:
 
 - **Preloader context** - Pass path params and search params to preloader functions, enabling loading logic based on the target route's dynamic data
-- **Server-side redirects** - Might be useful to add support for server-side redirects when using SSR
 
 ---
 

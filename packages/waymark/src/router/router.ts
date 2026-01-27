@@ -17,13 +17,15 @@ import type {
   Match,
   NavigateOptions,
   HistoryLike,
-  HistoryPushOptions
+  HistoryPushOptions,
+  SSRContext
 } from "../types";
 
 export interface RouterOptions {
   basePath?: string;
   routes: RouteList;
   history?: HistoryLike;
+  ssrContext?: SSRContext;
   defaultLinkOptions?: LinkOptions;
 }
 
@@ -31,14 +33,22 @@ export class Router {
   readonly basePath: string;
   readonly routes: RouteList;
   readonly history: HistoryLike;
+  readonly ssrContext?: SSRContext;
   readonly defaultLinkOptions?: LinkOptions;
   private readonly _: { routeMap: Map<string, Route> };
 
   constructor(options: RouterOptions) {
-    const { basePath = "/", routes, history, defaultLinkOptions } = options;
+    const {
+      basePath = "/",
+      routes,
+      history,
+      ssrContext,
+      defaultLinkOptions
+    } = options;
     this.basePath = normalizePath(basePath);
     this.routes = routes;
     this.history = history ?? new BrowserHistory();
+    this.ssrContext = ssrContext;
     this.defaultLinkOptions = defaultLinkOptions;
     this._ = {
       routeMap: new Map(routes.map(route => [route.pattern, route]))
