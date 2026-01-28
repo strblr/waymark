@@ -93,7 +93,9 @@ export class Router {
   preload = async <P extends Pattern>(options: NavigateOptions<P>) => {
     const { to, params = {}, search = {} } = options;
     const route = this.getRoute(to);
-    await route._.preloader({ params, search });
+    await Promise.all(
+      route._.preloaders.map(preloader => preloader({ params, search }))
+    );
   };
 
   navigate = <P extends Pattern>(
