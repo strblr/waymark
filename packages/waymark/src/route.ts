@@ -1,5 +1,4 @@
 import { lazy, memo, type ComponentType } from "react";
-
 import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { Handle, PreloadContext, ComponentLoader } from "./types";

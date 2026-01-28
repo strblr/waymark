@@ -671,7 +671,7 @@ navigate(1); // Go forward
 navigate(-2); // Go back two steps
 ```
 
-You can also access the router directly via `useRouter()` (or import the router if created outside of React) and call its `navigate` method, which works the same way
+You can also access the router directly via `useRouter()` (or import the router if created outside of React) and call its `navigate` method, which works the same way:
 
 ```tsx
 router.navigate({ to: "/login" });
@@ -684,7 +684,7 @@ For unsafe navigation that bypasses type checking, you can pass `url` instead of
 navigate({ to: userProfile, params: { id: "42" } });
 
 // Unsafe navigation - no type checking
-navigate({ url: "/some/unknown/path" });
+navigate({ url: "/some/path?tab=settings" });
 navigate({ url: "/callback", replace: true, state: { data: 123 } });
 ```
 
@@ -881,8 +881,8 @@ function Breadcrumbs() {
     <nav>
       {handles.map((h, i) => (
         <span key={i}>
+          {i !== 0 && " / "}
           {h.title}
-          {i < handles.length - 1 && " / "}
         </span>
       ))}
     </nav>
