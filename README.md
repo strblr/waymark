@@ -48,7 +48,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Navigation](#navigation)
   - [The Link component](#the-link-component)
   - [Active state detection](#active-state-detection)
-  - [Link preloading](#link-preloading)
+  - [Route preloading](#route-preloading)
   - [Programmatic navigation](#programmatic-navigation)
   - [Declarative navigation](#declarative-navigation)
 - [Lazy loading](#lazy-loading)
@@ -595,7 +595,7 @@ Or use the `activeClassName` and `activeStyle` props directly:
 </Link>
 ```
 
-### Link preloading
+### Route preloading
 
 Links can optionally trigger route preloading before navigation occurs. When preloading is enabled, any [lazy-loaded components](#lazy-loading) (defined with `.lazy()`) and [preloaders](#data-preloading) (defined with `.preloader()`) are called early. This improves perceived performance by loading component bundles and running preparation logic like prefetching data ahead of time.
 
@@ -753,7 +753,7 @@ const settings = dashboard.route("/settings").component(Settings);
 
 When navigating to `/dashboard/settings`, React loads the dashboard component first, then renders settings inside it. The Dashboard component must include an `<Outlet />` for the child route to appear.
 
-See [Link preloading](#link-preloading) for ways to load these components before the user navigates.
+See [Route preloading](#route-preloading) for ways to load these components before the user navigates.
 
 ---
 
@@ -773,7 +773,7 @@ const userProfile = route("/users/:id")
   .component(UserProfile);
 ```
 
-See [Link preloading](#link-preloading) for how to trigger preloaders.
+See [Route preloading](#route-preloading) for how to trigger preloaders.
 
 Depending on when and how preloading is triggered, preloaders may run repeatedly. Waymark intentionally doesn't cache or deduplicate these calls - that's the job of your data layer. Libraries like TanStack Query, SWR, or Apollo handle this well. For example, TanStack Query's `staleTime` prevents refetches when data is still fresh:
 
