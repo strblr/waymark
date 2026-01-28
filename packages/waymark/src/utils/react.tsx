@@ -4,32 +4,26 @@ import {
   Component,
   useInsertionEffect,
   type Ref,
+  type RefObject,
   type ReactNode,
   type ComponentType
 } from "react";
 import { useOutlet } from "../react";
 
-export function mergeRefs<T>(...inputRefs: (Ref<T> | undefined)[]): Ref<T> {
-  const filtered = inputRefs.filter(r => !!r);
-  if (filtered.length <= 1) {
-    return filtered[0] ?? null;
-  }
+export function mergeRefs<T>(own: RefObject<T | null>, other?: Ref<T>): Ref<T> {
+  if (!other) return own;
   return value => {
-    const cleanups: (() => void)[] = [];
-    for (const ref of filtered) {
-      const cleanup = assignRef(ref, value);
-      cleanups.push(cleanup ?? (() => assignRef(ref, null)));
-    }
-    return () => cleanups.forEach(cleanup => cleanup());
+    own.current = value;
+    const cleanup =
+      typeof other === "function" ? other(value) : void (other.current = value);
+    return (
+      cleanup &&
+      (() => {
+        own.current = null;
+        cleanup();
+      })
+    );
   };
-}
-
-function assignRef<T>(ref: Ref<T>, value: T) {
-  if (typeof ref === "function") {
-    return ref(value);
-  } else if (ref) {
-    ref.current = value;
-  }
 }
 
 export function useEvent<F extends (...args: any[]) => any>(fn: F) {
