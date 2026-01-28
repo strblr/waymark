@@ -387,7 +387,7 @@ function FileBrowser() {
 
 ### Basic usage
 
-Search params (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://standardschema.dev/schema#what-schema-libraries-implement-the-spec) validator like Zod, or a plain mapping function.
+Search params (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://standardschema.dev/schema#what-schema-libraries-implement-the-spec) validator like Zod, or a plain validation function.
 
 With Zod:
 
@@ -480,7 +480,7 @@ function ProjectsPage() {
 }
 ```
 
-If a child route needs additional search params, define a new validator with `.search()`. Your validator receives the raw params from the URL along with the parent's already-validated params. After validation, your result is combined with the parent's validated params to produce the final search params object.
+If a child route needs additional search params, define a new validator with `.search()`. Your validator receives the raw params from the URL merged with the parent's already-validated params. After validation, your result is combined with the parent's validated params to produce the final search params object.
 
 In practice, this means you only need to validate the new params you're adding - the parent's params are automatically included in the final result:
 
