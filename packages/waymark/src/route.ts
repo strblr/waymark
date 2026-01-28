@@ -42,7 +42,6 @@ export class Route<
     mapSearch: (search: Record<string, unknown>) => S;
     handles: Handle[];
     components: ComponentType[];
-    preloaded: boolean;
     preloaders: (() => Promise<any>)[];
   };
 
@@ -65,7 +64,6 @@ export class Route<
       mapSearch,
       handles,
       components,
-      preloaded: false,
       preloaders
     };
   }
@@ -150,10 +148,7 @@ export class Route<
   }
 
   async preload() {
-    const { preloaded, preloaders } = this._;
-    if (preloaded) return;
-    this._.preloaded = true;
-    await Promise.all(preloaders.map(loader => loader()));
+    await Promise.all(this._.preloaders.map(loader => loader()));
   }
 
   toString() {
