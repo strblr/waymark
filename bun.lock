@@ -20,6 +20,7 @@
     "packages/example": {
       "name": "example",
       "dependencies": {
+        "@tanstack/react-query": "^5.90.20",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
         "waymark": "workspace:*",
@@ -36,7 +37,7 @@
     },
     "packages/waymark": {
       "name": "waymark",
-      "version": "0.2.0",
+      "version": "0.2.3",
       "dependencies": {
         "@standard-schema/spec": "^1.1.0",
         "regexparam": "^3.0.0",
@@ -473,6 +474,10 @@
     "@tailwindcss/oxide-win32-x64-msvc": ["@tailwindcss/oxide-win32-x64-msvc@4.1.15", "", { "os": "win32", "cpu": "x64" }, "sha512-NLeHE7jUV6HcFKS504bpOohyi01zPXi2PXmjFfkzTph8xRxDdxkRsXm/xDO5uV5K3brrE1cCwbUYmFUSHR3u1w=="],
 
     "@tailwindcss/vite": ["@tailwindcss/vite@4.1.15", "", { "dependencies": { "@tailwindcss/node": "4.1.15", "@tailwindcss/oxide": "4.1.15", "tailwindcss": "4.1.15" }, "peerDependencies": { "vite": "^5.2.0 || ^6 || ^7" } }, "sha512-B6s60MZRTUil+xKoZoGe6i0Iar5VuW+pmcGlda2FX+guDuQ1G1sjiIy1W0frneVpeL/ZjZ4KEgWZHNrIm++2qA=="],
+
+    "@tanstack/query-core": ["@tanstack/query-core@5.90.20", "", {}, "sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg=="],
+
+    "@tanstack/react-query": ["@tanstack/react-query@5.90.20", "", { "dependencies": { "@tanstack/query-core": "5.90.20" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-vXBxa+qeyveVO7OA0jX1z+DeyCA4JKnThKv411jd5SORpBKgkcVnYKCiBgECvADvniBX7tobwBmg01qq9JmMJw=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg=="],
 

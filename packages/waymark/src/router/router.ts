@@ -90,6 +90,12 @@ export class Router {
     return mergeUrl(path, search);
   };
 
+  preload = async <P extends Pattern>(options: NavigateOptions<P>) => {
+    const { to, params = {}, search = {} } = options;
+    const route = this.getRoute(to);
+    await route._.preloader({ params, search });
+  };
+
   navigate = <P extends Pattern>(
     options: NavigateOptions<P> | HistoryPushOptions | number
   ) => {

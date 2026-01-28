@@ -14,6 +14,13 @@ export type RouteList = Register extends {
 
 export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 
+// Route
+
+export interface PreloadContext<R extends Route = Route> {
+  params: NonNullable<R["_"]["_params"]>;
+  search: NonNullable<R["_"]["_search"]>;
+}
+
 // Router
 
 export interface RouterOptions {

@@ -1,7 +1,7 @@
-import { useMemo, useCallback, useContext, useSyncExternalStore } from "react";
+import { useMemo, useContext, useSyncExternalStore } from "react";
 import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import type { Router } from "../router";
-import { mergeUrl } from "../utils";
+import { mergeUrl, useEvent } from "../utils";
 import type {
   Handle,
   Pattern,
@@ -66,14 +66,12 @@ export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
     [route, search]
   );
 
-  const setSearch = useCallback(
+  const setSearch = useEvent(
     (update: Updater<Search<P>>, replace?: boolean) => {
-      const mapped = route._.mapSearch(router.history.getSearch());
       update = typeof update === "function" ? update(mapped) : update;
       const url = mergeUrl(router.history.getPath(), { ...mapped, ...update });
       router.navigate({ url, replace });
-    },
-    [router, route]
+    }
   );
 
   return [mapped, setSearch] as const;

@@ -1,6 +1,8 @@
 import {
+  useRef,
   Suspense,
   Component,
+  useInsertionEffect,
   type Ref,
   type ReactNode,
   type ComponentType
@@ -28,6 +30,14 @@ function assignRef<T>(ref: Ref<T>, value: T) {
   } else if (ref) {
     ref.current = value;
   }
+}
+
+export function useEvent<F extends (...args: any[]) => any>(fn: F) {
+  const ref = useRef(fn);
+  useInsertionEffect(() => {
+    ref.current = fn;
+  }, [fn]);
+  return useRef(((...args) => ref.current(...args)) as F).current;
 }
 
 export function suspenseBoundary(Comp: ComponentType): ComponentType {

@@ -16,7 +16,7 @@ import {
 import { useRouter, useOutlet, useMatch, useSubscribe } from "./hooks";
 import { RouterContext, MatchContext, OutletContext } from "./contexts";
 import { Router } from "../router";
-import { mergeRefs } from "../utils";
+import { mergeRefs, useEvent } from "../utils";
 import type {
   RouterOptions,
   Pattern,
@@ -106,8 +106,8 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
 
   const ref = useRef<HTMLAnchorElement>(null);
   const url = router.createUrl(props);
-  const route = router.getRoute(props.to);
-  const active = !!useMatch({ from: route, strict, params });
+  const active = !!useMatch({ from: props.to, strict, params });
+  const preloadRoute = useEvent(() => router.preload(props));
 
   const activeProps = useMemo(() => {
     return {
@@ -121,12 +121,12 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
 
   useEffect(() => {
     if (preload === "render") {
-      route.preload();
+      preloadRoute();
     } else if (preload === "viewport" && ref.current) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            route.preload();
+            preloadRoute();
             observer.disconnect();
           }
         });
@@ -134,7 +134,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
       observer.observe(ref.current);
       return () => observer.disconnect();
     }
-  }, [preload, route]);
+  }, [preload]);
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     rest.onClick?.(event);
@@ -154,14 +154,14 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
     rest.onFocus?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      route.preload();
+      preloadRoute();
     }
   };
 
   const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
     rest.onPointerEnter?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      route.preload();
+      preloadRoute();
     }
   };
 

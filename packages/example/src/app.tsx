@@ -1,4 +1,9 @@
 import { useState, use } from "react";
+import {
+  useQuery,
+  QueryClient,
+  QueryClientProvider
+} from "@tanstack/react-query";
 import { z } from "zod";
 import {
   RouterRoot,
@@ -33,37 +38,29 @@ const logMiddleware = (history: HistoryLike) => {
   return history;
 };
 
-// const transitionMiddleware = (history: HistoryLike) => {
-//   const { go, push } = history;
-//   const wrap = (fn: () => void) => {
-//     return !document.startViewTransition
-//       ? fn()
-//       : document.startViewTransition(() => flushSync(fn));
-//   };
-//   history.go = delta => wrap(() => go(delta));
-//   history.push = options => wrap(() => push(options));
-//   return history;
-// };
+const queryClient = new QueryClient({});
 
 export function App() {
   const [counter, setCounter] = useState(0);
   return (
-    <div className="app-container">
-      <div className="app-header">
-        <button onClick={() => setCounter(c => c + 1)}>
-          App counter {counter}
-        </button>
+    <QueryClientProvider client={queryClient}>
+      <div className="app-container">
+        <div className="app-header">
+          <button onClick={() => setCounter(c => c + 1)}>
+            App counter {counter}
+          </button>
+        </div>
+        <RouterRoot
+          routes={routes}
+          history={logMiddleware(new BrowserHistory())}
+          defaultLinkOptions={{
+            preload: "intent",
+            className: "waymark-link",
+            activeClassName: "active-link"
+          }}
+        />
       </div>
-      <RouterRoot
-        routes={routes}
-        history={logMiddleware(new BrowserHistory())}
-        defaultLinkOptions={{
-          preload: "intent",
-          className: "waymark-link",
-          activeClassName: "active-link"
-        }}
-      />
-    </div>
+    </QueryClientProvider>
   );
 }
 
@@ -112,6 +109,13 @@ function Layout() {
         <Link to="/lazy">Lazy</Link>
         <Link to="/suspended">Suspended</Link>
         <Link to="/faulty">Faulty</Link>
+        <Link
+          to={preloaderDemo}
+          params={{ userId: "123" }}
+          search={{ role: "admin" }}
+        >
+          Preloader
+        </Link>
         <Link to="/param/:id" params={{ id: "1" }}>
           Param 1
         </Link>
@@ -317,6 +321,48 @@ function Faulty(): never {
   throw new Error("Faulty");
 }
 
+// Preloader
+
+const preloaderDemo = layout
+  .route("/preloader/:userId")
+  .handle({ breadcrumb: "Preloader Demo" })
+  .search(z.object({ role: z.enum(["developer", "admin"]).catch("developer") }))
+  .preloader(async ({ params, search }) => {
+    await queryClient.prefetchQuery({
+      staleTime: 60 * 1000,
+      queryKey: ["user", params.userId, search.role],
+      queryFn: () => fetchUser(params.userId, search.role)
+    });
+  })
+  .component(PreloaderDemo);
+
+async function fetchUser(id: string, role: string) {
+  console.log("Fetching user", { id, role });
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return { id, role };
+}
+
+function PreloaderDemo() {
+  const { userId } = useParams(preloaderDemo);
+  const [{ role }] = useSearch(preloaderDemo);
+  const { data } = useQuery({
+    queryKey: ["user", userId, role],
+    queryFn: () => fetchUser(userId, role)
+  });
+  return (
+    <div className="section">
+      <h1 className="section-title">Preloader Demo</h1>
+      <div className="section-content">
+        <div className="data-display">
+          <div>userId: {userId}</div>
+          <div>role: {role}</div>
+          <div>data: {JSON.stringify(data)}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Wildcard
 
 const wildcard = layout
@@ -345,6 +391,7 @@ const routes = [
   simplePage,
   wildcard,
   suspendedPage,
+  preloaderDemo,
   index,
   faulty,
   lazySection2,
