@@ -58,8 +58,8 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Route handles](#route-handles)
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
-- [Server-side rendering (SSR)](#server-side-rendering-ssr)
 - [Cookbook](#cookbook)
+  - [Server-side rendering (SSR)](#server-side-rendering-ssr)
   - [Scroll to top on navigation](#scroll-to-top-on-navigation)
   - [Global link configuration](#global-link-configuration)
   - [History middleware](#history-middleware)
@@ -991,7 +991,9 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 ---
 
-## Server-side rendering (SSR)
+## Cookbook
+
+### Server-side rendering (SSR)
 
 Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
 
@@ -1033,10 +1035,6 @@ hydrateRoot(document.getElementById("root")!, <RouterRoot routes={routes} />);
 ```
 
 You can also manually set `ssrContext.statusCode` in your components during SSR to control the response status (like 404 for not found pages).
-
----
-
-## Cookbook
 
 ### Scroll to top on navigation
 
