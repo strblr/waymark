@@ -759,7 +759,7 @@ See [Link preloading](#link-preloading) for ways to load these components before
 
 ## Data preloading
 
-Use `.preloader()` to run logic before navigation occurs, typically to prefetch data. Preloaders receive the target route's **typed params and search values**:
+Use `.preloader()` to run logic before navigation occurs, typically to prefetch data. Preloaders receive the target route's typed params and search values:
 
 ```tsx
 const userProfile = route("/users/:id")
