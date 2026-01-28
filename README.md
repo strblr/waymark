@@ -1168,12 +1168,7 @@ const dashboard = route("/dashboard").component(Dashboard);
 const settings = route("/settings").component(Settings);
 
 function Sidebar() {
-  // Using route patterns
   const dashboardMatch = useMatch({ from: "/dashboard" });
-  const settingsMatch = useMatch({ from: "/settings", strict: true });
-
-  // Using route objects
-  const dashboardMatch = useMatch({ from: dashboard });
   const settingsMatch = useMatch({ from: settings, strict: true });
 
   return (
