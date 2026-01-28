@@ -17,8 +17,8 @@ export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 // Route
 
 export interface PreloadContext<R extends Route = Route> {
-  params: NonNullable<R["_"]["_params"]>;
-  search: NonNullable<R["_"]["_search"]>;
+  params: R["_types"]["params"];
+  search: R["_types"]["search"];
 }
 
 // Router
@@ -38,13 +38,9 @@ export type GetRoute<P extends Pattern> = Extract<
   { pattern: P }
 >;
 
-export type Params<P extends Pattern> = NonNullable<
-  GetRoute<P>["_"]["_params"]
->;
+export type Params<P extends Pattern> = GetRoute<P>["_types"]["params"];
 
-export type Search<P extends Pattern> = NonNullable<
-  GetRoute<P>["_"]["_search"]
->;
+export type Search<P extends Pattern> = GetRoute<P>["_types"]["search"];
 
 export type MatchOptions<P extends Pattern> = {
   from: P | GetRoute<P>;

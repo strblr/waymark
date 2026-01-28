@@ -1,3 +1,4 @@
+import { parse } from "regexparam";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { NormalizePath } from "./types";
 
@@ -8,7 +9,14 @@ export function normalizePath<P extends string>(path: P) {
   return normalized as NormalizePath<P>;
 }
 
-export function patternWeights(pattern: string): number[] {
+export function parsePattern(pattern: string) {
+  const { keys, pattern: regex } = parse(pattern);
+  const looseRegex = parse(pattern, true).pattern;
+  const weights = patternWeights(pattern);
+  return { keys, regex, looseRegex, weights };
+}
+
+function patternWeights(pattern: string): number[] {
   return pattern
     .split("/")
     .slice(1)

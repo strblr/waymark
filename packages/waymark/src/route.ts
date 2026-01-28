@@ -1,11 +1,11 @@
 import { lazy, memo, type ComponentType } from "react";
-import { parse } from "regexparam";
+
 import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { Handle, PreloadContext, ComponentLoader } from "./types";
 import {
   normalizePath,
-  patternWeights,
+  parsePattern,
   suspenseBoundary,
   errorBoundary,
   validator,
@@ -17,13 +17,14 @@ import {
 export function route<P extends string>(pattern: P) {
   type P_ = NormalizePath<P>;
   type Ps = ParsePattern<P_>;
-  return new Route<P_, Ps, {}>(
-    normalizePath(pattern),
-    search => search,
-    [],
-    [],
-    []
-  );
+  const normalized = normalizePath(pattern);
+  return new Route<P_, Ps, {}>(normalized, {
+    ...parsePattern(normalized),
+    validate: search => search,
+    handles: [],
+    components: [],
+    preloads: []
+  });
 }
 
 export class Route<
@@ -32,112 +33,86 @@ export class Route<
   S extends {} = any
 > {
   readonly pattern: P;
+  readonly _types!: {
+    params: Ps;
+    search: S;
+  };
   readonly _: {
-    _params?: Ps;
-    _search?: S;
     keys: string[];
     regex: RegExp;
     looseRegex: RegExp;
     weights: number[];
-    mapSearch: (search: Record<string, unknown>) => S;
+    validate: (search: Record<string, unknown>) => S;
     handles: Handle[];
     components: ComponentType[];
-    preloaders: ((context: PreloadContext) => Promise<any>)[];
+    preloads: ((context: PreloadContext) => Promise<any>)[];
   };
 
-  constructor(
-    pattern: P,
-    mapSearch: (search: Record<string, unknown>) => S,
-    handles: Handle[],
-    components: ComponentType[],
-    preloaders: ((context: PreloadContext) => Promise<any>)[]
-  ) {
-    const { keys, pattern: regex } = parse(pattern);
-    const looseRegex = parse(pattern, true).pattern;
-    const weights = patternWeights(pattern);
+  constructor(pattern: P, _: typeof this._) {
     this.pattern = pattern;
-    this._ = {
-      keys,
-      regex,
-      looseRegex,
-      weights,
-      mapSearch,
-      handles,
-      components,
-      preloaders
-    };
+    this._ = _;
   }
 
-  route<P2 extends string>(subPattern: P2) {
+  route<P2 extends string>(pattern: P2) {
     type P_ = NormalizePath<`${P}/${P2}`>;
     type Ps = ParsePattern<P_>;
-    const { mapSearch, handles, components, preloaders } = this._;
-    return new Route<P_, Ps, S>(
-      normalizePath(`${this.pattern}/${subPattern}`),
-      mapSearch,
-      handles,
-      components,
-      preloaders
-    );
+    const normalized = normalizePath(`${this.pattern}/${pattern}`);
+    return new Route<P_, Ps, S>(normalized, {
+      ...this._,
+      ...parsePattern(normalized)
+    });
   }
 
   search<S2 extends {}>(
-    mapper:
+    validate:
       | ((search: S & Record<string, unknown>) => S2)
       | StandardSchemaV1<Record<string, unknown>, S2>
   ) {
     type S_ = Merge<S, OptionalOnUndefined<S2>>;
-    const { mapSearch, handles, components, preloaders } = this._;
-    mapper = validator(mapper);
-    return new Route<P, Ps, S_>(
-      this.pattern,
-      search => {
-        const mapped = mapSearch(search);
-        return { ...mapped, ...mapper({ ...search, ...mapped }) };
-      },
-      handles,
-      components,
-      preloaders
-    );
+    validate = validator(validate);
+    return new Route<P, Ps, S_>(this.pattern, {
+      ...this._,
+      validate: search => {
+        const validated = this._.validate(search);
+        return { ...validated, ...validate({ ...search, ...validated }) };
+      }
+    });
   }
 
   handle(handle: Handle) {
-    const { mapSearch, handles, components, preloaders } = this._;
-    return new Route<P, Ps, S>(
-      this.pattern,
-      mapSearch,
-      [...handles, handle],
-      components,
-      preloaders
-    );
+    return new Route<P, Ps, S>(this.pattern, {
+      ...this._,
+      handles: [...this._.handles, handle]
+    });
   }
 
-  preloader(preloader: (context: PreloadContext<this>) => Promise<any>) {
-    const { mapSearch, handles, components, preloaders } = this._;
-    return new Route<P, Ps, S>(this.pattern, mapSearch, handles, components, [
-      ...preloaders,
-      context =>
-        preloader({ params: context.params, search: mapSearch(context.search) })
-    ]);
+  preload(preload: (context: PreloadContext<this>) => Promise<any>) {
+    return new Route<P, Ps, S>(this.pattern, {
+      ...this._,
+      preloads: [
+        ...this._.preloads,
+        context =>
+          preload({
+            params: context.params,
+            search: this._.validate(context.search)
+          })
+      ]
+    });
   }
 
   component(component: ComponentType) {
-    const { mapSearch, handles, components, preloaders } = this._;
-    return new Route<P, Ps, S>(
-      this.pattern,
-      mapSearch,
-      handles,
-      [...components, memo(component)],
-      preloaders
-    );
+    return new Route<P, Ps, S>(this.pattern, {
+      ...this._,
+      components: [...this._.components, memo(component)]
+    });
   }
 
   lazy(loader: ComponentLoader) {
     const component = lazy(async () => {
       const result = await loader();
-      return { default: memo("default" in result ? result.default : result) };
+      return { default: "default" in result ? result.default : result };
     });
-    return this.preloader(loader).component(component);
+    return this.preload(loader).component(component);
   }
 
   suspense(fallback: ComponentType) {

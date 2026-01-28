@@ -61,20 +61,21 @@ export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
   const router = useRouter();
   const route = router.getRoute(from);
   const search = useSubscribe(router, router.history.getSearch);
-  const mapped = useMemo<Search<P>>(
-    () => route._.mapSearch(search),
+  const validated = useMemo<Search<P>>(
+    () => route._.validate(search),
     [route, search]
   );
 
   const setSearch = useEvent(
     (update: Updater<Search<P>>, replace?: boolean) => {
-      update = typeof update === "function" ? update(mapped) : update;
-      const url = mergeUrl(router.history.getPath(), { ...mapped, ...update });
+      update = typeof update === "function" ? update(validated) : update;
+      const search = { ...validated, ...update };
+      const url = mergeUrl(router.history.getPath(), search);
       router.navigate({ url, replace });
     }
   );
 
-  return [mapped, setSearch] as const;
+  return [validated, setSearch] as const;
 }
 
 // useMatch

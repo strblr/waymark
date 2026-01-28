@@ -597,7 +597,7 @@ Or use the `activeClassName` and `activeStyle` props directly:
 
 ### Route preloading
 
-Links can optionally trigger route preloading before navigation occurs. When preloading is enabled, any [lazy-loaded components](#lazy-loading) (defined with `.lazy()`) and [preloaders](#data-preloading) (defined with `.preloader()`) are called early. This improves perceived performance by loading component bundles and running preparation logic like prefetching data ahead of time.
+Links can optionally trigger route preloading before navigation occurs. When preloading is enabled, any [lazy-loaded components](#lazy-loading) (defined with `.lazy()`) and [preload functions](#data-preloading) (defined with `.preload()`) are called early. This improves perceived performance by loading component bundles and running preparation logic like prefetching data ahead of time.
 
 The `preload` prop controls when preloading happens:
 
@@ -759,12 +759,12 @@ See [Route preloading](#route-preloading) for ways to load these components befo
 
 ## Data preloading
 
-Use `.preloader()` to run logic before navigation occurs, typically to prefetch data. Preloaders receive the target route's typed params and search values:
+Use `.preload()` to run logic before navigation occurs, typically to prefetch data. Preload functions receive the target route's typed params and search values:
 
 ```tsx
 const userProfile = route("/users/:id")
   .search(z.object({ tab: z.enum(["posts", "comments"]).catch("posts") }))
-  .preloader(async ({ params, search }) => {
+  .preload(async ({ params, search }) => {
     await queryClient.prefetchQuery({
       queryKey: ["user", params.id, search.tab],
       queryFn: () => fetchUser(params.id, search.tab)
@@ -773,9 +773,9 @@ const userProfile = route("/users/:id")
   .component(UserProfile);
 ```
 
-See [Route preloading](#route-preloading) for how to trigger preloaders.
+See [Route preloading](#route-preloading) for how to trigger preload functions.
 
-Depending on when and how preloading is triggered, preloaders may run repeatedly. Waymark intentionally doesn't cache or deduplicate these calls - that's the job of your data layer. Libraries like TanStack Query, SWR, or Apollo handle this well. For example, TanStack Query's `staleTime` prevents refetches when data is still fresh:
+Depending on when and how preloading is triggered, these functions may run repeatedly. Waymark intentionally doesn't cache or deduplicate the calls - that's the job of your data layer. Libraries like TanStack Query, SWR, or Apollo handle this well. For example, TanStack Query's `staleTime` prevents refetches when data is still fresh:
 
 ```tsx
 await queryClient.prefetchQuery({
@@ -785,15 +785,15 @@ await queryClient.prefetchQuery({
 });
 ```
 
-Preloaders inherit to child routes:
+Preload functions inherit to child routes:
 
 ```tsx
 const dashboard = route("/dashboard")
-  .preloader(prefetchDashboardData)
+  .preload(prefetchDashboardData)
   .component(DashboardLayout);
 
 const settings = dashboard.route("/settings").component(Settings);
-// Preloading /dashboard/settings runs the dashboard preloader
+// Preloading /dashboard/settings runs prefetchDashboardData
 ```
 
 ---
@@ -1333,12 +1333,12 @@ const lazy = route("/lazy")
 const risky = route("/risky").error(ErrorPage).component(RiskyPage);
 ```
 
-**`.preloader(fn)`** registers a preloader function that receives typed params and search. Called when a `Link` triggers preloading or via `router.preload()`:
+**`.preload(fn)`** registers a preload function that receives typed params and search. Called when a `Link` triggers preloading or via `router.preload()`:
 
 ```tsx
 const user = route("/users/:id")
   .search(z.object({ tab: z.string().catch("profile") }))
-  .preloader(async ({ params, search }) => {
+  .preload(async ({ params, search }) => {
     // params.id: string, search.tab: string - fully typed
     await prefetchUser(params.id, search.tab);
   });
@@ -1566,7 +1566,7 @@ type SSRContext = {
 };
 ```
 
-**`PreloadContext<R>`** is the context passed to preloader functions:
+**`PreloadContext<R>`** is the context passed to preload functions:
 
 ```tsx
 interface PreloadContext<R extends Route> {
@@ -1579,7 +1579,8 @@ interface PreloadContext<R extends Route> {
 
 ## Roadmap
 
-- Possibility to pass an arbitrary context to the Router instance for later use in preloaders?
+- Possibility to pass an arbitrary context to the Router instance for later use in preloads?
+- Document usage in test environments
 - Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
 
 ---

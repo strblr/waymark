@@ -94,7 +94,7 @@ export class Router {
     const { to, params = {}, search = {} } = options;
     const route = this.getRoute(to);
     await Promise.all(
-      route._.preloaders.map(preloader => preloader({ params, search }))
+      route._.preloads.map(preload => preload({ params, search }))
     );
   };
 

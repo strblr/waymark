@@ -327,7 +327,7 @@ const preloaderDemo = layout
   .route("/preloader/:userId")
   .handle({ breadcrumb: "Preloader Demo" })
   .search(z.object({ role: z.enum(["developer", "admin"]).catch("developer") }))
-  .preloader(async ({ params, search }) => {
+  .preload(async ({ params, search }) => {
     await queryClient.prefetchQuery({
       staleTime: 60 * 1000,
       queryKey: ["user", params.userId, search.role],
