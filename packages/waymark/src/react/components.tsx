@@ -123,14 +123,9 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     if (preload === "render") {
       preloadRoute();
     } else if (preload === "viewport" && ref.current) {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            preloadRoute();
-            observer.disconnect();
-          }
-        });
-      });
+      const observer = new IntersectionObserver(entries =>
+        entries.forEach(entry => entry.isIntersecting && preloadRoute())
+      );
       observer.observe(ref.current);
       return () => observer.disconnect();
     }
@@ -168,7 +163,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const anchorProps = {
     ...rest,
     ...activeProps,
-    ref: mergeRefs(rest.ref, ref),
+    ref: mergeRefs(ref, rest.ref),
     href: url,
     onClick,
     onFocus,
