@@ -39,7 +39,7 @@
     "minimal"
   ],
   "scripts": {
-    "build": "tsc --noEmit && tsdown --minify --platform browser",
+    "build": "tsc --noEmit && tsdown",
     "prepublishOnly": "bun run build && cp ../../README.md README.md",
     "postpublish": "rm -f README.md"
   },
