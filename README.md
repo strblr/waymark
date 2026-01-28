@@ -61,10 +61,10 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Cookbook](#cookbook)
   - [Server-side rendering (SSR)](#server-side-rendering-ssr)
   - [Scroll to top on navigation](#scroll-to-top-on-navigation)
+  - [Matching a route anywhere](#matching-a-route-anywhere)
   - [Global link configuration](#global-link-configuration)
   - [History middleware](#history-middleware)
   - [View transitions](#view-transitions)
-  - [Matching a route anywhere](#matching-a-route-anywhere)
 - [API reference](#api-reference)
   - [Router class](#router-class)
   - [Route class](#route-class)
@@ -1061,6 +1061,47 @@ function AppLayout() {
 }
 ```
 
+### Matching a route anywhere
+
+Use `useMatch` to check if a route matches the current path from anywhere in your component tree. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
+
+By default, `useMatch` uses loose matching where the current path only needs to start with the route's path. To require an exact match instead, pass `strict: true`:
+
+```tsx
+import { useMatch } from "waymark";
+
+const dashboard = route("/dashboard").component(Dashboard);
+const settings = route("/settings").component(Settings);
+
+function Sidebar() {
+  // Loose matching: matches /dashboard and /dashboard/literally/anything
+  const dashboardMatch = useMatch({ from: "/dashboard" });
+
+  // Strict matching: matches only /settings
+  const settingsMatch = useMatch({ from: settings, strict: true });
+
+  return (
+    <nav>
+      {dashboardMatch && <DashboardMenu />}
+      {settingsMatch && <SettingsSubmenu />}
+    </nav>
+  );
+}
+```
+
+You can also filter by param values to match only specific instances:
+
+```tsx
+const adminMatch = useMatch({
+  from: "/users/:id",
+  params: { id: "admin" }
+});
+
+if (adminMatch) {
+  // Currently viewing the admin user
+}
+```
+
 ### Global link configuration
 
 Set defaults for all `Link` components using `defaultLinkOptions` on the router. Useful for consistent styling and preload behavior across your app:
@@ -1156,42 +1197,6 @@ Add CSS to control the transition:
 ```
 
 For more advanced techniques, see the [MDN documentation on View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API).
-
-### Matching a route anywhere
-
-Use `useMatch` to check if a route matches the current path from anywhere in your component tree. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
-
-```tsx
-import { useMatch } from "waymark";
-
-const dashboard = route("/dashboard").component(Dashboard);
-const settings = route("/settings").component(Settings);
-
-function Sidebar() {
-  const dashboardMatch = useMatch({ from: "/dashboard" });
-  const settingsMatch = useMatch({ from: settings, strict: true });
-
-  return (
-    <nav>
-      {dashboardMatch && <DashboardMenu />}
-      {settingsMatch && <SettingsSubmenu />}
-    </nav>
-  );
-}
-```
-
-You can also filter by param values to match only specific instances:
-
-```tsx
-const adminMatch = useMatch({
-  from: "/users/:id",
-  params: { id: "admin" }
-});
-
-if (adminMatch) {
-  // Currently viewing the admin user
-}
-```
 
 ---
 
