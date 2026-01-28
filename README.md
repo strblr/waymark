@@ -164,9 +164,9 @@ Route building is immutable: every method on a route returns a new route instanc
 
 ## Nested routes and layouts
 
-Nesting is the core mechanism for building layouts and route hierarchies in Waymark. When you call `.route()` on an existing route, you create a child route that inherits everything from the parent: its path as a prefix, its params, its components, its handles, and its search mappers.
+Nesting is the core mechanism for building layouts and route hierarchies in Waymark. When you call `.route()` on an existing route, you create a child route that inherits everything from the parent: its path as a prefix, its params, its components, etc.
 
-Here's how it works. Let's start with a layout route:
+Here's how it works. Start with any route:
 
 ```tsx
 const dashboard = route("/dashboard").component(DashboardLayout);
@@ -237,7 +237,7 @@ const about = layout.route("/about").component(About);
 const routes = [home, about]; // ✅ Don't include `layout`
 ```
 
-This keeps your route list clean and makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable.
+This makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable.
 
 The `RouterRoot` component is the entry point to Waymark. It listens to URL changes, matches the current path against your routes, and renders the matching route's component hierarchy.
 
@@ -259,7 +259,7 @@ You can also pass a `basePath` if your app lives under a subpath:
 <RouterRoot routes={routes} basePath="/my-app" />
 ```
 
-The second approach is to create a `Router` instance outside of React. This is useful when you need to access the router from anywhere in your code, for example to navigate programmatically from a non-React context:
+The second approach is to create a `Router` instance outside of React. This gives you a global router instance that can be accessed from non-React contexts (e.g., utility functions, service modules, or other non-React code):
 
 ```tsx
 import { Router, RouterRoot } from "waymark";
@@ -338,7 +338,7 @@ declare module "waymark" {
 }
 ```
 
-But again, this is just one approach. You could keep all routes in a single file, split them by feature, organize them by route depth, whatever fits your project. Waymark doesn't care where the route objects come from or how you structure your files.
+But again, this is just one approach. You could keep all routes in a single file, split them by feature, organize them by route depth, whatever fits your project. Waymark doesn't care where the routes come from or how you structure your files.
 
 ---
 
@@ -677,7 +677,7 @@ You can also access the router directly via `useRouter()` (or import the router 
 router.navigate({ to: "/login" });
 ```
 
-For unsafe navigation that bypasses type checking, you can pass `url` instead of `to`, `params` and `search`. This is useful when you don't know the target URL statically (e.g. external redirects):
+For unsafe navigation that bypasses type checking, you can pass `url` instead of `to`, `params` and `search`. This is useful when you don't know the target URL statically (e.g., URLs from user input or API responses):
 
 ```tsx
 // Type-safe navigation
@@ -706,7 +706,7 @@ function ProtectedPage() {
 }
 ```
 
-The `Navigate` component accepts the same navigation props as the `Link` component. You can pass route patterns, path params, search params, and state:
+The `Navigate` component accepts the same navigation props as the `Link` component:
 
 ```tsx
 <Navigate to="/users/:id" params={{ id: "42" }} search={{ tab: "posts" }} />
@@ -1269,7 +1269,7 @@ const match = router.matchAll("/users/42");
 const route = router.getRoute("/users/:id");
 ```
 
-`router.preload(options)` triggers preloading for a route with typed params and search:
+`router.preload(options)` triggers preloading for a route:
 
 ```tsx
 await router.preload({ to: "/user/:id", params: { id: "42" } });
