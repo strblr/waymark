@@ -63,6 +63,7 @@ export type NavigateOptions<P extends Pattern> = {
 export interface LinkOptions {
   strict?: boolean;
   preload?: "intent" | "render" | "viewport" | false;
+  preloadDelay?: number;
   style?: CSSProperties;
   className?: string;
   activeStyle?: CSSProperties;

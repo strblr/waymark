@@ -1,7 +1,8 @@
 import {
   useRef,
-  useMemo,
   useState,
+  useMemo,
+  useCallback,
   useLayoutEffect,
   useEffect,
   isValidElement,
@@ -92,6 +93,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     search: _search,
     strict,
     preload,
+    preloadDelay = 50,
     style,
     className,
     activeStyle,
@@ -105,9 +107,21 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   };
 
   const ref = useRef<HTMLAnchorElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const url = router.createUrl(props);
   const active = !!useMatch({ from: props.to, strict, params });
   const preloadRoute = useEvent(() => router.preload(props));
+
+  const cancelPreload = useCallback(() => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+    }
+  }, []);
+
+  const schedulePreload = useCallback(() => {
+    cancelPreload();
+    timeoutRef.current = setTimeout(preloadRoute, preloadDelay);
+  }, [preloadDelay, cancelPreload]);
 
   const activeProps = useMemo(() => {
     return {
@@ -121,15 +135,25 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
 
   useEffect(() => {
     if (preload === "render") {
-      preloadRoute();
+      schedulePreload();
     } else if (preload === "viewport" && ref.current) {
       const observer = new IntersectionObserver(entries =>
-        entries.forEach(entry => entry.isIntersecting && preloadRoute())
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            schedulePreload();
+          } else {
+            cancelPreload();
+          }
+        })
       );
       observer.observe(ref.current);
-      return () => observer.disconnect();
+      return () => {
+        observer.disconnect();
+        cancelPreload();
+      };
     }
-  }, [preload]);
+    return cancelPreload;
+  }, [preload, schedulePreload, cancelPreload]);
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     rest.onClick?.(event);
@@ -149,14 +173,28 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
     rest.onFocus?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      preloadRoute();
+      schedulePreload();
+    }
+  };
+
+  const onBlur = (event: FocusEvent<HTMLAnchorElement>) => {
+    rest.onBlur?.(event);
+    if (preload === "intent") {
+      cancelPreload();
     }
   };
 
   const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
     rest.onPointerEnter?.(event);
     if (preload === "intent" && !event.defaultPrevented) {
-      preloadRoute();
+      schedulePreload();
+    }
+  };
+
+  const onPointerLeave = (event: PointerEvent<HTMLAnchorElement>) => {
+    rest.onPointerLeave?.(event);
+    if (preload === "intent") {
+      cancelPreload();
     }
   };
 
@@ -167,7 +205,9 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     href: url,
     onClick,
     onFocus,
-    onPointerEnter
+    onBlur,
+    onPointerEnter,
+    onPointerLeave
   };
 
   return asChild && isValidElement(children) ? (

@@ -25,7 +25,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - **Fully type-safe** - Complete TypeScript inference for routes, path params, and search params
 - **Zero config** - No build plugins, no CLI tools, no configuration files, very low boilerplate
 - **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
-- **3.5kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so around 4kB total
+- **3.6kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so around 4kB total
 - **Not vibe-coded** - Built with careful design and attention to detail by a human
 - **Just works** - Define routes, get autocomplete everywhere
 
@@ -628,6 +628,14 @@ The `preload` prop controls when preloading happens:
 
 **`preload={false}`** disables preloading entirely. This is the default.
 
+To prevent unwanted preloads from quick hover/focus interactions, Link waits 50ms before triggering. You can customize this with `preloadDelay`:
+
+```tsx
+<Link to="/heavy-page" preload="intent" preloadDelay={100}>
+  Heavy page
+</Link>
+```
+
 You can also preload programmatically using `router.preload()`:
 
 ```tsx
@@ -1154,6 +1162,7 @@ Set defaults for all `Link` components using `defaultLinkOptions` on the router.
   routes={routes}
   defaultLinkOptions={{
     preload: "intent",
+    preloadDelay: 75,
     className: "app-link",
     activeClassName: "active"
   }}
@@ -1442,7 +1451,7 @@ The `HistoryLike` interface defines how Waymark interacts with navigation. All h
 
 **`history.getPath()`** returns the current path.
 
-- Returns: `string` - The current path (e.g., `"/users/42"`)
+- Returns: `string` - The current path
 
 ```tsx
 const path = history.getPath();
@@ -1490,7 +1499,7 @@ history.push({ url: "/login", replace: true });
 
 **`history.subscribe(listener)`** subscribes to navigation events.
 
-- `listener` - `() => void` - Callback invoked any navigation occurs
+- `listener` - `() => void` - Callback invoked when any navigation occurs
 - Returns: `() => void` - An unsubscribe function
 
 ```tsx
@@ -1679,6 +1688,7 @@ type Match = {
 interface LinkOptions {
   strict?: boolean; // Strict matching for active state detection
   preload?: "intent" | "render" | "viewport" | false; // When to trigger preloading
+  preloadDelay?: number; // Delay in ms before preloading starts (default: 50)
   style?: CSSProperties; // Base styles for the link
   className?: string; // Base class name for the link
   activeStyle?: CSSProperties; // Additional styles when active
