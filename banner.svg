@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400">
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#1a1a1a;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#0B0D0F;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1b1c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0B0D0F;stop-opacity:1" />
     </linearGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#grad)" rx="32"/>
@@ -13,11 +13,11 @@
   <text x="800" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#999" text-anchor="middle">
     Type-safe routing for React
   </text>
-  <g transform="translate(280, 190)" fill="none" stroke="#666" stroke-width="6" stroke-linecap="round">
+  <g transform="translate(280, 190)" fill="none" stroke="white" stroke-width="6" stroke-linecap="round">
     <path d="M 12 0 L 60 0 L 96 -36"/>
     <path d="M 60 0 L 96 36"/>
     <circle cx="0" cy="0" r="15" fill="#fedc43" stroke="none"/>
-    <circle cx="96" cy="-36" r="12" fill="#666"/>
-    <circle cx="96" cy="36" r="12" fill="#666"/>
+    <circle cx="96" cy="-36" r="15" fill="white" stroke="none"/>
+    <circle cx="96" cy="36" r="15" fill="white" stroke="none"/>
   </g>
 </svg>
