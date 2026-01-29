@@ -52,7 +52,7 @@ export class Route<
     this._ = _;
   }
 
-  route<P2 extends string>(pattern: P2) {
+  route = <P2 extends string>(pattern: P2) => {
     type P_ = NormalizePath<`${P}/${P2}`>;
     type Ps = ParsePattern<P_>;
     const normalized = normalizePath(`${this.pattern}/${pattern}`);
@@ -60,13 +60,13 @@ export class Route<
       ...this._,
       ...parsePattern(normalized)
     });
-  }
+  };
 
-  search<S2 extends {}>(
+  search = <S2 extends {}>(
     validate:
       | ((search: S & Record<string, unknown>) => S2)
       | StandardSchemaV1<Record<string, unknown>, S2>
-  ) {
+  ) => {
     type S_ = Merge<S, OptionalOnUndefined<S2>>;
     validate = validator(validate);
     return new Route<P, Ps, S_>(this.pattern, {
@@ -76,16 +76,16 @@ export class Route<
         return { ...validated, ...validate({ ...search, ...validated }) };
       }
     });
-  }
+  };
 
-  handle(handle: Handle) {
+  handle = (handle: Handle) => {
     return new Route<P, Ps, S>(this.pattern, {
       ...this._,
       handles: [...this._.handles, handle]
     });
-  }
+  };
 
-  preload(preload: (context: PreloadContext<this>) => Promise<any>) {
+  preload = (preload: (context: PreloadContext<this>) => Promise<any>) => {
     return new Route<P, Ps, S>(this.pattern, {
       ...this._,
       preloads: [
@@ -97,32 +97,32 @@ export class Route<
           })
       ]
     });
-  }
+  };
 
-  component(component: ComponentType) {
+  component = (component: ComponentType) => {
     return new Route<P, Ps, S>(this.pattern, {
       ...this._,
       components: [...this._.components, memo(component)]
     });
-  }
+  };
 
-  lazy(loader: ComponentLoader) {
+  lazy = (loader: ComponentLoader) => {
     const component = lazy(async () => {
       const result = await loader();
       return { default: "default" in result ? result.default : result };
     });
     return this.preload(loader).component(component);
-  }
+  };
 
-  suspense(fallback: ComponentType) {
+  suspense = (fallback: ComponentType) => {
     return this.component(suspenseBoundary(fallback));
-  }
+  };
 
-  error(fallback: ComponentType<{ error: unknown }>) {
+  error = (fallback: ComponentType<{ error: unknown }>) => {
     return this.component(errorBoundary(fallback));
-  }
+  };
 
-  toString() {
+  toString = () => {
     return this.pattern;
-  }
+  };
 }
