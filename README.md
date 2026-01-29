@@ -69,9 +69,9 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [API reference](#api-reference)
   - [Router class](#router-class)
   - [Route class](#route-class)
-  - [History interface](#history-interface)
   - [Hooks](#hooks)
   - [Components](#components)
+  - [History interface](#history-interface)
   - [Types](#types)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -183,7 +183,7 @@ const profile = dashboard.route("/profile").component(Profile);
 
 The child routes combine the parent's path pattern with their own. So `overview` has the full pattern `/dashboard`, `settings` has `/dashboard/settings`, and `profile` has `/dashboard/profile`.
 
-For this to work, the parent component must render an `<Outlet />` where these children should appear:
+The parent component must render an `<Outlet />` where child routes should appear:
 
 ```tsx
 function DashboardLayout() {
@@ -238,7 +238,7 @@ const about = layout.route("/about").component(About);
 const routes = [home, about]; // ✅ Don't include `layout`
 ```
 
-This makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable.
+This makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable. Note that the order of routes in the array doesn't matter - Waymark uses a [ranking algorithm](#route-matching-and-ranking) to pick the most specific match.
 
 The `RouterRoot` component is the entry point to Waymark. It listens to URL changes, matches the current path against your routes, and renders the matching route's component hierarchy.
 
@@ -417,7 +417,9 @@ const searchPage = route("/search")
   .component(SearchPage);
 ```
 
-Access search params with `useSearch`, which returns a tuple of the current values and a setter function:
+Since you can't control what users put in the URL, your validator should handle missing or malformed values gracefully - validate and normalize rather than reject.
+
+Access validated search params with `useSearch`, which returns a tuple of the current values and a setter function:
 
 ```tsx
 function SearchPage() {
@@ -1445,71 +1447,6 @@ const user = route("/users/:id")
   });
 ```
 
-## History interface
-
-The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
-
-**`history.getPath()`** returns the current path.
-
-- Returns: `string` - The current path
-
-```tsx
-const path = history.getPath();
-// Returns "/users/42"
-```
-
-**`history.getSearch()`** returns the current search params as a parsed JSON object.
-
-- Returns: `Record<string, unknown>` - The parsed search params
-
-```tsx
-const search = history.getSearch();
-// Returns { tab: "posts", page: 2 }
-```
-
-**`history.getState()`** returns the current history state.
-
-- Returns: `any` - The state passed during navigation, or undefined
-
-```tsx
-const state = history.getState();
-// Returns any state passed during navigation
-```
-
-**`history.go(delta)`** navigates forward or back in history.
-
-- `delta` - `number` - The number of entries to move
-- Returns: `void`
-
-```tsx
-history.go(-1); // Go back
-history.go(1); // Go forward
-history.go(-2); // Go back two steps
-```
-
-**`history.push(options)`** pushes or replaces a history entry.
-
-- `options` - `HistoryPushOptions` - The URL to navigate to, with optional `replace` and `state`
-- Returns: `void`
-
-```tsx
-history.push({ url: "/users/42", state: { from: "list" } });
-history.push({ url: "/login", replace: true });
-```
-
-**`history.subscribe(listener)`** subscribes to navigation events.
-
-- `listener` - `() => void` - Callback invoked when any navigation occurs
-- Returns: `() => void` - An unsubscribe function
-
-```tsx
-const unsubscribe = history.subscribe(() => {
-  console.log("Navigation occurred");
-});
-
-// Later: unsubscribe()
-```
-
 ## Hooks
 
 **`useRouter()`** returns the Router instance from context.
@@ -1625,6 +1562,81 @@ function Layout() {
 
 ```tsx
 <Navigate to="/login" replace />
+```
+
+## History interface
+
+The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
+
+**Available implementations:**
+
+```tsx
+new BrowserHistory(); // Browser History API (/posts/123). Default.
+new HashHistory(); // URL hash (/#/posts/123).
+new MemoryHistory("/initial"); // In-memory only.
+```
+
+See [History implementations](#history-implementations) for detailed usage.
+
+**`history.getPath()`** returns the current path.
+
+- Returns: `string` - The current path
+
+```tsx
+const path = history.getPath();
+// Returns "/users/42"
+```
+
+**`history.getSearch()`** returns the current search params as a parsed JSON object.
+
+- Returns: `Record<string, unknown>` - The parsed search params
+
+```tsx
+const search = history.getSearch();
+// Returns { tab: "posts", page: 2 }
+```
+
+**`history.getState()`** returns the current history state.
+
+- Returns: `any` - The state passed during navigation, or undefined
+
+```tsx
+const state = history.getState();
+// Returns any state passed during navigation
+```
+
+**`history.go(delta)`** navigates forward or back in history.
+
+- `delta` - `number` - The number of entries to move
+- Returns: `void`
+
+```tsx
+history.go(-1); // Go back
+history.go(1); // Go forward
+history.go(-2); // Go back two steps
+```
+
+**`history.push(options)`** pushes or replaces a history entry.
+
+- `options` - `HistoryPushOptions` - The URL to navigate to, with optional `replace` and `state`
+- Returns: `void`
+
+```tsx
+history.push({ url: "/users/42", state: { from: "list" } });
+history.push({ url: "/login", replace: true });
+```
+
+**`history.subscribe(listener)`** subscribes to navigation events.
+
+- `listener` - `() => void` - Callback invoked when any navigation occurs
+- Returns: `() => void` - An unsubscribe function
+
+```tsx
+const unsubscribe = history.subscribe(() => {
+  console.log("Navigation occurred");
+});
+
+// Later: unsubscribe()
 ```
 
 ## Types
