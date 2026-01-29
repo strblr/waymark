@@ -25,7 +25,9 @@ if (tocStart !== -1 && tocEnd !== -1) {
   processedLines = lines;
 }
 
-const processedContent = processedLines.join("\n");
+const processedContent = processedLines
+  .map(line => (line.match(/^#+\s/) ? `#${line}` : line))
+  .join("\n");
 
 const outputPath = new URL("../docs/pages/readme.mdx", import.meta.url);
 await write(outputPath, processedContent);
