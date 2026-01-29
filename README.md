@@ -1733,6 +1733,7 @@ interface PreloadContext {
 - Possibility to pass an arbitrary context to the Router instance for later use in preloads?
 - Relative path navigation? Not sure it's indispensable given that users can export/import route objects and pass them as navigation option.
 - Document usage in test environments
+- Devtools? Let me know if needed.
 - Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
 
 ---
