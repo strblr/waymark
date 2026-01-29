@@ -1031,7 +1031,7 @@ import { hydrateRoot } from "react-dom/client";
 import { RouterRoot } from "waymark";
 import { routes } from "./routes";
 
-hydrateRoot(document.getElementById("root")!, <RouterRoot routes={routes} />);
+hydrateRoot(rootElement, <RouterRoot routes={routes} />);
 ```
 
 You can also manually set `ssrContext.statusCode` in your components during SSR to control the response status (like 404 for not found pages).
