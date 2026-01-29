@@ -9,7 +9,7 @@ let tocStart = -1;
 let tocEnd = -1;
 
 for (let i = 0; i < lines.length; i++) {
-  if (lines[i].trim() === "## Table of contents") {
+  if (lines[i].match(/^#+\sTable of contents/)) {
     tocStart = i;
   }
   if (tocStart !== -1 && tocEnd === -1 && lines[i].trim() === "---") {
