@@ -1214,16 +1214,18 @@ The `Router` class is the core of Waymark. You can create an instance directly o
 - `router.ssrContext` - The SSR context (if provided)
 - `router.defaultLinkOptions` - Default link options
 
-**`new Router(options)`**
-
-Creates a new router.
+**`new Router(options)`** creates a new router.
 
 - `options` - `RouterOptions` - Router configuration
 - Returns: `Router` - A new router instance
 
-**`router.navigate(options)`**
+```tsx
+const router = new Router({ routes });
+const router = new Router({ routes, basePath: "/app" });
+const router = new Router({ routes, history: new HashHistory() });
+```
 
-Navigates to a new location.
+**`router.navigate(options)`** navigates to a new location.
 
 - `options` - `NavigateOptions | HistoryPushOptions | number` - Type-safe navigation options, untyped navigation options, or a history delta
 - Returns: `void`
@@ -1240,9 +1242,7 @@ router.navigate(-1); // Back
 router.navigate(1); // Forward
 ```
 
-**`router.createUrl(options)`**
-
-Builds a URL string.
+**`router.createUrl(options)`** builds a URL string.
 
 - `options` - `NavigateOptions` - Type-safe navigation options
 - Returns: `string` - The constructed URL
@@ -1252,9 +1252,7 @@ const url = router.createUrl({ to: userProfile, params: { id: "42" } });
 // Returns "/users/42"
 ```
 
-**`router.match(path, options)`**
-
-Checks if a path matches a specific route.
+**`router.match(path, options)`** checks if a path matches a specific route.
 
 - `path` - `string` - The path to match against
 - `options` - `MatchOptions` - Matching options
@@ -1265,9 +1263,7 @@ const match = router.match("/users/42", { from: "/users/:id" });
 // Returns { route, params: { id: "42" } } or null
 ```
 
-**`router.matchAll(path)`**
-
-Finds the best matching route from all registered routes.
+**`router.matchAll(path)`** finds the best match from all registered routes.
 
 - `path` - `string` - The path to match against
 - Returns: `Match | null` - The best match or null if no route matches
@@ -1277,9 +1273,7 @@ const match = router.matchAll("/users/42");
 // Returns the best match or null
 ```
 
-**`router.getRoute(pattern)`**
-
-Retrieves a route by its pattern.
+**`router.getRoute(pattern)`** get a route by its pattern.
 
 - `pattern` - `Pattern | Route` - A route pattern string or a route object
 - Returns: `Route` - The route object; throws if not found
@@ -1288,9 +1282,7 @@ Retrieves a route by its pattern.
 const route = router.getRoute("/users/:id");
 ```
 
-**`router.preload(options)`**
-
-Triggers preloading for a route, calling its lazy loader and preload functions in parallel.
+**`router.preload(options)`** triggers preloading for a route.
 
 - `options` - `NavigateOptions` - Type-safe navigation options
 - Returns: `Promise<void>` - Resolves when preloaded
@@ -1304,9 +1296,7 @@ await router.preload({ to: searchPage, search: { q: "test" } });
 
 Routes are created with the `route()` function and configured by chaining methods.
 
-**`route(pattern)`**
-
-Creates a new route.
+**`route(pattern)`** creates a new route.
 
 - `pattern` - `string` - The route path pattern (e.g., `"/users"`, `"/users/:id"`, `"/*"`)
 - Returns: `Route` - A new route object
@@ -1317,9 +1307,7 @@ const user = route("/users/:id");
 const catchAll = route("/*");
 ```
 
-**`.route(pattern)`**
-
-Creates a nested child route.
+**`.route(pattern)`** creates a nested child route.
 
 - `pattern` - `string` - The child path pattern to append
 - Returns: `Route` - A new route object
@@ -1329,9 +1317,7 @@ const userSettings = user.route("/settings");
 // Pattern becomes "/users/:id/settings"
 ```
 
-**`.component(component)`**
-
-Adds a React component to render when this route matches.
+**`.component(component)`** adds a component to render when this route matches.
 
 - `component` - `ComponentType` - A React component
 - Returns: `Route` - A new route object
@@ -1340,9 +1326,7 @@ Adds a React component to render when this route matches.
 const users = route("/users").component(UsersPage);
 ```
 
-**`.lazy(loader)`**
-
-Adds a lazy-loaded component to render when this route matches.
+**`.lazy(loader)`** adds a lazy-loaded component to render when this route matches.
 
 - `loader` - `ComponentLoader` - A function returning a dynamic import promise
 - Returns: `Route` - A new route object
@@ -1351,9 +1335,7 @@ Adds a lazy-loaded component to render when this route matches.
 const users = route("/users").lazy(() => import("./UsersPage"));
 ```
 
-**`.search(validate)`**
-
-Adds search parameter validation.
+**`.search(validate)`** adds search parameter validation.
 
 - `validate` - `StandardSchema | ((search) => ValidatedSearch)` - A Standard Schema (like Zod) or a validation function
 - Returns: `Route` - A new route object
@@ -1362,9 +1344,7 @@ Adds search parameter validation.
 const search = route("/search").search(z.object({ q: z.string() }));
 ```
 
-**`.handle(handle)`**
-
-Attaches static metadata to the route.
+**`.handle(handle)`** attaches static metadata to the route.
 
 - `handle` - `Handle` - Arbitrary metadata
 - Returns: `Route` - A new route object
@@ -1373,9 +1353,7 @@ Attaches static metadata to the route.
 const admin = route("/admin").handle({ requiresAuth: true });
 ```
 
-**`.suspense(fallback)`**
-
-Wraps all nested content in a React Suspense boundary.
+**`.suspense(fallback)`** wraps nested content in a Suspense boundary.
 
 - `fallback` - `ComponentType` - The fallback component to show while suspended
 - Returns: `Route` - A new route object
@@ -1386,9 +1364,7 @@ const lazy = route("/lazy")
   .lazy(() => import("./Page"));
 ```
 
-**`.error(fallback)`**
-
-Wraps all nested content in an error boundary.
+**`.error(fallback)`** wraps nested content in an error boundary.
 
 - `fallback` - `ComponentType<{ error: unknown }>` - The fallback component, receives the caught error as a prop
 - Returns: `Route` - A new route object
@@ -1397,9 +1373,7 @@ Wraps all nested content in an error boundary.
 const risky = route("/risky").error(ErrorPage).component(RiskyPage);
 ```
 
-**`.preload(preload)`**
-
-Registers a preload function that runs before navigation when triggered by a `Link` with preloading enabled or via `router.preload()`.
+**`.preload(preload)`** registers a preload function for the route.
 
 - `preload` - `(context: PreloadContext) => Promise<any>` - An async function receiving typed `params` and `search`
 - Returns: `Route` - A new route object
@@ -1417,9 +1391,7 @@ const user = route("/users/:id")
 
 The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
 
-**`history.getPath()`**
-
-Returns the current pathname.
+**`history.getPath()`** returns the current path.
 
 - Returns: `string` - The current path (e.g., `"/users/42"`)
 
@@ -1428,20 +1400,16 @@ const path = history.getPath();
 // Returns "/users/42"
 ```
 
-**`history.getSearch()`**
+**`history.getSearch()`** returns the current search params as a parsed JSON object.
 
-Returns the current search params as a parsed object (JSON values are automatically decoded).
-
-- Returns: `Record<string, unknown>` - The parsed search parameters
+- Returns: `Record<string, unknown>` - The parsed search params
 
 ```tsx
 const search = history.getSearch();
 // Returns { tab: "posts", page: 2 }
 ```
 
-**`history.getState()`**
-
-Returns the current history state.
+**`history.getState()`** returns the current history state.
 
 - Returns: `any` - The state passed during navigation, or undefined
 
@@ -1450,9 +1418,7 @@ const state = history.getState();
 // Returns any state passed during navigation
 ```
 
-**`history.go(delta)`**
-
-Navigates forward or back in history.
+**`history.go(delta)`** navigates forward or back in history.
 
 - `delta` - `number` - The number of entries to move
 - Returns: `void`
@@ -1463,9 +1429,7 @@ history.go(1); // Go forward
 history.go(-2); // Go back two steps
 ```
 
-**`history.push(options)`**
-
-Pushes or replaces a history entry.
+**`history.push(options)`** pushes or replaces a history entry.
 
 - `options` - `HistoryPushOptions` - The URL to navigate to, with optional `replace` and `state`
 - Returns: `void`
@@ -1475,9 +1439,7 @@ history.push({ url: "/users/42", state: { from: "list" } });
 history.push({ url: "/login", replace: true });
 ```
 
-**`history.subscribe(listener)`**
-
-Subscribes to navigation events.
+**`history.subscribe(listener)`** subscribes to navigation events.
 
 - `listener` - `() => void` - Callback invoked any navigation occurs
 - Returns: `() => void` - An unsubscribe function
@@ -1492,9 +1454,7 @@ const unsubscribe = history.subscribe(() => {
 
 ## Hooks
 
-**`useRouter()`**
-
-Returns the Router instance from context.
+**`useRouter()`** returns the Router instance from context.
 
 - Returns: `Router` - The router instance
 
@@ -1502,9 +1462,7 @@ Returns the Router instance from context.
 const router = useRouter();
 ```
 
-**`useNavigate()`**
-
-Returns a navigation function (equivalent to `router.navigate`).
+**`useNavigate()`** returns a navigation function.
 
 - Returns: `(options: NavigateOptions | HistoryPushOptions | number) => void` - The navigate function
 
@@ -1514,19 +1472,15 @@ navigate({ to: "/home" });
 navigate(-1);
 ```
 
-**`useLocation()`**
+**`useLocation()`** returns the current location, subscribes to changes.
 
-Returns the current location, re-rendering when it changes.
-
-- Returns: `{ path: string, search: Record<string, unknown>, state: any }` - The current path, raw search params, and history state
+- Returns: `{ path: string, search: Record<string, unknown>, state: any }` - The current path, parsed search params, and history state
 
 ```tsx
 const { path, search, state } = useLocation();
 ```
 
-**`useOutlet()`**
-
-Returns the child route content for the current route. Used internally by `Outlet`.
+**`useOutlet()`** returns the child route content.
 
 - Returns: `ReactNode` - The child route's content or null
 
@@ -1534,20 +1488,16 @@ Returns the child route content for the current route. Used internally by `Outle
 const outlet = useOutlet();
 ```
 
-**`useParams(route)`**
-
-Returns typed path parameters for a route. Throws if the route doesn't match the current path.
+**`useParams(route)`** returns typed path params for a route.
 
 - `route` - `Pattern | Route` - A route pattern string or route object
-- Returns: `Params` - The extracted path parameters, fully typed
+- Returns: `Params` - The extracted path params, fully typed
 
 ```tsx
 const { id } = useParams(userRoute);
 ```
 
-**`useSearch(route)`**
-
-Returns validated search params and a setter function.
+**`useSearch(route)`** returns validated search params and a setter function.
 
 - `route` - `Pattern | Route` - A route pattern string or route object
 - Returns: `[Search, SetSearch]` - A tuple of the validated search params and a setter; the setter accepts a partial update or an updater function, with an optional second argument to replace instead of push
@@ -1559,9 +1509,7 @@ setSearch(prev => ({ page: prev.page + 1 }));
 setSearch({ page: 1 }, true); // Replace instead of push
 ```
 
-**`useMatch(options)`**
-
-Checks if a route matches the current path.
+**`useMatch(options)`** checks if a route matches the current path.
 
 - `options` - `MatchOptions` - Matching options
 - Returns: `Match | null` - The match result or null if no match
@@ -1572,9 +1520,7 @@ const strictMatch = useMatch({ from: "/users", strict: true });
 const filteredMatch = useMatch({ from: "/users/:id", params: { id: "admin" } });
 ```
 
-**`useHandles()`**
-
-Returns all handles from the matched route chain.
+**`useHandles()`** returns the handles from the matched route chain.
 
 - Returns: `Handle[]` - Array of handles
 
@@ -1584,20 +1530,16 @@ const handles = useHandles();
 
 ## Components
 
-**`RouterRoot`**
+**`RouterRoot`** sets up routing context and renders your routes.
 
-The root component that sets up routing context and renders your routes.
-
-- `props` - `RouterOptions | { router: Router }` - Either router options (same as the `Router` constructor) or a pre-created router instance
+- `props` - `RouterOptions | { router: Router }` - Either router options (same as the `Router` constructor) or a router instance
 
 ```tsx
 <RouterRoot routes={routes} basePath="/app" history={history} />
 <RouterRoot router={router} />
 ```
 
-**`Outlet`**
-
-Renders the child route's content. Place this in parent route components where nested content should appear.
+**`Outlet`** renders the child route content.
 
 ```tsx
 function Layout() {
@@ -1609,9 +1551,7 @@ function Layout() {
 }
 ```
 
-**`Link`**
-
-Renders an anchor tag for navigation.
+**`Link`** renders an anchor tag for navigation.
 
 - `props` - `NavigateOptions & LinkOptions & { asChild?: boolean }` - Navigation options, link options, and optional `asChild` to use a child element as the anchor; other props are passed through
 
@@ -1621,9 +1561,7 @@ Renders an anchor tag for navigation.
 </Link>
 ```
 
-**`Navigate`**
-
-Redirects on render.
+**`Navigate`** redirects on render.
 
 - `props` - `NavigateOptions` - The navigation target
 
@@ -1633,9 +1571,7 @@ Redirects on render.
 
 ## Types
 
-**`RouterOptions`**
-
-Options for creating a `Router` instance or passing to `RouterRoot`.
+**`RouterOptions`** are options for creating a `Router` instance or passing to `RouterRoot`.
 
 ```tsx
 interface RouterOptions {
@@ -1647,23 +1583,19 @@ interface RouterOptions {
 }
 ```
 
-**`NavigateOptions`**
-
-The main type for type-safe navigation.
+**`NavigateOptions`** are options for type-safe navigation.
 
 ```tsx
 type NavigateOptions = {
   to: Pattern | Route; // Route pattern string or route object
-  params?: Params; // Path parameters
-  search?: Search; // Search parameters
+  params?: Params; // Path params
+  search?: Search; // Search params
   replace?: boolean; // Replace history entry instead of pushing
   state?: any; // Arbitrary state to pass
 };
 ```
 
-**`HistoryPushOptions`**
-
-Options for untyped navigation.
+**`HistoryPushOptions`** are options for untyped navigation.
 
 ```tsx
 interface HistoryPushOptions {
@@ -1673,9 +1605,7 @@ interface HistoryPushOptions {
 }
 ```
 
-**`MatchOptions`**
-
-Options for route matching.
+**`MatchOptions`** are options for route matching.
 
 ```tsx
 type MatchOptions = {
@@ -1685,20 +1615,16 @@ type MatchOptions = {
 };
 ```
 
-**`Match`**
-
-The result of a successful route match.
+**`Match`** is the result of a successful route match.
 
 ```tsx
 type Match = {
-  route: Route; // The matched route object
-  params: Params; // The extracted path parameters
+  route: Route; // Matched route object
+  params: Params; // Extracted path params
 };
 ```
 
-**`LinkOptions`**
-
-Controls link behavior and styling.
+**`LinkOptions`** controls link behavior and styling.
 
 ```tsx
 interface LinkOptions {
@@ -1711,9 +1637,7 @@ interface LinkOptions {
 }
 ```
 
-**`SSRContext`**
-
-Captures context during server-side rendering.
+**`SSRContext`** captures context during server-side rendering.
 
 ```tsx
 type SSRContext = {
@@ -1722,14 +1646,12 @@ type SSRContext = {
 };
 ```
 
-**`PreloadContext`**
-
-The context passed to preload functions.
+**`PreloadContext`** is the context passed to preload functions.
 
 ```tsx
 interface PreloadContext {
-  params: Params; // Typed path parameters for the route
-  search: Search; // Typed and validated search parameters
+  params: Params; // Path params for the route
+  search: Search; // Validated search params
 }
 ```
 
