@@ -31,7 +31,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 ---
 
-## Table of contents
+# Table of contents
 
 - [Showcase](#showcase)
 - [Installation](#installation)
@@ -77,7 +77,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 ---
 
-## Showcase
+# Showcase
 
 Here's what a small routing setup looks like. Define some routes, render them, and get full type safety:
 
@@ -118,7 +118,7 @@ Links, navigation, path params, search params - everything autocompletes and typ
 
 ---
 
-## Installation
+# Installation
 
 ```bash
 npm install waymark
@@ -128,7 +128,7 @@ Waymark requires React 18 or higher.
 
 ---
 
-## Defining routes
+# Defining routes
 
 Routes are created using the `route()` function, following the [builder pattern](https://dev.to/superviz/design-pattern-7-builder-pattern-10j4). You pass it a path and chain methods to configure the route.
 
@@ -162,7 +162,7 @@ Route building is immutable: every method on a route returns a new route instanc
 
 ---
 
-## Nested routes and layouts
+# Nested routes and layouts
 
 Nesting is the core mechanism for building layouts and route hierarchies in Waymark. When you call `.route()` on an existing route, you create a child route that inherits everything from the parent: its path as a prefix, its params, its components, etc.
 
@@ -221,7 +221,7 @@ Each level must include an `<Outlet />` to render the next level.
 
 ---
 
-## Setting up the router
+# Setting up the router
 
 Before setting up the router, you need to collect your navigable routes into an array. When building nested route hierarchies, you'll often create intermediate parent routes solely for grouping and shared layouts. These intermediate routes shouldn't be included in your routes array - only the final, navigable routes should be:
 
@@ -289,7 +289,7 @@ With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs
 
 ---
 
-## Code organization
+# Code organization
 
 There's no prescribed way to organize your routing code. Since Waymark isn't file-based routing, the structure is entirely up to you.
 
@@ -342,7 +342,7 @@ But again, this is just one approach. You could keep all routes in a single file
 
 ---
 
-## Path params
+# Path params
 
 Dynamic segments in route patterns become typed path params. Define them with a colon prefix. They can also be made optional.
 
@@ -384,9 +384,9 @@ function FileBrowser() {
 
 ---
 
-## Search params
+# Search params
 
-### Basic usage
+## Basic usage
 
 Search params (the `?key=value` part of URLs) can be typed and validated using the `.search()` method on a route. You can pass either a [Standard Schema](https://standardschema.dev/schema#what-schema-libraries-implement-the-spec) validator like Zod, or a plain validation function.
 
@@ -439,7 +439,7 @@ Pass `true` as the second argument to replace the history entry instead of pushi
 setSearch({ page: 1 }, true);
 ```
 
-### JSON-first approach
+## JSON-first approach
 
 Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
 
@@ -454,7 +454,7 @@ This means you can store complex data structures like arrays and objects in sear
 
 The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
 
-### Inheritance
+## Inheritance
 
 When you define search params with a validator on a route, all child routes automatically inherit that validator along with its typing.
 
@@ -502,7 +502,7 @@ function ProjectsPage() {
 }
 ```
 
-### Idempotency requirement
+## Idempotency requirement
 
 The validation function or schema you pass to `.search()` must be **idempotent**, meaning `fn(fn(x))` should equal `fn(x)`.
 
@@ -510,9 +510,9 @@ When you read search params, the values are passed through your validator. When 
 
 ---
 
-## Navigation
+# Navigation
 
-### The Link component
+## The Link component
 
 The `Link` component renders an anchor tag that navigates without a full page reload. It accepts a `to` prop that can be either a route pattern string or a route object:
 
@@ -561,7 +561,7 @@ The `asChild` prop lets you use your own component while keeping Link's behavior
 </Link>
 ```
 
-### Active state detection
+## Active state detection
 
 Links automatically track whether they match the current URL. When active, they receive a `data-active="true"` attribute and can apply different styles.
 
@@ -595,7 +595,7 @@ Or use the `activeClassName` and `activeStyle` props directly:
 </Link>
 ```
 
-### Route preloading
+## Route preloading
 
 Links can optionally trigger route preloading before navigation occurs. When preloading is enabled, any [lazy-loaded components](#lazy-loading) (defined with `.lazy()`) and [preload functions](#data-preloading) (defined with `.preload()`) are called early. This improves perceived performance by loading component bundles and running preparation logic like prefetching data ahead of time.
 
@@ -636,7 +636,7 @@ router.preload({ to: userProfile, params: { id: "42" } });
 
 To set a preload strategy globally for all links in your app, see [Global link configuration](#global-link-configuration).
 
-### Programmatic navigation
+## Programmatic navigation
 
 For navigation triggered by code rather than user clicks, use the `useNavigate` hook:
 
@@ -688,7 +688,7 @@ navigate({ url: "/some/path?tab=settings" });
 navigate({ url: "/callback", replace: true, state: { data: 123 } });
 ```
 
-### Declarative navigation
+## Declarative navigation
 
 For redirects triggered by rendering rather than events, use the `Navigate` component. It navigates as soon as it mounts, making it useful for conditional redirects based on application state:
 
@@ -718,7 +718,7 @@ Note that `Navigate` uses `useLayoutEffect` internally to ensure the navigation 
 
 ---
 
-## Lazy loading
+# Lazy loading
 
 Load route components on demand with `.lazy()`. The function you pass should return a dynamic import:
 
@@ -757,7 +757,7 @@ See [Route preloading](#route-preloading) for ways to load these components befo
 
 ---
 
-## Data preloading
+# Data preloading
 
 Use `.preload()` to run logic before navigation occurs, typically to prefetch data. Preload functions receive the target route's typed params and search values:
 
@@ -798,7 +798,7 @@ const settings = dashboard.route("/settings").component(Settings);
 
 ---
 
-## Error boundaries
+# Error boundaries
 
 Catch errors thrown during rendering with `.error()`. The error component receives the error as a prop:
 
@@ -826,7 +826,7 @@ To give new routes a fresh start, the error boundary automatically resets when n
 
 ---
 
-## Suspense boundaries
+# Suspense boundaries
 
 When using lazy loading or React's `use()` hook for data fetching, you may want to add suspense boundaries to show loading states. Add them with `.suspense()`:
 
@@ -855,7 +855,7 @@ Note: React 19 has a [known throttling behavior](https://github.com/facebook/rea
 
 ---
 
-## Route handles
+# Route handles
 
 Handles let you attach static arbitrary metadata to routes. This is useful for breadcrumbs, page titles, access control flags, or any other static data you want to associate with a route.
 
@@ -905,7 +905,7 @@ declare module "waymark" {
 
 ---
 
-## Route matching and ranking
+# Route matching and ranking
 
 When a user navigates to a URL, Waymark needs to determine which route matches. Since multiple routes can potentially match the same path (think `/users/:id` vs `/users/new`), Waymark uses a ranking algorithm to pick the most specific one.
 
@@ -957,7 +957,7 @@ const routes = [
 
 ---
 
-## History implementations
+# History implementations
 
 History is an abstraction layer that sits between the router and the actual low-level navigation logic. It handles reading and updating the current location, managing navigation state, and notifying when the URL changes. This abstraction allows Waymark to work in different environments (browser, hash-based, in-memory, server-side, tests, etc.) without changing the router's core logic. You can switch between environments simply by swapping the history implementation - the rest of your app stays exactly the same.
 
@@ -991,9 +991,9 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 ---
 
-## Cookbook
+# Cookbook
 
-### Server-side rendering (SSR)
+## Server-side rendering (SSR)
 
 Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
 
@@ -1036,7 +1036,7 @@ hydrateRoot(document.getElementById("root")!, <RouterRoot routes={routes} />);
 
 You can also manually set `ssrContext.statusCode` in your components during SSR to control the response status (like 404 for not found pages).
 
-### Scroll to top on navigation
+## Scroll to top on navigation
 
 Create a component that scrolls to top when the path changes and include it in your layout:
 
@@ -1061,7 +1061,7 @@ function AppLayout() {
 }
 ```
 
-### Matching a route anywhere
+## Matching a route anywhere
 
 Use `useMatch` to check if a route matches the current path from anywhere in your component tree. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
 
@@ -1102,7 +1102,7 @@ if (adminMatch) {
 }
 ```
 
-### Global link configuration
+## Global link configuration
 
 Set defaults for all `Link` components using `defaultLinkOptions` on the router. Useful for consistent styling and preload behavior across your app:
 
@@ -1119,7 +1119,7 @@ Set defaults for all `Link` components using `defaultLinkOptions` on the router.
 
 Individual links can override any of these defaults by passing their own props.
 
-### History middleware
+## History middleware
 
 This is a design pattern rather than a feature. You can extend history behavior for logging, analytics, or other side effects by monkey-patching the history instance:
 
@@ -1158,7 +1158,7 @@ const router = new Router({
 });
 ```
 
-### View transitions
+## View transitions
 
 You can use the view transitions API for smoother page animations. Create a history middleware that wraps navigation in a view transition:
 
@@ -1200,9 +1200,9 @@ For more advanced techniques, see the [MDN documentation on View Transitions](ht
 
 ---
 
-## API reference
+# API reference
 
-### Router class
+## Router class
 
 The `Router` class is the core of Waymark. You can create an instance directly or let `RouterRoot` create one.
 
@@ -1300,7 +1300,7 @@ await router.preload({ to: "/user/:id", params: { id: "42" } });
 await router.preload({ to: searchPage, search: { q: "test" } });
 ```
 
-### Route class
+## Route class
 
 Routes are created with the `route()` function and configured by chaining methods.
 
@@ -1413,7 +1413,7 @@ const user = route("/users/:id")
   });
 ```
 
-### History interface
+## History interface
 
 The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
 
@@ -1505,7 +1505,7 @@ const unsubscribe = history.subscribe(() => {
 // Later: unsubscribe()
 ```
 
-### Hooks
+## Hooks
 
 **`useRouter()`**
 
@@ -1597,7 +1597,7 @@ Returns all handles from the matched route chain.
 const handles = useHandles();
 ```
 
-### Components
+## Components
 
 **`RouterRoot`**
 
@@ -1646,7 +1646,7 @@ Redirects on render.
 <Navigate to="/login" replace />
 ```
 
-### Types
+## Types
 
 **`RouterOptions`**
 
@@ -1750,7 +1750,7 @@ interface PreloadContext {
 
 ---
 
-## Roadmap
+# Roadmap
 
 - Possibility to pass an arbitrary context to the Router instance for later use in preloads?
 - Document usage in test environments
@@ -1758,6 +1758,6 @@ interface PreloadContext {
 
 ---
 
-## License
+# License
 
 MIT
