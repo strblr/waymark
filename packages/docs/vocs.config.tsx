@@ -6,8 +6,15 @@ export default defineConfig({
   baseUrl: "https://waymark.strblr.workers.dev",
   iconUrl:
     "https://raw.githubusercontent.com/strblr/waymark/master/favicon.svg",
+  ogImageUrl:
+    "https://raw.githubusercontent.com/strblr/waymark/master/banner.svg",
   font: {
-    google: "Inter"
+    default: {
+      google: "Inter"
+    },
+    mono: {
+      google: "JetBrains Mono"
+    }
   },
   socials: [
     {
@@ -20,7 +27,21 @@ export default defineConfig({
     accentColor: "hsl(49, 99%, 63%)",
     variables: {
       color: {
-        background: "black"
+        background: "#0B0D0F",
+        codeBlockBackground: "#090a0b"
+      },
+      fontWeight: {
+        regular: "400",
+        medium: "500",
+        semibold: "600"
+      },
+      borderRadius: {
+        "0": "0",
+        "2": "8px",
+        "3": "12px",
+        "4": "16px",
+        "6": "24px",
+        "8": "32px"
       }
     }
   },
