@@ -59,6 +59,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
 - [Cookbook](#cookbook)
+  - [Quick start example](#quick-start-example)
   - [Server-side rendering (SSR)](#server-side-rendering-ssr)
   - [Scroll to top on navigation](#scroll-to-top-on-navigation)
   - [Matching a route anywhere](#matching-a-route-anywhere)
@@ -993,6 +994,48 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 # Cookbook
 
+## Quick start example
+
+Here's a minimal but complete routing setup with a layout and two pages:
+
+```tsx
+import { route, RouterRoot, Outlet, Link } from "waymark";
+
+// Layout route
+const app = route("/").component(AppLayout);
+
+function AppLayout() {
+  return (
+    <div>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+      </nav>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+// Page routes
+const home = app.route("/").component(() => <h1>Welcome home</h1>);
+const about = app.route("/about").component(() => <h1>About us</h1>);
+
+// Router setup
+const routes = [home, about];
+
+export function App() {
+  return <RouterRoot routes={routes} />;
+}
+
+declare module "waymark" {
+  interface Register {
+    routes: typeof routes;
+  }
+}
+```
+
 ## Server-side rendering (SSR)
 
 Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
@@ -1333,6 +1376,9 @@ const users = route("/users").component(UsersPage);
 
 ```tsx
 const users = route("/users").lazy(() => import("./UsersPage"));
+const admin = route("/admin").lazy(() =>
+  import("./Admin").then(m => m.AdminPage)
+);
 ```
 
 **`.search(validate)`** adds search parameter validation.
@@ -1342,6 +1388,9 @@ const users = route("/users").lazy(() => import("./UsersPage"));
 
 ```tsx
 const search = route("/search").search(z.object({ q: z.string() }));
+const filter = route("/filter").search(raw => ({
+  term: String(raw.term ?? "")
+}));
 ```
 
 **`.handle(handle)`** attaches static metadata to the route.
@@ -1660,6 +1709,7 @@ interface PreloadContext {
 # Roadmap
 
 - Possibility to pass an arbitrary context to the Router instance for later use in preloads?
+- Relative path navigation? Not sure it's indispensable given that users can export/import route objects and pass them as navigation option.
 - Document usage in test environments
 - Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
 

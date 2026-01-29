@@ -109,7 +109,7 @@ export class Route<
   lazy = (loader: ComponentLoader) => {
     const component = lazy(async () => {
       const result = await loader();
-      return { default: "default" in result ? result.default : result };
+      return "default" in result ? result : { default: result };
     });
     return this.preload(loader).component(component);
   };
