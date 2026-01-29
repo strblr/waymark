@@ -1,6 +1,6 @@
 {
   "name": "waymark",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "license": "MIT",
   "author": "strblr",
   "description": "Lightweight type-safe router for React",
