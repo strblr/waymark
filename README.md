@@ -1206,11 +1206,6 @@ For more advanced techniques, see the [MDN documentation on View Transitions](ht
 
 The `Router` class is the core of Waymark. You can create an instance directly or let `RouterRoot` create one.
 
-**`new Router(options)`**
-
-- `options` - `RouterOptions` - Router configuration
-- Returns: `Router` - A new router instance
-
 **Properties:**
 
 - `router.basePath` - The configured base path
@@ -1219,7 +1214,12 @@ The `Router` class is the core of Waymark. You can create an instance directly o
 - `router.ssrContext` - The SSR context (if provided)
 - `router.defaultLinkOptions` - Default link options
 
-**Methods:**
+**`new Router(options)`**
+
+Creates a new router.
+
+- `options` - `RouterOptions` - Router configuration
+- Returns: `Router` - A new router instance
 
 **`router.navigate(options)`**
 
@@ -1417,21 +1417,6 @@ const user = route("/users/:id")
 
 The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
 
-**Interface:**
-
-```tsx
-interface HistoryLike {
-  getPath: () => string;
-  getSearch: () => Record<string, unknown>;
-  getState: () => any;
-  go: (delta: number) => void;
-  push: (options: HistoryPushOptions) => void;
-  subscribe: (listener: () => void) => () => void;
-}
-```
-
-**Methods:**
-
 **`history.getPath()`**
 
 Returns the current pathname.
@@ -1601,7 +1586,7 @@ const handles = useHandles();
 
 **`RouterRoot`**
 
-The root provider that sets up routing context and renders your routes.
+The root component that sets up routing context and renders your routes.
 
 - `props` - `RouterOptions | { router: Router }` - Either router options (same as the `Router` constructor) or a pre-created router instance
 
