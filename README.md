@@ -48,9 +48,10 @@
 Waymark is a routing library for React built around three core ideas: **type safety**, **simplicity**, and **minimal overhead**.
 
 - **Fully type-safe** - Complete TypeScript inference for routes, path params, and search params
-- **Zero config** - No build plugins, no CLI tools, no configuration files, very low boilerplate
+- **Zero config** - No build plugins, no CLI, no codegen, no config files, very low boilerplate
 - **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
-- **3.6kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so around 4kB total
+- **3.6kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so ~4kB total
+- **Feature packed** - Search param validation, lazy loading, data preloading, SSR, error boundaries, etc.
 - **Not vibe-coded** - Built with careful design and attention to detail by a human
 - **Just works** - Define routes, get autocomplete everywhere
 
@@ -105,34 +106,39 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 # Showcase
 
-Here's what a small routing setup looks like. Define some routes, render them, and get full type safety:
+Here's what routing looks like with Waymark:
 
 ```tsx
-import { route, RouterRoot, Link, useParams } from "waymark";
+import { route, RouterRoot, Outlet, Link, useParams } from "waymark";
 
-// Define routes
-const home = route("/").component(() => <h1>Home</h1>);
+// Layout
+const layout = route("/").component(() => (
+  <div>
+    <nav>
+      <Link to="/">Home</Link>
+      <Link to="/users/:id" params={{ id: "42" }}>
+        User
+      </Link>
+    </nav>
+    <Outlet />
+  </div>
+));
 
-const user = route("/users/:id").component(UserPage);
+// Pages
+const home = layout.route("/").component(() => <h1>Home</h1>);
 
-function UserPage() {
+const user = layout.route("/users/:id").component(function UserPage() {
   const { id } = useParams(user); // Fully typed
-  return (
-    <div>
-      <h1>User {id}</h1>
-      <Link to="/">Back to home</Link> {/* Also fully typed */}
-    </div>
-  );
-}
+  return <h1>User {id}</h1>;
+});
 
-// Render
+// Setup
 const routes = [home, user];
 
 function App() {
   return <RouterRoot routes={routes} />;
 }
 
-// Register for type safety
 declare module "waymark" {
   interface Register {
     routes: typeof routes;
@@ -140,7 +146,7 @@ declare module "waymark" {
 }
 ```
 
-Links, navigation, path params, search params - everything autocompletes and type-checks automatically. That's it. No config files, no build plugins, no CLI.
+Everything autocompletes and type-checks automatically. No heavy setup, no magic, just a simple API that gets out of your way.
 
 ---
 
