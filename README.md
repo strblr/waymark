@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  A lightweight, type-safe router for React that just works.
+  A type-safe router for React that just works.
 </p>
 
 <p align="center">
@@ -47,13 +47,13 @@
 
 Waymark is a routing library for React built around three core ideas: **type safety**, **simplicity**, and **minimal overhead**.
 
-- **Fully type-safe** - Complete TypeScript inference for routes, path params, and search params
-- **Zero config** - No build plugins, no CLI, no codegen, no config files, very low boilerplate
-- **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
-- **3.7kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so ~4kB total
-- **Feature packed** - Search param validation, lazy loading, data preloading, SSR, error boundaries, etc.
-- **Not vibe-coded** - Built with careful design and attention to detail by a human
-- **Just works** - Define routes, get autocomplete everywhere
+- 🔒 **Fully type-safe** - Complete TypeScript inference for routes, path params, search params, and more
+- ⚡ **Zero config** - No build plugins, no CLI, no codegen, no config files, very low boilerplate
+- 🤝 **Familiar API** - If you've used React Router or TanStack Router, you'll feel at home
+- 🪶 **3.7kB gzipped** - Extremely lightweight with just one 0.4kB dependency, so ~4kB total
+- 🎯 **Feature packed** - Search param validation, lazy loading, data preloading, SSR, error boundaries, etc.
+- 🧠 **Not vibe-coded** - Built with careful design and attention to detail by a human
+- ✨ **Just works** - Define routes, get autocomplete everywhere
 
 ---
 

@@ -2,7 +2,8 @@ import { defineConfig } from "vocs";
 
 export default defineConfig({
   title: "Waymark",
-  description: "Type-safe routing for React",
+  description:
+    "Type-safe React router that just works - simple setup, full autocomplete, 4kB gzipped",
   baseUrl: "https://waymarkrouter.com",
   iconUrl:
     "https://raw.githubusercontent.com/strblr/waymark/master/favicon.svg",
