@@ -1,6 +1,8 @@
 import type { ComponentType, CSSProperties } from "react";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { Merge } from "type-fest";
 import type { Route } from "./route";
-import type { MaybeKey } from "./utils";
+import type { MaybeKey, OptionalOnUndefined } from "./utils";
 
 // Register
 
@@ -16,9 +18,32 @@ export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 
 // Route
 
-export interface PreloadContext<R extends Route = Route> {
-  params: R["_types"]["params"];
-  search: R["_types"]["search"];
+export interface Middleware<S extends {} = any> {
+  use: <S2 extends {}>(
+    middleware: Middleware<S2>
+  ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
+  search: <S2 extends {}>(
+    validate:
+      | ((search: S & Record<string, unknown>) => S2)
+      | StandardSchemaV1<Record<string, unknown>, S2>
+  ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
+  handle: (handle: Handle) => Middleware<S>;
+  preload: (
+    preload: (context: PreloadContext<{}, S>) => Promise<any>
+  ) => Middleware<S>;
+  component: (component: ComponentType) => Middleware<S>;
+  lazy: (loader: ComponentLoader) => Middleware<S>;
+  suspense: (fallback: ComponentType) => Middleware<S>;
+  error: (
+    fallback: ComponentType<{
+      error: unknown;
+    }>
+  ) => Middleware<S>;
+}
+
+export interface PreloadContext<Ps extends {} = any, S extends {} = any> {
+  params: Ps;
+  search: S;
 }
 
 // Router

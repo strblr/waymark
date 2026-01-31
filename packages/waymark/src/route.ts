@@ -1,7 +1,12 @@
 import { lazy, memo, type ComponentType } from "react";
 import type { Merge } from "type-fest";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import type { Handle, PreloadContext, ComponentLoader } from "./types";
+import type {
+  Handle,
+  Middleware,
+  PreloadContext,
+  ComponentLoader
+} from "./types";
 import {
   normalizePath,
   parsePattern,
@@ -25,11 +30,16 @@ export function route<P extends string>(
   });
 }
 
+export function middleware(): Middleware<{}> {
+  return route("");
+}
+
 export class Route<
   P extends string = string,
   Ps extends {} = any,
   S extends {} = any
-> {
+> implements Middleware<S>
+{
   readonly _: {
     pattern: P;
     keys: string[];
@@ -64,6 +74,18 @@ export class Route<
     });
   };
 
+  use = <S2 extends {}>(
+    middleware: Middleware<S2>
+  ): Route<P, Ps, Merge<S, OptionalOnUndefined<S2>>> => {
+    const { _ } = middleware as Route<never, never, S2>;
+    return new Route({
+      ...this._,
+      handles: [...this._.handles, ..._.handles],
+      components: [...this._.components, ..._.components],
+      preloads: [...this._.preloads, ..._.preloads]
+    }).search(_.validate);
+  };
+
   search = <S2 extends {}>(
     validate:
       | ((search: S & Record<string, unknown>) => S2)
@@ -84,7 +106,7 @@ export class Route<
   };
 
   preload = (
-    preload: (context: PreloadContext<this>) => Promise<any>
+    preload: (context: PreloadContext<Ps, S>) => Promise<any>
   ): Route<P, Ps, S> => {
     return new Route({
       ...this._,
@@ -92,7 +114,7 @@ export class Route<
         ...this._.preloads,
         context =>
           preload({
-            params: context.params,
+            params: context.params as Ps,
             search: this._.validate(context.search)
           })
       ]

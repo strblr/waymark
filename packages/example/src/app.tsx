@@ -8,6 +8,7 @@ import { z } from "zod";
 import {
   RouterRoot,
   route,
+  middleware,
   Outlet,
   Link,
   useRouter,
@@ -229,10 +230,14 @@ const param = layout
   .handle({ breadcrumb: "Param" })
   .component(Param);
 
+const nameMiddleware = middleware().search(
+  z.object({ name: z.string().catch("") })
+);
+
 const paramDetail = param
   .route("/detail")
   .handle({ breadcrumb: "Detail" })
-  .search(z.object({ name: z.string().catch("") }))
+  .use(nameMiddleware)
   .component(ParamDetail);
 
 function Param() {
