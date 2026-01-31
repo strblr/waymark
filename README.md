@@ -1565,8 +1565,11 @@ const user = route("/users/:id")
 - Returns: `Middleware` - A new middleware object
 
 ```tsx
-const paginated = middleware().search(
-  z.object({ page: z.number(), limit: z.number() })
+const pagination = middleware().search(
+  z.object({
+    page: z.coerce.number().catch(1),
+    limit: z.coerce.number().catch(10)
+  })
 );
 const auth = middleware()
   .handle({ requiresAuth: true })
