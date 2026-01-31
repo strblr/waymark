@@ -13,12 +13,11 @@ import {
   type OptionalOnUndefined
 } from "./utils";
 
-export function route<P extends string>(pattern: P) {
-  type P_ = NormalizePath<P>;
-  type Ps = ParsePattern<P_>;
-  const normalized = normalizePath(pattern);
-  return new Route<P_, Ps, {}>(normalized, {
-    ...parsePattern(normalized),
+export function route<P extends string>(
+  pattern: P
+): Route<NormalizePath<P>, ParsePattern<NormalizePath<P>>, {}> {
+  return new Route({
+    ...parsePattern(normalizePath(pattern)),
     validate: search => search,
     handles: [],
     components: [],
@@ -31,12 +30,8 @@ export class Route<
   Ps extends {} = any,
   S extends {} = any
 > {
-  readonly pattern: P;
-  readonly _types!: {
-    params: Ps;
-    search: S;
-  };
   readonly _: {
+    pattern: P;
     keys: string[];
     regex: RegExp;
     looseRegex: RegExp;
@@ -47,18 +42,25 @@ export class Route<
     preloads: ((context: PreloadContext) => Promise<any>)[];
   };
 
-  constructor(pattern: P, _: typeof this._) {
-    this.pattern = pattern;
+  readonly _types!: {
+    params: Ps;
+    search: S;
+  };
+
+  constructor(_: typeof this._) {
     this._ = _;
   }
 
-  route = <P2 extends string>(pattern: P2) => {
-    type P_ = NormalizePath<`${P}/${P2}`>;
-    type Ps = ParsePattern<P_>;
-    const normalized = normalizePath(`${this.pattern}/${pattern}`);
-    return new Route<P_, Ps, S>(normalized, {
+  route = <P2 extends string>(
+    pattern: P2
+  ): Route<
+    NormalizePath<`${P}/${P2}`>,
+    ParsePattern<NormalizePath<`${P}/${P2}`>>,
+    S
+  > => {
+    return new Route({
       ...this._,
-      ...parsePattern(normalized)
+      ...parsePattern(normalizePath(`${this._.pattern}/${pattern}`))
     });
   };
 
@@ -66,10 +68,9 @@ export class Route<
     validate:
       | ((search: S & Record<string, unknown>) => S2)
       | StandardSchemaV1<Record<string, unknown>, S2>
-  ) => {
-    type S_ = Merge<S, OptionalOnUndefined<S2>>;
+  ): Route<P, Ps, Merge<S, OptionalOnUndefined<S2>>> => {
     validate = validator(validate);
-    return new Route<P, Ps, S_>(this.pattern, {
+    return new Route({
       ...this._,
       validate: search => {
         const validated = this._.validate(search);
@@ -78,15 +79,14 @@ export class Route<
     });
   };
 
-  handle = (handle: Handle) => {
-    return new Route<P, Ps, S>(this.pattern, {
-      ...this._,
-      handles: [...this._.handles, handle]
-    });
+  handle = (handle: Handle): Route<P, Ps, S> => {
+    return new Route({ ...this._, handles: [...this._.handles, handle] });
   };
 
-  preload = (preload: (context: PreloadContext<this>) => Promise<any>) => {
-    return new Route<P, Ps, S>(this.pattern, {
+  preload = (
+    preload: (context: PreloadContext<this>) => Promise<any>
+  ): Route<P, Ps, S> => {
+    return new Route({
       ...this._,
       preloads: [
         ...this._.preloads,
@@ -99,14 +99,14 @@ export class Route<
     });
   };
 
-  component = (component: ComponentType) => {
-    return new Route<P, Ps, S>(this.pattern, {
+  component = (component: ComponentType): Route<P, Ps, S> => {
+    return new Route({
       ...this._,
       components: [...this._.components, memo(component)]
     });
   };
 
-  lazy = (loader: ComponentLoader) => {
+  lazy = (loader: ComponentLoader): Route<P, Ps, S> => {
     const component = lazy(async () => {
       const result = await loader();
       return "default" in result ? result : { default: result };
@@ -114,15 +114,15 @@ export class Route<
     return this.preload(loader).component(component);
   };
 
-  suspense = (fallback: ComponentType) => {
+  suspense = (fallback: ComponentType): Route<P, Ps, S> => {
     return this.component(suspenseBoundary(fallback));
   };
 
-  error = (fallback: ComponentType<{ error: unknown }>) => {
+  error = (fallback: ComponentType<{ error: unknown }>): Route<P, Ps, S> => {
     return this.component(errorBoundary(fallback));
   };
 
-  toString = () => {
-    return this.pattern;
+  toString = (): P => {
+    return this._.pattern;
   };
 }

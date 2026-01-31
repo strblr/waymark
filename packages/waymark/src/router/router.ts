@@ -44,7 +44,7 @@ export class Router {
     this.ssrContext = ssrContext;
     this.defaultLinkOptions = defaultLinkOptions;
     this._ = {
-      routeMap: new Map(routes.map(route => [route.pattern, route]))
+      routeMap: new Map(routes.map(route => [route._.pattern, route]))
     };
   }
 
@@ -85,7 +85,7 @@ export class Router {
 
   createUrl = <P extends Pattern>(options: NavigateOptions<P>) => {
     const { to, params = {}, search = {} } = options;
-    const { pattern } = this.getRoute(to);
+    const { pattern } = this.getRoute(to)._;
     const path = absolutePath(inject(pattern, params), this.basePath);
     return mergeUrl(path, search);
   };

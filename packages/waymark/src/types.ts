@@ -31,11 +31,11 @@ export interface RouterOptions {
   defaultLinkOptions?: LinkOptions;
 }
 
-export type Pattern = RouteList[number]["pattern"];
+export type Pattern = RouteList[number]["_"]["pattern"];
 
 export type GetRoute<P extends Pattern> = Extract<
   RouteList[number],
-  { pattern: P }
+  { _: { pattern: P } }
 >;
 
 export type Params<P extends Pattern> = GetRoute<P>["_types"]["params"];
