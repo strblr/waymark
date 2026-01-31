@@ -3,7 +3,7 @@ import { defineConfig } from "vocs";
 export default defineConfig({
   title: "Waymark",
   description: "Type-safe routing for React",
-  baseUrl: "https://waymark.strblr.workers.dev",
+  baseUrl: "https://waymarkrouter.com",
   iconUrl:
     "https://raw.githubusercontent.com/strblr/waymark/master/favicon.svg",
   ogImageUrl:

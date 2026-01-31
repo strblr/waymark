@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://waymark.strblr.workers.dev">📖 Documentation</a>
+  <a href="https://waymarkrouter.com">📖 Documentation</a>
 </p>
 
 ---

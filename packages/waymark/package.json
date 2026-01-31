@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/strblr/waymark.git"
   },
-  "homepage": "https://waymark.strblr.workers.dev",
+  "homepage": "https://waymarkrouter.com",
   "bugs": "https://github.com/strblr/waymark/issues",
   "keywords": [
     "react",
