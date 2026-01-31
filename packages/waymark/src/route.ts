@@ -1,9 +1,9 @@
 import { lazy, memo, type ComponentType } from "react";
 import type { Merge } from "type-fest";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type {
   Handle,
   Middleware,
+  Validator,
   PreloadContext,
   ComponentLoader
 } from "./types";
@@ -87,9 +87,7 @@ export class Route<
   };
 
   search = <S2 extends {}>(
-    validate:
-      | ((search: S & Record<string, unknown>) => S2)
-      | StandardSchemaV1<Record<string, unknown>, S2>
+    validate: Validator<S, S2>
   ): Route<P, Ps, Merge<S, OptionalOnUndefined<S2>>> => {
     validate = validator(validate);
     return new Route({

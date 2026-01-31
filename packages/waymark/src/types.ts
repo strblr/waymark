@@ -23,9 +23,7 @@ export interface Middleware<S extends {} = any> {
     middleware: Middleware<S2>
   ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
   search: <S2 extends {}>(
-    validate:
-      | ((search: S & Record<string, unknown>) => S2)
-      | StandardSchemaV1<Record<string, unknown>, S2>
+    validate: Validator<S, S2>
   ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
   handle: (handle: Handle) => Middleware<S>;
   preload: (
@@ -40,6 +38,10 @@ export interface Middleware<S extends {} = any> {
     }>
   ) => Middleware<S>;
 }
+
+export type Validator<S extends {}, S2 extends {}> =
+  | ((search: S & Record<string, unknown>) => S2)
+  | StandardSchemaV1<Record<string, unknown>, S2>;
 
 export interface PreloadContext<Ps extends {} = any, S extends {} = any> {
   params: Ps;

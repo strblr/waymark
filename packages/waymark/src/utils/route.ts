@@ -1,6 +1,6 @@
 import { parse } from "regexparam";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { NormalizePath } from "./types";
+import type { Validator } from "../types";
 
 export function normalizePath<P extends string>(path: P) {
   const normalized = `/${path}`
@@ -19,10 +19,8 @@ export function parsePattern<P extends string>(pattern: P) {
   return { pattern, keys, regex, looseRegex, weights };
 }
 
-export function validator<Input, Output>(
-  validate:
-    | ((input: Input) => Output)
-    | StandardSchemaV1<Record<string, unknown>, Output>
+export function validator<Input extends {}, Output extends {}>(
+  validate: Validator<Input, Output>
 ) {
   if (typeof validate === "function") {
     return validate;

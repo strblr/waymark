@@ -3,7 +3,7 @@
   "version": "0.3.1",
   "license": "MIT",
   "author": "strblr",
-  "description": "Lightweight type-safe router for React",
+  "description": "Type-safe router for React",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,9 +34,7 @@
     "search",
     "params",
     "simple",
-    "tiny",
-    "lightweight",
-    "minimal"
+    "lightweight"
   ],
   "scripts": {
     "build": "tsc --noEmit && tsdown",
