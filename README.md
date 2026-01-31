@@ -82,6 +82,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [Error boundaries](#error-boundaries)
 - [Suspense boundaries](#suspense-boundaries)
 - [Route handles](#route-handles)
+- [Middlewares](#middlewares)
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
 - [Cookbook](#cookbook)
@@ -95,6 +96,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 - [API reference](#api-reference)
   - [Router class](#router-class)
   - [Route class](#route-class)
+  - [Middleware](#middleware)
   - [Hooks](#hooks)
   - [Components](#components)
   - [History interface](#history-interface)
@@ -947,6 +949,74 @@ declare module "waymark" {
 
 ---
 
+# Middlewares
+
+Middlewares bundle reusable configuration that can be applied to multiple routes. Instead of repeating the same configuration across routes, you define it once in a middleware and apply it wherever needed.
+
+Create middleware with the `middleware()` function. It returns a middleware object that supports the same builder methods as routes, except `.route()`.
+
+```tsx
+import { middleware } from "waymark";
+
+const pagination = middleware().search(
+  z.object({
+    page: z.coerce.number().catch(1),
+    limit: z.coerce.number().catch(10)
+  })
+);
+
+const auth = middleware()
+  .handle({ requiresAuth: true })
+  .component(AuthRedirect);
+```
+
+Here, `pagination` validates pagination search params, and `auth` marks routes as protected via a handle and wraps them in a component that redirects unauthenticated users.
+
+Apply middleware to a route with the `.use()` method:
+
+```tsx
+const userPage = route("/users").use(pagination).component(UserPage);
+
+function UserPage() {
+  const [search] = useSearch(userPage);
+  // search.page: number
+  // search.limit: number
+}
+```
+
+The middleware's configuration merges into the route - here, the route gets typed and validated `page` and `limit` search params. You can apply multiple middlewares to the same route:
+
+```tsx
+route("/users").use(auth).use(pagination).component(UserPage);
+```
+
+Middlewares can also use other middlewares:
+
+```tsx
+const filter = middleware()
+  .use(pagination)
+  .search(
+    z.object({
+      status: z.enum(["active", "archived", "all"]).catch("all")
+    })
+  );
+```
+
+Any route using `filter` gets pagination and filtering by status combined:
+
+```tsx
+const userPage = route("/users").use(filter).component(UserPage);
+
+function UserPage() {
+  const [search] = useSearch(userPage);
+  // search.page: number
+  // search.limit: number
+  // search.status: "active" | "archived" | "all"
+}
+```
+
+---
+
 # Route matching and ranking
 
 When a user navigates to a URL, Waymark needs to determine which route matches. Since multiple routes can potentially match the same path (think `/users/:id` vs `/users/new`), Waymark uses a ranking algorithm to pick the most specific one.
@@ -1402,6 +1472,16 @@ const userSettings = user.route("/settings");
 // Pattern becomes "/users/:id/settings"
 ```
 
+**`.use(middleware)`** applies a middleware to the route, merging its configuration.
+
+- `middleware` - `Middleware` - A middleware object
+- Returns: `Route` - A new route object
+
+```tsx
+const auth = middleware().component(AuthRedirect);
+const dashboard = route("/dashboard").use(auth).component(Dashboard);
+```
+
 **`.component(component)`** adds a component to render when this route matches.
 
 - `component` - `ComponentType` - A React component
@@ -1477,6 +1557,23 @@ const user = route("/users/:id")
     await prefetchUser(params.id, search.tab);
   });
 ```
+
+## Middleware
+
+**`middleware()`** creates a new middleware.
+
+- Returns: `Middleware` - A new middleware object
+
+```tsx
+const paginated = middleware().search(
+  z.object({ page: z.number(), limit: z.number() })
+);
+const auth = middleware()
+  .handle({ requiresAuth: true })
+  .component(AuthRedirect);
+```
+
+Middlewares support all the same builder methods as `Route` except `.route()`. See the [Route class](#route-class) documentation above for details on each method.
 
 ## Hooks
 
