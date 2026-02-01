@@ -85,7 +85,7 @@ export function useMatch<P extends Pattern>(options: MatchOptions<P>) {
   const path = useSubscribe(router, router.history.getPath);
   const match = useMemo(
     () => router.match(path, options),
-    [router, path, options]
+    [router, path, options.from, options.strict, options.params]
   );
   return match;
 }

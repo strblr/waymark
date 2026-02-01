@@ -113,9 +113,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const preloadRoute = useEvent(() => router.preload(props));
 
   const cancelPreload = useCallback(() => {
-    if (timeoutRef.current !== null) {
-      clearTimeout(timeoutRef.current);
-    }
+    clearTimeout(timeoutRef.current!);
   }, []);
 
   const schedulePreload = useCallback(() => {
