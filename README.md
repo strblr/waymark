@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://waymarkrouter.com">📖 Documentation</a>
+  📖 <a href="https://waymarkrouter.com">waymarkrouter.com</a>
 </p>
 
 ---
@@ -192,31 +192,25 @@ const files = route("/files/*").component(FileBrowser);
 const optional = route("/books/*?").component(FileBrowser);
 ```
 
-Route building is immutable: every method on a route returns a new route instance, which means you can branch off at any point to create variations or nested routes without affecting the original.
+Route building is immutable: every method on a route returns a new route instance.
 
 ---
 
 # Nested routes and layouts
 
-Nesting is the core mechanism for building layouts and route hierarchies in Waymark. When you call `.route()` on an existing route, you create a child route that inherits everything from the parent: its path as a prefix, its params, its components, etc.
-
-Here's how it works. Start with any route:
+Any route can have child routes. Call `.route()` on an existing route to create one:
 
 ```tsx
 const dashboard = route("/dashboard").component(DashboardLayout);
-```
 
-Then create child routes by calling `.route()` on it:
-
-```tsx
 const overview = dashboard.route("/").component(Overview);
 const settings = dashboard.route("/settings").component(Settings);
 const profile = dashboard.route("/profile").component(Profile);
 ```
 
-The child routes combine the parent's path pattern with their own. So `overview` has the full pattern `/dashboard`, `settings` has `/dashboard/settings`, and `profile` has `/dashboard/profile`.
+Child routes build on their parent's path. So `overview` matches `/dashboard`, `settings` matches `/dashboard/settings`, and `profile` matches `/dashboard/profile`.
 
-The parent component must render an `<Outlet />` where child routes should appear:
+They also nest inside the parent's component. The parent renders an `<Outlet />` to mark where child routes should appears:
 
 ```tsx
 function DashboardLayout() {
@@ -231,7 +225,7 @@ function DashboardLayout() {
 }
 ```
 
-When the URL is `/dashboard/settings`, Waymark renders `DashboardLayout` with `Settings` inside the outlet. The layout stays mounted (and doesn't even rerender) as users navigate between child routes.
+When the URL is `/dashboard/settings`, Waymark renders `DashboardLayout` with `Settings` inside the outlet. This is how you build layouts - shared UI like navigation or sidebars that stays mounted as users navigate between child routes.
 
 You can nest as deep as you need:
 
@@ -252,6 +246,8 @@ AppShell
 ```
 
 Each level must include an `<Outlet />` to render the next level.
+
+Beyond paths and components, child routes also inherit search param validators, handles, and preload functions from their parent chain. While you can think of nesting as building a tree, every route is self-contained: it carries everything it needs to render, including all parent components.
 
 ---
 
@@ -459,6 +455,9 @@ function SearchPage() {
   const [search, setSearch] = useSearch(searchPage);
   // search.q: string
   // search.page: number
+
+  const [search, setSearch] = useSearch("/search");
+  // Also works
 }
 ```
 
@@ -1013,6 +1012,16 @@ function UserPage() {
   // search.limit: number
   // search.status: "active" | "archived" | "all"
 }
+```
+
+For parametrized middlewares, define a function that returns a middleware:
+
+```tsx
+const guard = (role: string) =>
+  middleware().handle({ requiredRole: role }).component(RoleGuard);
+
+const adminPage = route("/admin").use(guard("admin")).component(AdminPage);
+const editorPage = route("/editor").use(guard("editor")).component(EditorPage);
 ```
 
 ---
@@ -1862,7 +1871,7 @@ interface PreloadContext {
 # Roadmap
 
 - Possibility to pass an arbitrary context to the Router instance for later use in preloads?
-- Relative path navigation? Not sure it's indispensable given that users can export/import route objects and pass them as navigation option.
+- Relative path navigation? Not sure it's worth the extra bundle size given that users can export/import route objects and pass them as navigation option.
 - Document usage in test environments
 - Devtools? Let me know if needed.
 - Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
