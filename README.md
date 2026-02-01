@@ -6,7 +6,7 @@
   A type-safe router for React that just works.
 </p>
 
-<p align="center">
+<div align="center">
   <a href="https://www.npmjs.com/package/waymark">
     <img
       src="https://img.shields.io/npm/v/waymark?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
@@ -37,7 +37,7 @@
       alt="sponsors"
     />
   </a>
-</p>
+</div>
 
 <p align="center">
   📖 <a href="https://waymarkrouter.com">waymarkrouter.com</a>
@@ -57,8 +57,53 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 ---
 
+# Comparison
+
+| Feature                          | Waymark | React Router | TanStack Router | Wouter |
+| -------------------------------- | :-----: | :----------: | :-------------: | :----: |
+| **Bundle size (gzip)**\*         |  ~4kB   |    ~26kB+    |     ~19kB+      | ~2.2kB |
+| **Zero config**\*                |   ✅    |      ❌      |       ❌        |   ✅   |
+| **Full type inference**\*        |   ✅    |      ⚠️      |       ✅        |   ❌   |
+| **Nested routes**                |   ✅    |      ✅      |       ✅        |   ✅   |
+| **Search param validation**\*    |   ✅    |      ❌      |       ✅        |   ❌   |
+| **Lazy loading**                 |   ✅    |      ✅      |       ✅        |   ❌   |
+| **Data preloading**              |   ✅    |      ✅      |       ✅        |   ❌   |
+| **Built-in error boundaries**    |   ✅    |      ✅      |       ✅        |   ❌   |
+| **Built-in suspense boundaries** |   ✅    |      ❌      |       ✅        |   ❌   |
+| **Link preloading strategies**   |   ✅    |      ✅      |       ✅        |   ❌   |
+| **Active link detection**        |   ✅    |      ✅      |       ✅        |   ⚠️   |
+| **Browser/Hash/Memory history**  |   ✅    |      ✅      |       ✅        |   ✅   |
+| **SSR support**                  |   ✅    |      ✅      |       ✅        |   ✅   |
+| **Route middlewares**\*          |   ✅    |      ❌      |       ❌        |   ❌   |
+| **Route handles (metadata)**     |   ✅    |      ✅      |       ✅        |   ❌   |
+| **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
+| **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
+| **Devtools**                     |   ❌    |      ⚠️      |       ✅        |   ❌   |
+| **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
+| **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
+
+<details>
+<summary><b>Comparison notes</b></summary>
+
+<br />
+
+If you believe there's a mistake in the comparison table, please [open an issue](https://github.com/strblr/waymark/issues) or [submit a PR](https://github.com/strblr/waymark/pulls) and it will be fixed.
+
+- ⚠️ indicates the feature is only partially supported or requires external libraries.
+- **Bundle sizes** are approximate gzipped values. React Router and TanStack Router sizes can vary significantly based on imports and versions; Waymark's ~4kB includes its single ~0.4kB dependency ([regexparam](https://github.com/lukeed/regexparam)). Wouter is the smallest option but lacks features.
+- **Zero config** means no CLI tools, build plugins, code generation, or configuration files are required. React Router requires its typegen CLI or bundler plugin for full type safety. Same with TanStack Router for file-based routing. You can use code-based routing but it's more boilerplate.
+- **Full type inference** refers to automatic TypeScript inference for routes, params, search params, and navigation without manual type annotations.
+- **Search params validation** refers to built-in support for validating and typing URL search parameters. Wouter provides `useSearch()` but no validation layer. Same with React Router and `useSearchParams`.
+- **Route middlewares** are reusable configuration bundles (search validation, handles, preload functions, components) that can be applied to multiple routes. This is a Waymark-specific feature.
+- **Route match ranking** automatically picks the most specific route when multiple patterns match (e.g., `/users/new` wins over `/users/:id`). Without ranking, route definition order matters.
+
+</details>
+
+---
+
 # Table of contents
 
+- [Comparison](#comparison)
 - [Showcase](#showcase)
 - [Installation](#installation)
 - [Defining routes](#defining-routes)
@@ -315,7 +360,9 @@ declare module "waymark" {
 }
 ```
 
-With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs will know exactly which routes exist and what input they expect, and you're good to go.
+With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs will know exactly which routes exist and what input they expect.
+
+**You're all set up!**
 
 ---
 
