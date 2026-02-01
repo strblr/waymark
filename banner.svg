@@ -1,23 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400">
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#0B0D0F;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#1a1b1c;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0B0D0F;stop-opacity:1" />
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B0D0F" />
+      <stop offset="100%" stop-color="#1A1B1C" />
     </linearGradient>
+
+    <linearGradient id="fadeLeft" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <mask id="gridFade">
+      <rect x="0" y="0" width="1200" height="300" fill="url(#fadeLeft)" />
+    </mask>
+
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path
+        d="M40 0 H0 V40"
+        fill="none"
+        stroke="#2a2b2d"
+        stroke-width="1"
+      />
+    </pattern>
   </defs>
-  <rect width="1600" height="400" fill="url(#grad)" rx="32"/>
-  <text x="800" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="120" font-weight="600" fill="#fff" text-anchor="middle">
-    waymark
-  </text>
-  <text x="800" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#999" text-anchor="middle">
-    Type-safe routing for React
-  </text>
-  <g transform="translate(280, 190)" fill="none" stroke="#666" stroke-width="6" stroke-linecap="round">
-    <path d="M 12 0 L 60 0 L 96 -36"/>
-    <path d="M 60 0 L 96 36"/>
-    <circle cx="0" cy="0" r="15" fill="#fedc43" stroke="none"/>
-    <circle cx="96" cy="-36" r="15" fill="#666" stroke="none"/>
-    <circle cx="96" cy="36" r="15" fill="#666" stroke="none"/>
+
+  <rect width="1200" height="300" rx="24" fill="url(#bg)" />
+
+  <g mask="url(#gridFade)">
+    <rect x="560" y="0" width="640" height="300" fill="url(#grid)" />
+  </g>
+
+  <g mask="url(#gridFade)" fill="none" stroke="#3a3b3d" stroke-width="2">
+    <path d="M600 160 H760 V120 H920 V200 H1080" />
+    <path d="M720 240 V160 H880" stroke-width="1.5" />
+  </g>
+
+  <g>
+    <circle cx="600" cy="160" r="3" fill="#3a3b3d" />
+    <circle cx="760" cy="160" r="3" fill="#3a3b3d" />
+    <circle cx="760" cy="120" r="3" fill="#3a3b3d" />
+    <circle cx="920" cy="120" r="3" fill="#3a3b3d" />
+    <circle cx="920" cy="200" r="3" fill="#3a3b3d" />
+    <circle cx="1080" cy="200" r="3.5" fill="#FEDC43" />
+  </g>
+
+  <g transform="translate(0 160)">
+    <text
+      x="80"
+      y="-8"
+      fill="#F8FAFC"
+      font-size="64"
+      font-weight="700"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    >
+      Waymark
+    </text>
+
+    <text
+      x="80"
+      y="32"
+      fill="#9CA3AF"
+      font-size="28"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    >
+      Type-safe routing for React
+    </text>
   </g>
 </svg>
