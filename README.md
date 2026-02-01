@@ -62,7 +62,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 | Feature                          | Waymark | React Router | TanStack Router | Wouter |
 | -------------------------------- | :-----: | :----------: | :-------------: | :----: |
 | **Bundle size (gzip)**\*         |  ~4kB   |    ~26kB+    |     ~19kB+      | ~2.2kB |
-| **Zero config**\*                |   ✅    |      ❌      |       ❌        |   ✅   |
+| **Zero config**\*                |   ✅    |      ❌      |       ⚠️        |   ✅   |
 | **Full type inference**\*        |   ✅    |      ⚠️      |       ✅        |   ❌   |
 | **Nested routes**                |   ✅    |      ✅      |       ✅        |   ✅   |
 | **Search param validation**\*    |   ✅    |      ❌      |       ✅        |   ❌   |
