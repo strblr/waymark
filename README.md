@@ -78,7 +78,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 | **Route handles (metadata)**     |   ✅    |      ✅      |       ✅        |   ❌   |
 | **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
 | **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Devtools**                     |   ❌    |      ⚠️      |       ✅        |   ❌   |
+| **Devtools**                     |   🔨    |      ⚠️      |       ✅        |   ❌   |
 | **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
 | **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
 
@@ -90,6 +90,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 If you believe there's a mistake in the comparison table, please [open an issue](https://github.com/strblr/waymark/issues) or [submit a PR](https://github.com/strblr/waymark/pulls) and it will be fixed.
 
 - ⚠️ indicates the feature is only partially supported, supported with heavy boilerplate, or requires external libraries.
+- 🔨 indicates the feature is not yet ready but being worked on.
 - **Bundle sizes** are approximate gzipped values. React Router and TanStack Router sizes can vary significantly based on imports and versions; Waymark's ~4kB includes its single ~0.4kB dependency ([regexparam](https://github.com/lukeed/regexparam)), before any tree shaking. Wouter is the smallest option but lacks features.
 - **Zero config** means no CLI tools, build plugins, code generation, or configuration files are required. React Router requires its typegen CLI or bundler plugin for full type safety. Same with TanStack Router for file-based routing. You can use code-based routing but it's more boilerplate.
 - **Full type inference** refers to automatic TypeScript inference for routes, params, search params, and navigation without manual type annotations.
