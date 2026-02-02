@@ -195,6 +195,8 @@ declare module "waymark" {
 
 Everything autocompletes and type-checks automatically. No heavy setup, no magic, just a simple API that gets out of your way.
 
+👉 [Try it live in the StackBlitz playground](https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx)
+
 ---
 
 # Installation
