@@ -40,7 +40,7 @@
 </div>
 
 <p align="center">
-  📖 <a href="https://waymarkrouter.com">waymarkrouter.com</a>
+  📖 <a href="https://waymarkrouter.com">Documentation</a> · 🎮 <a href="https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx">Live playground</a>
 </p>
 
 ---
