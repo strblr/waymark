@@ -13,7 +13,6 @@ import type {
   RouterOptions,
   Pattern,
   GetRoute,
-  MatchOptions,
   Match,
   NavigateOptions,
   HistoryLike,
@@ -61,24 +60,16 @@ export class Router {
 
   match = <P extends Pattern>(
     path: string,
-    options: MatchOptions<P>
+    route: GetRoute<P>
   ): Match<P> | null => {
-    const { from, strict, params: filter } = options;
-    const route = this.getRoute(from);
-    const regex = strict ? route._.regex : route._.looseRegex;
-    const params = matchPattern(regex, route._.keys, path, this.basePath);
-    if (
-      !params ||
-      (filter && Object.keys(filter).some(key => filter[key] !== params[key]))
-    ) {
-      return null;
-    }
-    return { route, params };
+    const { regex, keys } = route._;
+    const params = matchPattern(regex, keys, path, this.basePath);
+    return !params ? null : { route, params };
   };
 
   matchAll = (path: string): Match | null => {
     const matches = this.routes
-      .map(route => this.match(path, { from: route, strict: true }))
+      .map(route => this.match(path, route))
       .filter(m => !!m);
     return rankMatches(matches)[0] ?? null;
   };

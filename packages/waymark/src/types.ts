@@ -104,19 +104,23 @@ export type SSRContext = {
 
 // History
 
+export interface HistoryLike {
+  location: () => HistoryLocation;
+  go: (delta: number) => void;
+  push: (options: HistoryPushOptions) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+
+export interface HistoryLocation {
+  path: string;
+  search: Record<string, unknown>;
+  state: any;
+}
+
 export interface HistoryPushOptions {
   url: string;
   replace?: boolean;
   state?: any;
-}
-
-export interface HistoryLike {
-  getPath: () => string;
-  getSearch: () => Record<string, unknown>;
-  getState: () => any;
-  go: (delta: number) => void;
-  push: (options: HistoryPushOptions) => void;
-  subscribe: (listener: () => void) => () => void;
 }
 
 // React
