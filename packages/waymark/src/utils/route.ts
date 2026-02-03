@@ -11,12 +11,11 @@ export function normalizePath<P extends string>(path: P) {
 
 export function parsePattern<P extends string>(pattern: P) {
   const { keys, pattern: regex } = parse(pattern);
-  const looseRegex = parse(pattern, true).pattern;
   const weights = pattern
     .split("/")
     .slice(1)
     .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
-  return { pattern, keys, regex, looseRegex, weights };
+  return { pattern, keys, regex, weights };
 }
 
 export function validator<Input extends {}, Output extends {}>(

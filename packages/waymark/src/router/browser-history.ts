@@ -1,37 +1,36 @@
 import { parseSearch } from "../utils";
-import type { HistoryLike, HistoryPushOptions } from "../types";
+import type {
+  HistoryLike,
+  HistoryLocation,
+  HistoryPushOptions
+} from "../types";
 
 export class BrowserHistory implements HistoryLike {
-  private static patch = Symbol.for("wmbhp01");
-  private memo?: { search: string; parsed: Record<string, unknown> };
+  private _?: [search: string, location: HistoryLocation];
+
+  protected _loc = (path: string, search: string) => {
+    const { state } = history;
+    const [s, m] = this._ ?? [];
+    return m?.path === path && s === search && m.state === state
+      ? m
+      : (this._ = [search, { path, search: parseSearch(search), state }])[1];
+  };
 
   constructor() {
-    if (typeof history !== "undefined" && !(BrowserHistory.patch in window)) {
+    if (!(window as any)[patch]) {
       for (const type of [pushStateEvent, replaceStateEvent] as const) {
         const original = history[type];
         history[type] = function (...args) {
-          const result = original.apply(this, args);
+          original.apply(this, args);
           const event = new Event(type);
-          (event as any).arguments = args;
           dispatchEvent(event);
-          return result;
         };
       }
-      (window as any)[BrowserHistory.patch] = true;
+      (window as any)[patch] = 1;
     }
   }
 
-  protected getSearchMemo = (search: string) => {
-    return this.memo?.search === search
-      ? this.memo.parsed
-      : (this.memo = { search, parsed: parseSearch(search) }).parsed;
-  };
-
-  getPath = () => location.pathname;
-
-  getSearch = () => this.getSearchMemo(location.search);
-
-  getState = () => history.state;
+  location = () => this._loc(location.pathname, location.search);
 
   go = (delta: number) => history.go(delta);
 
@@ -48,8 +47,7 @@ export class BrowserHistory implements HistoryLike {
   };
 }
 
-// Events
-
+const patch = Symbol.for("wmp01");
 const popStateEvent = "popstate";
 const pushStateEvent = "pushState";
 const replaceStateEvent = "replaceState";

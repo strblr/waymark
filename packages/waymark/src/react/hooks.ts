@@ -1,93 +1,64 @@
-import { useMemo, useContext, useSyncExternalStore } from "react";
-import { RouterContext, MatchContext, OutletContext } from "./contexts";
-import type { Router } from "../router";
+import { useMemo, useContext, type ReactNode } from "react";
+import {
+  RouterContext,
+  LocationContext,
+  MatchContext,
+  OutletContext
+} from "./contexts";
 import { mergeUrl, useEvent } from "../utils";
 import type {
   Handle,
   Pattern,
   GetRoute,
+  MatchOptions,
+  Params,
   Search,
-  Updater,
-  MatchOptions
+  Updater
 } from "../types";
 
 // useRouter
 
 export function useRouter() {
   const router = useContext(RouterContext);
-  if (!router) {
-    throw new Error("[Waymark] useRouter must be used within a router context");
-  }
-  return router;
+  if (router) return router;
+  throw new Error("[Waymark] useRouter must be used within a router context");
+}
+
+// useLocation
+
+export function useLocation() {
+  const location = useContext(LocationContext);
+  if (location) return location;
+  throw new Error("[Waymark] useLocation must be used within a router context");
+}
+
+// useMatch
+
+export function useMatch<P extends Pattern>(
+  options: MatchOptions<P>
+): Params<P> | null {
+  const router = useRouter();
+  const match = useContext(MatchContext);
+  const { from, strict, params } = options;
+  const route = router.getRoute(from);
+  return match &&
+    (match.route === route || (!strict && match.route._.chain.has(route))) &&
+    (!params ||
+      Object.keys(params).every(key => params[key] === match.params[key]))
+    ? match.params
+    : null;
+}
+
+// useOutlet
+
+export function useOutlet(): ReactNode {
+  return useContext(OutletContext);
 }
 
 // useNavigate
 
 export function useNavigate() {
   return useRouter().navigate;
-}
-
-// useLocation
-
-export function useLocation() {
-  const router = useRouter();
-  const path = useSubscribe(router, router.history.getPath);
-  const search = useSubscribe(router, router.history.getSearch);
-  const state = useSubscribe(router, router.history.getState);
-  return useMemo(() => ({ path, search, state }), [path, search, state]);
-}
-
-// useOutlet
-
-export function useOutlet() {
-  return useContext(OutletContext);
-}
-
-// useParams
-
-export function useParams<P extends Pattern>(from: P | GetRoute<P>) {
-  const match = useMatch({ from });
-  if (!match) {
-    throw new Error(
-      `[Waymark] Can't read params for non-matching route: ${from}`
-    );
-  }
-  return match.params;
-}
-
-// useSearch
-
-export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
-  const router = useRouter();
-  const route = router.getRoute(from);
-  const search = useSubscribe(router, router.history.getSearch);
-  const validated = useMemo<Search<P>>(
-    () => route._.validate(search),
-    [route, search]
-  );
-
-  const setSearch = useEvent(
-    (update: Updater<Search<P>>, replace?: boolean) => {
-      update = typeof update === "function" ? update(validated) : update;
-      const search = { ...validated, ...update };
-      const url = mergeUrl(router.history.getPath(), search);
-      router.navigate({ url, replace });
-    }
-  );
-
-  return [validated, setSearch] as const;
-}
-
-// useMatch
-
-export function useMatch<P extends Pattern>(options: MatchOptions<P>) {
-  const router = useRouter();
-  const path = useSubscribe(router, router.history.getPath);
-  const match = useMemo(
-    () => router.match(path, options),
-    [router, path, options.from, options.strict, options.params]
-  );
-  return match;
 }
 
 // useHandles
@@ -97,12 +68,35 @@ export function useHandles(): Handle[] {
   return useMemo(() => match?.route._.handles ?? [], [match]);
 }
 
-// useSubscribe
+// useParams
 
-export function useSubscribe<T>(router: Router, getSnapshot: () => T) {
-  return useSyncExternalStore(
-    router.history.subscribe,
-    getSnapshot,
-    getSnapshot
+export function useParams<P extends Pattern>(from: P | GetRoute<P>): Params<P> {
+  const params = useMatch({ from });
+  if (params) return params;
+  throw new Error(
+    `[Waymark] Can't read params for non-matching route: ${from}`
   );
+}
+
+// useSearch
+
+export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
+  const router = useRouter();
+  const location = useLocation();
+  const route = router.getRoute(from);
+  const validated = useMemo<Search<P>>(
+    () => route._.validate(location.search),
+    [route, location.search]
+  );
+
+  const setSearch = useEvent(
+    (update: Updater<Search<P>>, replace?: boolean) => {
+      update = typeof update === "function" ? update(validated) : update;
+      const search = { ...validated, ...update };
+      const url = mergeUrl(location.path, search);
+      router.navigate({ url, replace });
+    }
+  );
+
+  return [validated, setSearch] as const;
 }

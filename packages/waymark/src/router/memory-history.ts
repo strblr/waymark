@@ -1,14 +1,12 @@
 import { parseUrl } from "../utils";
-import type { HistoryLike, HistoryPushOptions } from "../types";
-
-interface MemoryLocation {
-  path: string;
-  search: Record<string, unknown>;
-  state: any;
-}
+import type {
+  HistoryLike,
+  HistoryLocation,
+  HistoryPushOptions
+} from "../types";
 
 export class MemoryHistory implements HistoryLike {
-  private stack: MemoryLocation[] = [];
+  private stack: HistoryLocation[] = [];
   private index: number = 0;
   private listeners = new Set<() => void>();
 
@@ -16,13 +14,7 @@ export class MemoryHistory implements HistoryLike {
     this.stack.push({ ...parseUrl(url), state: undefined });
   }
 
-  private getCurrent = () => this.stack[this.index];
-
-  getPath = () => this.getCurrent().path;
-
-  getSearch = () => this.getCurrent().search;
-
-  getState = () => this.getCurrent().state;
+  location = () => this.stack[this.index];
 
   go = (delta: number) => {
     const index = this.index + delta;
@@ -34,7 +26,7 @@ export class MemoryHistory implements HistoryLike {
 
   push = (options: HistoryPushOptions) => {
     const { url, replace, state } = options;
-    const location: MemoryLocation = { ...parseUrl(url), state };
+    const location: HistoryLocation = { ...parseUrl(url), state };
     this.stack = this.stack.slice(0, this.index + 1);
     if (replace) {
       this.stack[this.index] = location;

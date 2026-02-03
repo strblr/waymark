@@ -5,6 +5,7 @@ import {
   useCallback,
   useLayoutEffect,
   useEffect,
+  useSyncExternalStore,
   isValidElement,
   cloneElement,
   type ReactNode,
@@ -14,8 +15,13 @@ import {
   type RefAttributes,
   type AnchorHTMLAttributes
 } from "react";
-import { useRouter, useOutlet, useMatch, useSubscribe } from "./hooks";
-import { RouterContext, MatchContext, OutletContext } from "./contexts";
+import { useRouter, useOutlet, useMatch } from "./hooks";
+import {
+  RouterContext,
+  LocationContext,
+  MatchContext,
+  OutletContext
+} from "./contexts";
 import { Router } from "../router";
 import { mergeRefs, useEvent } from "../utils";
 import type {
@@ -33,27 +39,33 @@ export function RouterRoot(props: RouterRootProps) {
   const [router] = useState(() =>
     "router" in props ? props.router : new Router(props)
   );
-  const path = useSubscribe(router, router.history.getPath);
-  const match = useMemo(() => router.matchAll(path), [router, path]);
+  const { subscribe, location: get } = router.history;
+  const location = useSyncExternalStore(subscribe, get, get);
+  const match = useMemo(
+    () => router.matchAll(location.path),
+    [router, location.path]
+  );
   if (!match) {
-    console.error("[Waymark] No matching route found for path:", path);
+    console.error("[Waymark] No matching route for path", location.path);
   }
   return useMemo<ReactNode>(
     () => (
       <RouterContext.Provider value={router}>
-        <MatchContext.Provider value={match}>
-          {match?.route._.components.reduceRight<ReactNode>(
-            (acc, Comp) => (
-              <OutletContext.Provider value={acc}>
-                <Comp />
-              </OutletContext.Provider>
-            ),
-            null
-          )}
-        </MatchContext.Provider>
+        <LocationContext.Provider value={location}>
+          <MatchContext.Provider value={match}>
+            {match?.route._.components.reduceRight<ReactNode>(
+              (acc, Comp) => (
+                <OutletContext.Provider value={acc}>
+                  <Comp />
+                </OutletContext.Provider>
+              ),
+              null
+            )}
+          </MatchContext.Provider>
+        </LocationContext.Provider>
       </RouterContext.Provider>
     ),
-    [router, match]
+    [router, location, match]
   );
 }
 
@@ -90,7 +102,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     replace,
     state,
     params,
-    search: _search,
+    search,
     strict,
     preload,
     preloadDelay = 50,
@@ -109,7 +121,7 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
   const ref = useRef<HTMLAnchorElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const url = router.createUrl(props);
-  const active = !!useMatch({ from: props.to, strict, params });
+  const active = !!useMatch({ from: to, strict, params });
   const preloadRoute = useEvent(() => router.preload(props));
 
   const cancelPreload = useCallback(() => {
