@@ -131,6 +131,7 @@ If you believe there's a mistake in the comparison table, please [open an issue]
 - [Middlewares](#middlewares)
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
+- [Devtools](#devtools)
 - [Cookbook](#cookbook)
   - [Quick start example](#quick-start-example)
   - [Server-side rendering (SSR)](#server-side-rendering-ssr)
@@ -1159,6 +1160,53 @@ import { MemoryHistory } from "waymark";
 ```
 
 All history implementations conform to the `HistoryLike` interface, so you can create custom implementations if needed.
+
+---
+
+# Devtools
+
+Waymark has a companion devtools package for inspecting routes, matches, parameters, and navigation state.
+
+```bash
+npm install waymark-devtools
+```
+
+Render the `Devtools` component anywhere inside your routes. It displays a toggle button that opens a draggable and resizable floating panel:
+
+```tsx
+import { Devtools } from "waymark-devtools";
+
+const layout = route("/").component(Layout);
+
+function Layout() {
+  return (
+    <div>
+      <Outlet />
+      <Devtools />
+    </div>
+  );
+}
+```
+
+If you'd rather embed the panel directly into your layout instead of using the floating window, use `DevtoolsPanel`:
+
+```tsx
+import { DevtoolsPanel } from "waymark-devtools";
+
+function DebugSidebar() {
+  return (
+    <aside>
+      <DevtoolsPanel />
+    </aside>
+  );
+}
+```
+
+To exclude devtools from production builds (Vite example):
+
+```tsx
+import.meta.env.DEV && <Devtools />;
+```
 
 ---
 
