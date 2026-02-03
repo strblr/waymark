@@ -23,15 +23,13 @@ export function RouteTree({
   selectedRoute,
   onSelectRoute
 }: RouteTreeProps) {
-  const activeSet = useMemo(() => {
-    const set = new Set<Route>();
-    if (currentMatch) {
-      for (let r: Route | undefined = currentMatch.route; r; r = r._._) {
-        set.add(r);
-      }
-    }
-    return set;
-  }, [currentMatch]);
+  const activeSet = useMemo(
+    () =>
+      !currentMatch
+        ? new Set<Route>()
+        : new Set<Route>(currentMatch.route._.chain).add(currentMatch.route),
+    [currentMatch]
+  );
 
   const tree = useMemo(() => {
     const navigableSet = new Set<Route>(routes);
@@ -40,10 +38,7 @@ export function RouteTree({
 
     for (let i = 0; i < routes.length; i++) {
       const route = routes[i];
-      const chain: Route[] = [];
-      for (let r: Route | undefined = route; r; r = r._._) {
-        chain.unshift(r);
-      }
+      const chain = [...route._.chain, route];
       for (let j = 0; j < chain.length; j++) {
         const r = chain[j];
         let node = nodeMap.get(r);
@@ -169,7 +164,8 @@ function RouteTreeNode({
 function formatPattern(route: Route): string {
   const pattern = route._.pattern;
   if (pattern === "/") return "/";
-  const parentPattern = route._._?._.pattern;
-  if (!parentPattern) return pattern;
+  const chain = route._.chain;
+  if (chain.size === 0) return pattern;
+  const parentPattern = [...chain].at(-1)!._.pattern;
   return pattern.substring(parentPattern.length);
 }

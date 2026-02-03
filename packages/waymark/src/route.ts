@@ -26,7 +26,8 @@ export function route<P extends string>(
     validate: search => search,
     handles: [],
     components: [],
-    preloads: []
+    preloads: [],
+    chain: new Set()
   });
 }
 
@@ -44,13 +45,12 @@ export class Route<
     pattern: P;
     keys: string[];
     regex: RegExp;
-    looseRegex: RegExp;
     weights: number[];
     validate: (search: Record<string, unknown>) => S;
     handles: Handle[];
     components: ComponentType[];
     preloads: ((context: PreloadContext) => Promise<any>)[];
-    _?: Route;
+    chain: Set<Route>;
   };
 
   readonly _types!: {
@@ -71,8 +71,8 @@ export class Route<
   > => {
     return new Route({
       ...this._,
-      _: this,
-      ...parsePattern(normalizePath(`${this._.pattern}/${pattern}`))
+      ...parsePattern(normalizePath(`${this._.pattern}/${pattern}`)),
+      chain: new Set([...this._.chain, this])
     });
   };
 

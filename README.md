@@ -40,7 +40,7 @@
 </div>
 
 <p align="center">
-  📖 <a href="https://waymarkrouter.com">waymarkrouter.com</a>
+  📖 <a href="https://waymarkrouter.com">Documentation</a> · 🎮 <a href="https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx">Live playground</a>
 </p>
 
 ---
@@ -78,7 +78,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 | **Route handles (metadata)**     |   ✅    |      ✅      |       ✅        |   ❌   |
 | **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
 | **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Devtools**                     |   ❌    |      ⚠️      |       ✅        |   ❌   |
+| **Devtools**                     |   🔨    |      ⚠️      |       ✅        |   ❌   |
 | **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
 | **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
 
@@ -90,6 +90,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 If you believe there's a mistake in the comparison table, please [open an issue](https://github.com/strblr/waymark/issues) or [submit a PR](https://github.com/strblr/waymark/pulls) and it will be fixed.
 
 - ⚠️ indicates the feature is only partially supported, supported with heavy boilerplate, or requires external libraries.
+- 🔨 indicates the feature is not yet ready but being worked on.
 - **Bundle sizes** are approximate gzipped values. React Router and TanStack Router sizes can vary significantly based on imports and versions; Waymark's ~4kB includes its single ~0.4kB dependency ([regexparam](https://github.com/lukeed/regexparam)), before any tree shaking. Wouter is the smallest option but lacks features.
 - **Zero config** means no CLI tools, build plugins, code generation, or configuration files are required. React Router requires its typegen CLI or bundler plugin for full type safety. Same with TanStack Router for file-based routing. You can use code-based routing but it's more boilerplate.
 - **Full type inference** refers to automatic TypeScript inference for routes, params, search params, and navigation without manual type annotations.
@@ -194,6 +195,8 @@ declare module "waymark" {
 ```
 
 Everything autocompletes and type-checks automatically. No heavy setup, no magic, just a simple API that gets out of your way.
+
+👉 [Try it live in the StackBlitz playground](https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx)
 
 ---
 
@@ -1273,29 +1276,27 @@ function AppLayout() {
 
 ## Matching a route anywhere
 
-Use `useMatch` to check if a route matches the current path from anywhere in your component tree. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
+Use `useMatch` to check if a route is part of the current match. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
 
-By default, `useMatch` uses loose matching where the current path only needs to start with the route's path. To require an exact match instead, pass `strict: true`:
+The hook returns the matched params if there's a match, or `null` otherwise. There are two matching modes:
+
+- **Loose matching** (default): Matches if you're on the route or any of its child routes.
+- **Strict matching** (`strict: true`): Matches only if you're on the exact route.
 
 ```tsx
-import { useMatch } from "waymark";
+import { route, useMatch } from "waymark";
 
 const dashboard = route("/dashboard").component(Dashboard);
-const settings = route("/settings").component(Settings);
+const settings = dashboard.route("/settings").component(Settings);
 
 function Sidebar() {
-  // Loose matching: matches /dashboard and /dashboard/literally/anything
-  const dashboardMatch = useMatch({ from: "/dashboard" });
+  // Matches /dashboard and any child route like /dashboard/settings
+  const match = useMatch({ from: dashboard });
 
-  // Strict matching: matches only /settings
-  const settingsMatch = useMatch({ from: settings, strict: true });
+  // Matches only /dashboard exactly
+  const match = useMatch({ from: dashboard, strict: true });
 
-  return (
-    <nav>
-      {dashboardMatch && <DashboardMenu />}
-      {settingsMatch && <SettingsSubmenu />}
-    </nav>
-  );
+  return <nav>{match && <DashboardMenu />}</nav>;
 }
 ```
 
@@ -1463,15 +1464,15 @@ const url = router.createUrl({ to: userProfile, params: { id: "42" } });
 // Returns "/users/42"
 ```
 
-**`router.match(path, options)`** checks if a path matches a specific route.
+**`router.match(path, route)`** checks if a path matches a specific route.
 
 - `path` - `string` - The path to match against
-- `options` - `MatchOptions` - Matching options
+- `route` - `Route` - The route object to match against
 - Returns: `Match | null` - The match result or null if no match
 
 ```tsx
-const match = router.match("/users/42", { from: "/users/:id" });
-// Returns { route, params: { id: "42" } } or null
+const match = router.match("/users/42", userRoute);
+// Returns { route, params: { id: "42" } }
 ```
 
 **`router.matchAll(path)`** finds the best match from all registered routes.
@@ -1656,7 +1657,7 @@ navigate(-1);
 
 **`useLocation()`** returns the current location, subscribes to changes.
 
-- Returns: `{ path: string, search: Record<string, unknown>, state: any }` - The current path, parsed search params, and history state
+- Returns: `HistoryLocation` - The current location with path, parsed search params, and history state
 
 ```tsx
 const { path, search, state } = useLocation();
@@ -1694,7 +1695,7 @@ setSearch({ page: 1 }, true); // Replace instead of push
 **`useMatch(options)`** checks if a route matches the current path.
 
 - `options` - `MatchOptions` - Matching options
-- Returns: `Match | null` - The match result or null if no match
+- Returns: `Params | null` - The extracted path params if matched, or null if no match
 
 ```tsx
 const match = useMatch({ from: "/users/:id" });
@@ -1765,31 +1766,15 @@ new MemoryHistory("/initial"); // In-memory only.
 
 See [History implementations](#history-implementations) for detailed usage.
 
-**`history.getPath()`** returns the current path.
+**`history.location()`** returns the current location.
 
-- Returns: `string` - The current path
-
-```tsx
-const path = history.getPath();
-// Returns "/users/42"
-```
-
-**`history.getSearch()`** returns the current search params as a parsed JSON object.
-
-- Returns: `Record<string, unknown>` - The parsed search params
+- Returns: `HistoryLocation` - The current location with path, parsed search params, and history state
 
 ```tsx
-const search = history.getSearch();
-// Returns { tab: "posts", page: 2 }
-```
-
-**`history.getState()`** returns the current history state.
-
-- Returns: `any` - The state passed during navigation, or undefined
-
-```tsx
-const state = history.getState();
-// Returns any state passed during navigation
+const { path, search, state } = history.location();
+// path: "/users/42"
+// search: { tab: "posts", page: 2 }
+// state: any state passed during navigation
 ```
 
 **`history.go(delta)`** navigates forward or back in history.
@@ -1852,6 +1837,16 @@ type NavigateOptions = {
 };
 ```
 
+**`HistoryLocation`** represents a history location.
+
+```tsx
+interface HistoryLocation {
+  path: string; // The current path
+  search: Record<string, unknown>; // Parsed search params
+  state: any; // History state passed during navigation
+}
+```
+
 **`HistoryPushOptions`** are options for untyped navigation.
 
 ```tsx
@@ -1867,7 +1862,7 @@ interface HistoryPushOptions {
 ```tsx
 type MatchOptions = {
   from: Pattern | Route; // The route to match against
-  strict?: boolean; // Require exact match (default: false, matches prefixes)
+  strict?: boolean; // Strict matching mode (default: false)
   params?: Partial<Params>; // Optional param values to filter by
 };
 ```

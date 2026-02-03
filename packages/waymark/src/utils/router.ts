@@ -33,9 +33,7 @@ export function matchPattern(
   const out: Record<string, string> = {};
   keys.forEach((key, i) => {
     const match = matches[i + 1];
-    if (match) {
-      out[key] = match;
-    }
+    match && (out[key] = match);
   });
   return out;
 }

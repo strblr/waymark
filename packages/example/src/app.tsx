@@ -64,9 +64,9 @@ function Layout() {
   const location = useLocation();
   const handles = useHandles();
   const navigate = useNavigate();
+  const lazyMatch = useMatch({ from: "/lazy" });
   const navigateToParam2 = () =>
     router.navigate({ to: param, params: { id: "2" } });
-  const lazyMatch = useMatch({ from: "/lazy" });
 
   return (
     <div className="layout">
@@ -76,7 +76,7 @@ function Layout() {
           Search: {JSON.stringify(location.search)}
         </div>
         <div className="location-match">
-          Matched lazy: {!!lazyMatch ? "✅" : "❌"}
+          Matched lazy: {lazyMatch ? "✅" : "❌"}
         </div>
       </div>
       <div className="breadcrumbs">
@@ -177,7 +177,12 @@ function SimplePage() {
 const lazyPage = layout
   .route("/lazy")
   .handle({ breadcrumb: "Lazy" })
-  .lazy(() => import("./lazy"));
+  .lazy(() =>
+    import("./lazy").then(async m => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return m.default;
+    })
+  );
 
 const lazySection1 = lazyPage
   .route("/section1")
