@@ -5,6 +5,7 @@ import {
   QueryClientProvider
 } from "@tanstack/react-query";
 import { z } from "zod";
+import { Devtools } from "waymark-devtools";
 import {
   RouterRoot,
   route,
@@ -24,21 +25,6 @@ import {
 
 // App
 
-const logMiddleware = (history: HistoryLike) => {
-  const { go, push } = history;
-  history.go = delta => {
-    console.log("go", delta);
-    go(delta);
-  };
-  history.push = options => {
-    console.groupCollapsed("push", options.url);
-    console.table(options);
-    console.groupEnd();
-    push(options);
-  };
-  return history;
-};
-
 const queryClient = new QueryClient({});
 
 export function App() {
@@ -47,7 +33,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <div className="app-container">
         <div className="app-header">
-          <button onClick={() => setCounter(c => c + 1)}>
+          <button className="button" onClick={() => setCounter(c => c + 1)}>
             App counter {counter}
           </button>
         </div>
@@ -67,9 +53,10 @@ export function App() {
 
 // Layout
 
-const root = route("/").handle({ breadcrumb: "Home" }).component(Outlet);
-const root2 = root.route("/").component(Outlet);
-const layout = root2.route("/").component(Layout).error(ErrorBoundary);
+const layout = route("/")
+  .handle({ breadcrumb: "Home" })
+  .component(Layout)
+  .error(ErrorBoundary);
 
 function Layout() {
   const [counter, setCounter] = useState(0);
@@ -129,13 +116,14 @@ function Layout() {
         <a onClick={() => navigate(1)}>Forward</a>
       </nav>
       <div className="counter-section">
-        <button onClick={() => setCounter(c => c + 1)}>
+        <button className="button" onClick={() => setCounter(c => c + 1)}>
           Layout counter {counter}
         </button>
       </div>
       <div className="content">
         <Outlet />
       </div>
+      <Devtools />
     </div>
   );
 }
@@ -270,10 +258,16 @@ function ParamDetail() {
       <h2 className="section-title">Detail</h2>
       <div className="section-content">
         <div className="data-display">{JSON.stringify(search)}</div>
-        <button onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}>
+        <button
+          className="button"
+          onClick={() => setSearch(s => ({ name: s.name + " Doe" }))}
+        >
           Set Name
         </button>
-        <button onClick={() => setSearch({ name: undefined })}>
+        <button
+          className="button"
+          onClick={() => setSearch({ name: undefined })}
+        >
           Clear Name
         </button>
       </div>
@@ -402,6 +396,21 @@ const routes = [
   lazySection2,
   lazySection1
 ];
+
+const logMiddleware = (history: HistoryLike) => {
+  const { go, push } = history;
+  history.go = delta => {
+    console.log("go", delta);
+    go(delta);
+  };
+  history.push = options => {
+    console.groupCollapsed("push", options.url);
+    console.table(options);
+    console.groupEnd();
+    push(options);
+  };
+  return history;
+};
 
 declare module "waymark" {
   interface Register {
