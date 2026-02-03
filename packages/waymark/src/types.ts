@@ -51,8 +51,8 @@ export interface PreloadContext<Ps extends {} = any, S extends {} = any> {
 // Router
 
 export interface RouterOptions {
-  basePath?: string;
   routes: RouteList;
+  basePath?: string;
   history?: HistoryLike;
   ssrContext?: SSRContext;
   defaultLinkOptions?: LinkOptions;

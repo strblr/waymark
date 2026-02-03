@@ -22,8 +22,8 @@ import type {
 } from "../types";
 
 export class Router {
-  readonly basePath: string;
   readonly routes: RouteList;
+  readonly basePath: string;
   readonly history: HistoryLike;
   readonly ssrContext?: SSRContext;
   readonly defaultLinkOptions?: LinkOptions;
@@ -31,14 +31,14 @@ export class Router {
 
   constructor(options: RouterOptions) {
     const {
-      basePath = "/",
       routes,
+      basePath = "/",
       history,
       ssrContext,
       defaultLinkOptions
     } = options;
-    this.basePath = normalizePath(basePath);
     this.routes = routes;
+    this.basePath = normalizePath(basePath);
     this.history = history ?? new BrowserHistory();
     this.ssrContext = ssrContext;
     this.defaultLinkOptions = defaultLinkOptions;

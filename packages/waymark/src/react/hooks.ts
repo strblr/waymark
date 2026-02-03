@@ -1,4 +1,4 @@
-import { useMemo, useContext } from "react";
+import { useMemo, useContext, type ReactNode } from "react";
 import {
   RouterContext,
   LocationContext,
@@ -51,7 +51,7 @@ export function useMatch<P extends Pattern>(
 
 // useOutlet
 
-export function useOutlet() {
+export function useOutlet(): ReactNode {
   return useContext(OutletContext);
 }
 
