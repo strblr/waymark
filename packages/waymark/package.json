@@ -38,6 +38,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit && tsdown",
+    "dev": "tsdown --watch",
     "prepublishOnly": "bun run build && cp ../../README.md README.md",
     "postpublish": "rm -f README.md"
   },
