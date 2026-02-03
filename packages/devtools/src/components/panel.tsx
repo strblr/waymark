@@ -105,6 +105,10 @@ function CurrentLocationSection({
     ? Object.keys(currentMatch.params).length
     : 0;
   const searchCount = Object.keys(location.search).length;
+  const validatedSearch = currentMatch?.route._.validate(location.search);
+  const validatedSearchCount = validatedSearch
+    ? Object.keys(validatedSearch).length
+    : 0;
   return (
     <div style={styles.section}>
       <div style={styles.sectionHeader}>
@@ -158,9 +162,17 @@ function CurrentLocationSection({
           </InfoSection>
         )}
 
-        {searchCount > 0 && (
-          <InfoSection label={`Search Params (${searchCount})`}>
+        {(searchCount > 0 || validatedSearchCount > 0) && (
+          <InfoSection label={`Search params (${searchCount})`}>
             <Inspector value={location.search} />
+          </InfoSection>
+        )}
+
+        {validatedSearchCount > 0 && (
+          <InfoSection
+            label={`Validated search params (${validatedSearchCount})`}
+          >
+            <Inspector value={validatedSearch} />
           </InfoSection>
         )}
 
