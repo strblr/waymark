@@ -13,7 +13,7 @@ interface InspectorProps {
 export function Inspector({ label, value, style }: InspectorProps) {
   return (
     <div style={{ ...styles.inspector, ...style }}>
-      <InspectorNode name={label} value={value} defaultExpanded depth={0} />
+      <InspectorNode name={label} value={value} defaultExpanded />
     </div>
   );
 }
@@ -22,21 +22,15 @@ interface InspectorNodeProps {
   name?: string;
   value: unknown;
   defaultExpanded?: boolean;
-  depth: number;
 }
 
-function InspectorNode({
-  name,
-  value,
-  defaultExpanded,
-  depth
-}: InspectorNodeProps) {
-  const [expanded, setExpanded] = useState(defaultExpanded || !depth);
+function InspectorNode({ name, value, defaultExpanded }: InspectorNodeProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const type = getValueType(value);
-  const expandable = type === "object" || type === "array";
-  const itemCount = expandable ? Object.keys(value as object).length : 0;
-  const empty = expandable && !itemCount;
-  const canExpand = expandable && !empty;
+  const objectLike = type === "object" || type === "array";
+  const itemCount = objectLike ? Object.keys(value as object).length : 0;
+  const empty = objectLike && !itemCount;
+  const expandable = objectLike && !empty;
 
   const formatValue = (t: ValueType): string => {
     switch (t) {
@@ -62,7 +56,7 @@ function InspectorNode({
   const renderValue = () => (
     <span style={styles.inspectorValue(type)}>
       {formatValue(type)}
-      {expandable && (
+      {objectLike && (
         <span style={styles.inspectorPreviewCount}>{itemCount}</span>
       )}
     </span>
@@ -72,10 +66,10 @@ function InspectorNode({
     <>
       <div style={styles.inspectorRow}>
         <button
-          style={styles.expandButton(canExpand)}
-          onClick={() => setExpanded(!expanded)}
+          tabIndex={expandable ? 0 : -1}
           aria-label={expanded ? "Collapse" : "Expand"}
-          tabIndex={canExpand ? 0 : -1}
+          onClick={() => setExpanded(!expanded)}
+          style={styles.expandButton(expandable)}
         >
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
@@ -85,7 +79,7 @@ function InspectorNode({
             <span style={styles.inspectorColon}>:</span>
           </>
         )}
-        {!expandable || empty || !expanded ? (
+        {!objectLike || empty || !expanded ? (
           renderValue()
         ) : (
           <>
@@ -95,24 +89,14 @@ function InspectorNode({
           </>
         )}
       </div>
-      {expandable && !empty && expanded && (
+      {objectLike && !empty && expanded && (
         <div style={styles.inspectorNested}>
           {type === "array"
             ? (value as unknown[]).map((item, index) => (
-                <InspectorNode
-                  key={index}
-                  name={String(index)}
-                  value={item}
-                  depth={depth + 1}
-                />
+                <InspectorNode key={index} name={String(index)} value={item} />
               ))
             : Object.entries(value as object).map(([key, val]) => (
-                <InspectorNode
-                  key={key}
-                  name={key}
-                  value={val}
-                  depth={depth + 1}
-                />
+                <InspectorNode key={key} name={key} value={val} />
               ))}
           <div style={styles.inspectorBracket}>
             {type === "array" ? "]" : "}"}

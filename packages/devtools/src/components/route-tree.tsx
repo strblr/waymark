@@ -108,11 +108,19 @@ function RouteTreeNode({
   onSelect
 }: RouteTreeNodeProps) {
   const [expanded, setExpanded] = useState(true);
+  const pattern = useMemo(() => formatPattern(node.route), [node.route]);
+  const active = activeSet.has(node.route);
   const hasChildren = node.children.length > 0;
   const selected = selectedRoute === node.route;
-  const active = activeSet.has(node.route);
   const leafActive = activeRoute === node.route;
   const status = leafActive ? "active" : active ? "matched" : "inactive";
+  const label = !node.navigable
+    ? "layout"
+    : pattern === "/"
+    ? "index"
+    : pattern === "*"
+    ? "catch-all"
+    : null;
 
   useEffect(() => {
     if (active && hasChildren) setExpanded(true);
@@ -139,10 +147,8 @@ function RouteTreeNode({
         </button>
         <span style={styles.routeIndicator(status)} />
         <code style={styles.routeTreePattern(node.navigable)}>
-          {formatPattern(node.route)}
-          {!node.navigable && (
-            <span style={styles.routeTreeLabel}>(layout)</span>
-          )}
+          {pattern}
+          {label && <span style={styles.routeTreeLabel}>({label})</span>}
         </code>
       </div>
       {expanded &&
@@ -161,11 +167,14 @@ function RouteTreeNode({
   );
 }
 
-function formatPattern(route: Route): string {
-  const pattern = route._.pattern;
+function formatPattern(route: Route) {
+  let pattern = route._.pattern;
   if (pattern === "/") return "/";
   const chain = route._.chain;
-  if (chain.size === 0) return pattern;
-  const parentPattern = [...chain].at(-1)!._.pattern;
-  return pattern.substring(parentPattern.length);
+  if (chain.size) {
+    const parentPattern = [...chain].at(-1)!._.pattern;
+    pattern = pattern.substring(parentPattern.length);
+  }
+  if (pattern.startsWith("/")) pattern = pattern.substring(1);
+  return pattern;
 }

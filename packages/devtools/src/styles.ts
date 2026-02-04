@@ -302,13 +302,14 @@ export const styles = {
   routeTreePattern: (navigable: boolean) => ({
     fontFamily: "inherit",
     fontSize: theme.fontSize.sm,
-    color: theme.colors.text,
-    ...(navigable ? {} : { opacity: 0.5, fontStyle: "italic" })
+    color: navigable ? theme.colors.text : theme.colors.textMuted
   }),
 
   routeTreeLabel: {
     marginLeft: 6,
-    fontSize: theme.fontSize.xs
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textMuted,
+    fontStyle: "italic"
   },
 
   inspector: {
