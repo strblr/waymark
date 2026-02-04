@@ -78,7 +78,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 | **Route handles (metadata)**     |   ✅    |      ✅      |       ✅        |   ❌   |
 | **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
 | **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Devtools**                     |   🔨    |      ⚠️      |       ✅        |   ❌   |
+| **Devtools**                     |   ✅    |      ⚠️      |       ✅        |   ❌   |
 | **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
 | **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
 
@@ -131,6 +131,7 @@ If you believe there's a mistake in the comparison table, please [open an issue]
 - [Middlewares](#middlewares)
 - [Route matching and ranking](#route-matching-and-ranking)
 - [History implementations](#history-implementations)
+- [Devtools](#devtools)
 - [Cookbook](#cookbook)
   - [Quick start example](#quick-start-example)
   - [Server-side rendering (SSR)](#server-side-rendering-ssr)
@@ -1162,6 +1163,53 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 ---
 
+# Devtools
+
+Waymark has a companion devtools package for inspecting routes, matches, parameters, and navigation state.
+
+```bash
+npm install waymark-devtools
+```
+
+Render the `Devtools` component anywhere inside your routes. It displays a toggle button that opens a draggable and resizable floating panel:
+
+```tsx
+import { Devtools } from "waymark-devtools";
+
+const layout = route("/").component(Layout);
+
+function Layout() {
+  return (
+    <div>
+      <Outlet />
+      <Devtools />
+    </div>
+  );
+}
+```
+
+If you'd rather embed the panel directly into your layout instead of using the floating window, use `DevtoolsPanel`:
+
+```tsx
+import { DevtoolsPanel } from "waymark-devtools";
+
+function DebugSidebar() {
+  return (
+    <aside>
+      <DevtoolsPanel />
+    </aside>
+  );
+}
+```
+
+To exclude devtools from production builds (Vite example):
+
+```tsx
+import.meta.env.DEV && <Devtools />;
+```
+
+---
+
 # Cookbook
 
 ## Quick start example
@@ -1915,7 +1963,6 @@ interface PreloadContext {
 - Possibility to pass an arbitrary context to the Router instance for later use in preloads?
 - Relative path navigation? Not sure it's worth the extra bundle size given that users can export/import route objects and pass them as navigation option.
 - Document usage in test environments
-- Devtools: working on it.
 - Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
 
 ---

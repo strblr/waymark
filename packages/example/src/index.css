@@ -148,7 +148,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
-button {
+.button {
   background: var(--color-blue);
   color: var(--color-white);
   border: none;
@@ -162,13 +162,13 @@ button {
   margin: 0.25rem;
 }
 
-button:hover {
+.button:hover {
   background: var(--color-blue-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
-button:active {
+.button:active {
   background: var(--color-blue-active);
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
