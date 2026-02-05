@@ -9,19 +9,19 @@
 <div align="center">
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.shields.io/npm/v/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/v/%40typeroute%2Frouter?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="npm version"
     />
   </a>
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.badgesize.io/https://unpkg.com/@typeroute/router/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@typeroute/router/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="gzip size"
     />
   </a>
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.shields.io/npm/dm/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/dm/%40typeroute%2Frouter?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="downloads"
     />
   </a>
@@ -40,7 +40,7 @@
 </div>
 
 <p align="center">
-  📖 <a href="https://typeroute.com">Documentation</a> · 🎮 <a href="https://stackblitz.com/edit/typeroute-demo?file=src%2Fapp.tsx">Live playground</a>
+  📖 <a href="https://typeroute.com">typeroute.com</a> · 🎮 <a href="https://stackblitz.com/edit/typeroute-demo?file=src%2Fapp.tsx">Live playground</a>
 </p>
 
 ---

@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
-    "@typeroute/router": "workspace:*",
     "@typeroute/devtools": "workspace:*",
+    "@typeroute/router": "workspace:*",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "zod": "^4.3.6"
