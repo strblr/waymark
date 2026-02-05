@@ -9,25 +9,25 @@
 <div align="center">
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.shields.io/npm/v/%40typeroute%2Frouter?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/v/%40typeroute%2Frouter?color=0d1117&labelColor=0d1117"
       alt="npm version"
     />
   </a>
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@typeroute/router/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@typeroute/router/dist/index.js?compression=gzip&label=gzip&color=0d1117&labelColor=0d1117"
       alt="gzip size"
     />
   </a>
   <a href="https://github.com/strblr/typeroute/blob/master/LICENSE">
     <img
-      src="https://img.shields.io/npm/l/%40typeroute%2Frouter?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/l/%40typeroute%2Frouter?color=0d1117&labelColor=0d1117"
       alt="license"
     />
   </a>
   <a href="https://github.com/sponsors/strblr">
     <img
-      src="https://img.shields.io/github/sponsors/strblr?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/github/sponsors/strblr?color=0d1117&labelColor=0d1117"
       alt="sponsors"
     />
   </a>
