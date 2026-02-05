@@ -1272,9 +1272,7 @@ function handleRequest(req: Request) {
   if (ssrContext.redirect) {
     return Response.redirect(ssrContext.redirect);
   }
-  return new Response(html, {
-    headers: { "Content-Type": "text/html" }
-  });
+  // ... Send pre-rendered HTML
 }
 ```
 

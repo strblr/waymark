@@ -30,6 +30,7 @@ export default defineConfig({
       color: {
         background: "rgb(13, 17, 23)",
         background2: "rgb(21, 27, 35)",
+        background3: "rgb(21, 27, 35)",
         codeBlockBackground: "rgb(21, 27, 35)"
       },
       fontWeight: {
