@@ -1324,24 +1324,23 @@ function AppLayout() {
 
 ## Matching a route anywhere
 
-Use `useMatch` to check if a route is part of the current match. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
+Use `useMatch` to check if a route matches the current path from anywhere in your component tree. You can pass either a route pattern string or a route object, just like with `Link` and `navigate`. This is useful for conditional rendering, styling, access control, and more. It's also used internally by `useParams` and `Link`.
 
-The hook returns the matched params if there's a match, or `null` otherwise. There are two matching modes:
+The hook returns a Match object (containing `route` and `params`) if there's a match, or `null` otherwise. There are two matching modes:
 
-- **Loose matching** (default): Matches if you're on the route or any of its child routes.
-- **Strict matching** (`strict: true`): Matches only if you're on the exact route.
+- **Loose matching** (default): Matches if the path starts with the route pattern (e.g., `/dashboard` matches `/dashboard/settings`).
+- **Strict matching** (`strict: true`): Matches only if the path exactly matches the route pattern.
 
 ```tsx
-import { route, useMatch } from "waymark";
+import { useMatch } from "waymark";
 
 const dashboard = route("/dashboard").component(Dashboard);
-const settings = dashboard.route("/settings").component(Settings);
 
 function Sidebar() {
-  // Matches /dashboard and any child route like /dashboard/settings
+  // Matches /dashboard, /dashboard/anything, etc.
   const match = useMatch({ from: dashboard });
 
-  // Matches only /dashboard exactly
+  // Matches only /dashboard
   const match = useMatch({ from: dashboard, strict: true });
 
   return <nav>{match && <DashboardMenu />}</nav>;
@@ -1512,14 +1511,14 @@ const url = router.createUrl({ to: userProfile, params: { id: "42" } });
 // Returns "/users/42"
 ```
 
-**`router.match(path, route)`** checks if a path matches a specific route.
+**`router.match(path, options)`** checks if a path matches a specific route.
 
 - `path` - `string` - The path to match against
-- `route` - `Route` - The route object to match against
+- `options` - `MatchOptions` - Matching options
 - Returns: `Match | null` - The match result or null if no match
 
 ```tsx
-const match = router.match("/users/42", userRoute);
+const match = router.match("/users/42", { from: "/users/:id" });
 // Returns { route, params: { id: "42" } }
 ```
 
@@ -1743,7 +1742,7 @@ setSearch({ page: 1 }, true); // Replace instead of push
 **`useMatch(options)`** checks if a route matches the current path.
 
 - `options` - `MatchOptions` - Matching options
-- Returns: `Params | null` - The extracted path params if matched, or null if no match
+- Returns: `Match | null` - The match result or null if no match
 
 ```tsx
 const match = useMatch({ from: "/users/:id" });
@@ -1910,7 +1909,7 @@ interface HistoryPushOptions {
 ```tsx
 type MatchOptions = {
   from: Pattern | Route; // The route to match against
-  strict?: boolean; // Strict matching mode (default: false)
+  strict?: boolean; // Require exact match (default: false, matches prefixes)
   params?: Partial<Params>; // Optional param values to filter by
 };
 ```
