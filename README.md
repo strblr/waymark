@@ -100,8 +100,8 @@ If you believe there's a mistake in the comparison table, please [open an issue]
 # Table of contents
 
 - [Comparison](#comparison)
-- [Showcase](#showcase)
 - [Installation](#installation)
+- [Showcase](#showcase)
 - [Defining routes](#defining-routes)
 - [Nested routes and layouts](#nested-routes-and-layouts)
 - [Setting up the router](#setting-up-the-router)
@@ -146,6 +146,16 @@ If you believe there's a mistake in the comparison table, please [open an issue]
   - [Types](#types)
 - [Roadmap](#roadmap)
 - [License](#license)
+
+---
+
+# Installation
+
+```bash
+npm install @typeroute/router
+```
+
+TypeRoute requires React 18 or higher.
 
 ---
 
@@ -194,16 +204,6 @@ declare module "@typeroute/router" {
 Everything autocompletes and type-checks automatically. No heavy setup, no magic, just a simple API that gets out of your way.
 
 👉 [Try it live in the StackBlitz playground](https://stackblitz.com/edit/typeroute-demo?file=src%2Fapp.tsx)
-
----
-
-# Installation
-
-```bash
-npm install @typeroute/router
-```
-
-TypeRoute requires React 18 or higher.
 
 ---
 
