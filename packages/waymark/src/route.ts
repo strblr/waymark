@@ -14,7 +14,8 @@ import {
   errorBoundary,
   validator,
   type ParsePattern,
-  type NormalizePath
+  type NormalizePath,
+  type OptionalOnUndefined
 } from "./utils";
 
 export function route<P extends string>(
@@ -77,7 +78,7 @@ export class Route<
 
   use = <S2 extends {}>(
     middleware: Middleware<S2>
-  ): Route<P, Ps, Merge<S, S2>> => {
+  ): Route<P, Ps, Merge<S, OptionalOnUndefined<S2>>> => {
     const { _ } = middleware as Route<never, never, S2>;
     return new Route({
       ...this._,
@@ -89,7 +90,7 @@ export class Route<
 
   search = <S2 extends {}>(
     validate: Validator<S, S2>
-  ): Route<P, Ps, Merge<S, S2>> => {
+  ): Route<P, Ps, Merge<S, OptionalOnUndefined<S2>>> => {
     validate = validator(validate);
     return new Route({
       ...this._,

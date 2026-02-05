@@ -543,7 +543,7 @@ The resulting parsed object is what gets passed to the `.search()` function or s
 
 ## Inheritance
 
-When you define search params with a validator on a route, all child routes automatically inherit that validator along with its typing.
+When you define search params with a validator on a route, all child routes automatically inherit that validator along with its typing. This makes sense because when a child route matches, parent components also render (parents use outlets to display their children), so parent search params remain relevant.
 
 Here's how it works. Start with a parent route that defines a search param:
 
