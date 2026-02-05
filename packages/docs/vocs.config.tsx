@@ -28,8 +28,9 @@ export default defineConfig({
     accentColor: "hsl(49, 99%, 63%)",
     variables: {
       color: {
-        background: "#0B0D0F",
-        codeBlockBackground: "#090a0b"
+        background: "rgb(13, 17, 23)",
+        background2: "rgb(21, 27, 35)",
+        codeBlockBackground: "rgb(21, 27, 35)"
       },
       fontWeight: {
         regular: "400",

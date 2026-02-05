@@ -19,12 +19,6 @@
       alt="gzip size"
     />
   </a>
-  <a href="https://www.npmjs.com/package/@typeroute/router">
-    <img
-      src="https://img.shields.io/npm/dm/%40typeroute%2Frouter?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
-      alt="downloads"
-    />
-  </a>
   <a href="https://github.com/strblr/typeroute/blob/master/LICENSE">
     <img
       src="https://img.shields.io/npm/l/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
