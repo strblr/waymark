@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import type { Route, Match } from "waymark";
+import type { Route, Match } from "@typeroute/router";
 import { styles } from "../styles";
 import { ChevronDown, ChevronRight } from "./icons";
 

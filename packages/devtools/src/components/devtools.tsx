@@ -42,15 +42,15 @@ export function Devtools({
         style={toggleButtonStyle}
         className={buttonClassName}
         onClick={() => setOpen(true)}
-        aria-label="Open Waymark devtools"
+        aria-label="Open TypeRoute devtools"
       >
         <Logo size={18} />
-        <span>Waymark</span>
+        <span>TypeRoute</span>
       </button>
       <FloatingWindow
         open={open}
         onClose={() => setOpen(false)}
-        title="Waymark Devtools"
+        title="TypeRoute Devtools"
         defaultPosition={defaultPosition}
         defaultSize={defaultSize}
         minSize={minSize}

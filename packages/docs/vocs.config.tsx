@@ -1,14 +1,14 @@
 import { defineConfig } from "vocs";
 
 export default defineConfig({
-  title: "Waymark",
+  title: "TypeRoute",
   description:
     "Type-safe React router that just works - simple setup, full autocomplete, 4kB gzipped",
-  baseUrl: "https://waymarkrouter.com",
+  baseUrl: "https://typeroute.com",
   iconUrl:
-    "https://raw.githubusercontent.com/strblr/waymark/master/favicon.svg",
+    "https://raw.githubusercontent.com/strblr/typeroute/master/favicon.svg",
   ogImageUrl:
-    "https://raw.githubusercontent.com/strblr/waymark/master/banner.svg",
+    "https://raw.githubusercontent.com/strblr/typeroute/master/banner.svg",
   font: {
     default: {
       google: "Inter"
@@ -20,7 +20,7 @@ export default defineConfig({
   socials: [
     {
       icon: "github",
-      link: "https://github.com/strblr/waymark"
+      link: "https://github.com/strblr/typeroute"
     }
   ],
   theme: {
@@ -53,7 +53,7 @@ export default defineConfig({
     },
     {
       text: "GitHub",
-      link: "https://github.com/strblr/waymark"
+      link: "https://github.com/strblr/typeroute"
     },
     {
       text: "Sponsor",

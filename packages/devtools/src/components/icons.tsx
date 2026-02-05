@@ -3,10 +3,10 @@ import type { CSSProperties, ReactNode } from "react";
 export function Logo({ size }: { size: number }) {
   return (
     <img
-      src="https://raw.githubusercontent.com/strblr/waymark/master/favicon.svg"
+      src="https://raw.githubusercontent.com/strblr/typeroute/master/favicon.svg"
       width={size}
       height={size}
-      alt="Waymark"
+      alt="TypeRoute"
     />
   );
 }

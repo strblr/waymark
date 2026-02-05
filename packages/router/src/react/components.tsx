@@ -46,7 +46,7 @@ export function RouterRoot(props: RouterRootProps) {
     [router, location.path]
   );
   if (!match) {
-    console.error("[Waymark] No matching route for path", location.path);
+    console.error("[TypeRoute] No matching route for path", location.path);
   }
   return useMemo<ReactNode>(
     () => (

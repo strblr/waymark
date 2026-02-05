@@ -54,7 +54,7 @@ export class Router {
     }
     const route = this._.routeMap.get(pattern);
     if (!route) {
-      throw new Error(`[Waymark] Route not found for ${pattern}`);
+      throw new Error(`[TypeRoute] Route not found for ${pattern}`);
     }
     return route as GetRoute<P>;
   };

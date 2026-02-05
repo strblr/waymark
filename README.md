@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/strblr/waymark/master/banner.svg" alt="Waymark" />
+  <img src="https://raw.githubusercontent.com/strblr/typeroute/master/banner.svg" alt="TypeRoute" />
 </p>
 
 <p align="center">
@@ -7,27 +7,27 @@
 </p>
 
 <div align="center">
-  <a href="https://www.npmjs.com/package/waymark">
+  <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.shields.io/npm/v/waymark?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/v/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="npm version"
     />
   </a>
-  <a href="https://www.npmjs.com/package/waymark">
+  <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.badgesize.io/https://unpkg.com/waymark/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.badgesize.io/https://unpkg.com/@typeroute/router/dist/index.js?compression=gzip&label=gzip&style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="gzip size"
     />
   </a>
-  <a href="https://www.npmjs.com/package/waymark">
+  <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
-      src="https://img.shields.io/npm/dm/waymark?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/dm/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="downloads"
     />
   </a>
-  <a href="https://github.com/strblr/waymark/blob/master/LICENSE">
+  <a href="https://github.com/strblr/typeroute/blob/master/LICENSE">
     <img
-      src="https://img.shields.io/npm/l/waymark?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/npm/l/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="license"
     />
   </a>
@@ -40,12 +40,12 @@
 </div>
 
 <p align="center">
-  📖 <a href="https://waymarkrouter.com">Documentation</a> · 🎮 <a href="https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx">Live playground</a>
+  📖 <a href="https://typeroute.com">Documentation</a> · 🎮 <a href="https://stackblitz.com/edit/typeroute-demo?file=src%2Fapp.tsx">Live playground</a>
 </p>
 
 ---
 
-Waymark is a routing library for React built around three core ideas: **type safety**, **simplicity**, and **minimal overhead**.
+TypeRoute is a routing library for React built around three core ideas: **type safety**, **simplicity**, and **minimal overhead**.
 
 - 🔒 **Fully type-safe** - Complete TypeScript inference for routes, path params, search params, and more
 - ⚡ **Zero config** - No build plugins, no CLI, no codegen, no config files, very low boilerplate
@@ -59,44 +59,44 @@ Waymark is a routing library for React built around three core ideas: **type saf
 
 # Comparison
 
-| Feature                          | Waymark | React Router | TanStack Router | Wouter |
-| -------------------------------- | :-----: | :----------: | :-------------: | :----: |
-| **Bundle size (gzip)**\*         |  ~4kB   |    ~26kB+    |     ~19kB+      | ~2.2kB |
-| **Zero config**\*                |   ✅    |      ❌      |       ⚠️        |   ✅   |
-| **Full type inference**\*        |   ✅    |      ⚠️      |       ✅        |   ❌   |
-| **Nested routes**                |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Search param validation**\*    |   ✅    |      ❌      |       ✅        |   ❌   |
-| **Lazy loading**                 |   ✅    |      ✅      |       ✅        |   ❌   |
-| **Data preloading**              |   ✅    |      ✅      |       ✅        |   ❌   |
-| **Built-in error boundaries**    |   ✅    |      ✅      |       ✅        |   ❌   |
-| **Built-in suspense boundaries** |   ✅    |      ❌      |       ✅        |   ❌   |
-| **Link preloading strategies**   |   ✅    |      ✅      |       ✅        |   ❌   |
-| **Active link detection**        |   ✅    |      ✅      |       ✅        |   ⚠️   |
-| **Browser/Hash/Memory history**  |   ✅    |      ✅      |       ✅        |   ✅   |
-| **SSR support**                  |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Route middlewares**\*          |   ✅    |      ❌      |       ❌        |   ❌   |
-| **Route handles (metadata)**     |   ✅    |      ✅      |       ✅        |   ❌   |
-| **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
-| **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
-| **Devtools**                     |   ✅    |      ⚠️      |       ✅        |   ❌   |
-| **Navigation blockers**          |   🔨    |      ✅      |       ✅        |   ❌   |
-| **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
-| **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
+| Feature                          | TypeRoute | React Router | TanStack Router | Wouter |
+| -------------------------------- | :-------: | :----------: | :-------------: | :----: |
+| **Bundle size (gzip)**\*         |   ~4kB    |    ~26kB+    |     ~19kB+      | ~2.2kB |
+| **Zero config**\*                |    ✅     |      ❌      |       ⚠️        |   ✅   |
+| **Full type inference**\*        |    ✅     |      ⚠️      |       ✅        |   ❌   |
+| **Nested routes**                |    ✅     |      ✅      |       ✅        |   ✅   |
+| **Search param validation**\*    |    ✅     |      ❌      |       ✅        |   ❌   |
+| **Lazy loading**                 |    ✅     |      ✅      |       ✅        |   ❌   |
+| **Data preloading**              |    ✅     |      ✅      |       ✅        |   ❌   |
+| **Built-in error boundaries**    |    ✅     |      ✅      |       ✅        |   ❌   |
+| **Built-in suspense boundaries** |    ✅     |      ❌      |       ✅        |   ❌   |
+| **Link preloading strategies**   |    ✅     |      ✅      |       ✅        |   ❌   |
+| **Active link detection**        |    ✅     |      ✅      |       ✅        |   ⚠️   |
+| **Browser/Hash/Memory history**  |    ✅     |      ✅      |       ✅        |   ✅   |
+| **SSR support**                  |    ✅     |      ✅      |       ✅        |   ✅   |
+| **Route middlewares**\*          |    ✅     |      ❌      |       ❌        |   ❌   |
+| **Route handles (metadata)**     |    ✅     |      ✅      |       ✅        |   ❌   |
+| **Route match ranking**\*        |    ✅     |      ✅      |       ✅        |   ❌   |
+| **View transitions**             |    ✅     |      ✅      |       ✅        |   ✅   |
+| **Devtools**                     |    ✅     |      ⚠️      |       ✅        |   ❌   |
+| **Navigation blockers**          |    🔨     |      ✅      |       ✅        |   ❌   |
+| **File-based routing**           |    ❌     |      ✅      |       ✅        |   ❌   |
+| **React Native**                 |    ❌     |      ✅      |       ❌        |   ❌   |
 
 <details>
 <summary><b>Comparison notes</b></summary>
 
 <br />
 
-If you believe there's a mistake in the comparison table, please [open an issue](https://github.com/strblr/waymark/issues) or [submit a PR](https://github.com/strblr/waymark/pulls) and it will be fixed.
+If you believe there's a mistake in the comparison table, please [open an issue](https://github.com/strblr/typeroute/issues) or [submit a PR](https://github.com/strblr/typeroute/pulls) and it will be fixed.
 
 - ⚠️ indicates the feature is only partially supported, supported with heavy boilerplate, or requires external libraries.
 - 🔨 indicates the feature is not yet ready but being worked on.
-- **Bundle sizes** are approximate gzipped values. React Router and TanStack Router sizes can vary significantly based on imports and versions; Waymark's ~4kB includes its single ~0.4kB dependency ([regexparam](https://github.com/lukeed/regexparam)), before any tree shaking. Wouter is the smallest option but lacks features.
+- **Bundle sizes** are approximate gzipped values. React Router and TanStack Router sizes can vary significantly based on imports and versions; TypeRoute's ~4kB includes its single ~0.4kB dependency ([regexparam](https://github.com/lukeed/regexparam)), before any tree shaking. Wouter is the smallest option but lacks features.
 - **Zero config** means no CLI tools, build plugins, code generation, or configuration files are required. React Router requires its typegen CLI or bundler plugin for full type safety. Same with TanStack Router for file-based routing. You can use code-based routing but it's more boilerplate.
 - **Full type inference** refers to automatic TypeScript inference for routes, params, search params, and navigation without manual type annotations.
 - **Search params validation** refers to built-in support for validating and typing URL search parameters. Wouter provides `useSearch()` but no validation layer. Same with React Router and `useSearchParams`.
-- **Route middlewares** are reusable configuration bundles (search validation, handles, preload functions, components) that can be applied to multiple routes. This is a Waymark-specific feature.
+- **Route middlewares** are reusable configuration bundles (search validation, handles, preload functions, components) that can be applied to multiple routes. This is a TypeRoute-specific feature.
 - **Route match ranking** automatically picks the most specific route when multiple patterns match (e.g., `/users/new` wins over `/users/:id`). Without ranking, route definition order matters.
 
 </details>
@@ -156,10 +156,10 @@ If you believe there's a mistake in the comparison table, please [open an issue]
 
 # Showcase
 
-Here's what routing looks like with Waymark:
+Here's what routing looks like with TypeRoute:
 
 ```tsx
-import { route, RouterRoot, Outlet, Link, useParams } from "waymark";
+import { route, RouterRoot, Outlet, Link, useParams } from "@typeroute/router";
 
 // Layout
 const layout = route("/").component(() => (
@@ -189,7 +189,7 @@ function App() {
   return <RouterRoot routes={routes} />;
 }
 
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
   }
@@ -198,17 +198,17 @@ declare module "waymark" {
 
 Everything autocompletes and type-checks automatically. No heavy setup, no magic, just a simple API that gets out of your way.
 
-👉 [Try it live in the StackBlitz playground](https://stackblitz.com/edit/waymark-demo?file=src%2Fapp.tsx)
+👉 [Try it live in the StackBlitz playground](https://stackblitz.com/edit/typeroute-demo?file=src%2Fapp.tsx)
 
 ---
 
 # Installation
 
 ```bash
-npm install waymark
+npm install @typeroute/router
 ```
 
-Waymark requires React 18 or higher.
+TypeRoute requires React 18 or higher.
 
 ---
 
@@ -219,7 +219,7 @@ Routes are created using the `route()` function, following the [builder pattern]
 The `.component()` method tells the route what to render when the path matches. It takes a React component and returns a new route instance with that component attached:
 
 ```tsx
-import { route } from "waymark";
+import { route } from "@typeroute/router";
 
 const home = route("/").component(HomePage);
 const about = route("/about").component(AboutPage);
@@ -275,7 +275,7 @@ function DashboardLayout() {
 }
 ```
 
-When the URL is `/dashboard/settings`, Waymark renders `DashboardLayout` with `Settings` inside the outlet. This is how you build layouts - shared UI like navigation or sidebars that stays mounted as users navigate between child routes.
+When the URL is `/dashboard/settings`, TypeRoute renders `DashboardLayout` with `Settings` inside the outlet. This is how you build layouts - shared UI like navigation or sidebars that stays mounted as users navigate between child routes.
 
 You can nest as deep as you need:
 
@@ -317,14 +317,14 @@ const about = layout.route("/about").component(About);
 const routes = [home, about]; // ✅ Don't include `layout`
 ```
 
-This makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable. Note that the order of routes in the array doesn't matter - Waymark uses a [ranking algorithm](#route-matching-and-ranking) to pick the most specific match.
+This makes sure that only actual pages can be matched and appear in autocomplete. The intermediate routes still exist as part of the hierarchy, they just aren't directly navigable. Note that the order of routes in the array doesn't matter - TypeRoute uses a [ranking algorithm](#route-matching-and-ranking) to pick the most specific match.
 
-The `RouterRoot` component is the entry point to Waymark. It listens to URL changes, matches the current path against your routes, and renders the matching route's component hierarchy.
+The `RouterRoot` component is the entry point to TypeRoute. It listens to URL changes, matches the current path against your routes, and renders the matching route's component hierarchy.
 
 There are two ways to set it up. The simplest is passing your routes array directly to `RouterRoot`. This creates a router instance internally (accessible via `useRouter`):
 
 ```tsx
-import { RouterRoot } from "waymark";
+import { RouterRoot } from "@typeroute/router";
 
 const routes = [home, about];
 
@@ -342,7 +342,7 @@ You can also pass a `basePath` if your app lives under a subpath:
 The second approach is to create a `Router` instance outside of React. This gives you a global router instance that can be accessed from non-React contexts (e.g., utility functions, service modules, or other non-React code):
 
 ```tsx
-import { Router, RouterRoot } from "waymark";
+import { Router, RouterRoot } from "@typeroute/router";
 
 const router = new Router({ routes });
 
@@ -358,7 +358,7 @@ function App() {
 For full type safety across your app, register your routes using TypeScript's module augmentation. This is a required step for proper autocompletion and type checking:
 
 ```tsx
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
   }
@@ -373,13 +373,13 @@ With this in place, `Link`, `navigate`, `useParams`, `useSearch`, and other APIs
 
 # Code organization
 
-There's no prescribed way to organize your routing code. Since Waymark isn't file-based routing, the structure is entirely up to you.
+There's no prescribed way to organize your routing code. Since TypeRoute isn't file-based routing, the structure is entirely up to you.
 
 That said, here's a pattern that tends to work well: define each route and its component in the same file, then export the route. This keeps everything related to that page in one place:
 
 ```tsx
 // pages/home.tsx
-import { route } from "waymark";
+import { route } from "@typeroute/router";
 
 export const home = route("/").component(Home);
 
@@ -390,7 +390,7 @@ function Home() {
 
 ```tsx
 // pages/about.tsx
-import { route } from "waymark";
+import { route } from "@typeroute/router";
 
 export const about = route("/about").component(About);
 
@@ -403,7 +403,7 @@ Then in your root app component file, import all the routes, register them with 
 
 ```tsx
 // app.tsx
-import { RouterRoot } from "waymark";
+import { RouterRoot } from "@typeroute/router";
 import { home } from "./pages/home";
 import { about } from "./pages/about";
 
@@ -413,14 +413,14 @@ export function App() {
   return <RouterRoot routes={routes} />;
 }
 
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
   }
 }
 ```
 
-But again, this is just one approach. You could keep all routes in a single file, split them by feature, organize them by route depth, whatever fits your project. Waymark doesn't care where the routes come from or how you structure your files.
+But again, this is just one approach. You could keep all routes in a single file, split them by feature, organize them by route depth, whatever fits your project. TypeRoute doesn't care where the routes come from or how you structure your files.
 
 ---
 
@@ -528,7 +528,7 @@ setSearch({ page: 1 }, true);
 
 ## JSON-first approach
 
-Waymark uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
+TypeRoute uses a JSON-first approach for search params, similar to TanStack Router. When serializing and deserializing values from the URL:
 
 - Plain strings that aren't valid JSON are kept as-is (and URL-encoded): `"John"` → `?name=John` → `"John"`
 - Everything else is JSON-encoded (then URL-encoded):
@@ -537,7 +537,7 @@ Waymark uses a JSON-first approach for search params, similar to TanStack Router
   - `[1, 2]` → `?filters=%5B1%2C2%5D` → `[1, 2]`
   - `42` → `count=42` → `42`
 
-This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, Waymark automatically parses JSON values back to their original types.
+This means you can store complex data structures like arrays and objects in search params without manual serialization. When reading from the URL, TypeRoute automatically parses JSON values back to their original types.
 
 The resulting parsed object is what gets passed to the `.search()` function or schema on the route builder. It's typed as `Record<string, unknown>`, which is why validation is useful - it lets you transform these unknown values into a typed, validated shape that your components can safely use.
 
@@ -736,7 +736,7 @@ To set a preload strategy globally for all links in your app, see [Global link c
 For navigation triggered by code rather than user clicks, use the `useNavigate` hook:
 
 ```tsx
-import { useNavigate } from "waymark";
+import { useNavigate } from "@typeroute/router";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -788,7 +788,7 @@ navigate({ url: "/callback", replace: true, state: { data: 123 } });
 For redirects triggered by rendering rather than events, use the `Navigate` component. It navigates as soon as it mounts, making it useful for conditional redirects based on application state:
 
 ```tsx
-import { Navigate } from "waymark";
+import { Navigate } from "@typeroute/router";
 
 function ProtectedPage() {
   const { isAuthenticated } = useAuth();
@@ -870,7 +870,7 @@ const userProfile = route("/users/:id")
 
 See [Route preloading](#route-preloading) for how to trigger preload functions.
 
-Depending on when and how preloading is triggered, these functions may run repeatedly. Waymark intentionally doesn't cache or deduplicate the calls - that's the job of your data layer. Libraries like TanStack Query, SWR, or Apollo handle this well. For example, TanStack Query's `staleTime` prevents refetches when data is still fresh:
+Depending on when and how preloading is triggered, these functions may run repeatedly. TypeRoute intentionally doesn't cache or deduplicate the calls - that's the job of your data layer. Libraries like TanStack Query, SWR, or Apollo handle this well. For example, TanStack Query's `staleTime` prevents refetches when data is still fresh:
 
 ```tsx
 await queryClient.prefetchQuery({
@@ -990,7 +990,7 @@ On `/dashboard/settings`, this renders "Dashboard / Settings". You can place the
 For type safety, register your handle type in the module augmentation:
 
 ```tsx
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
     handle: { title: string; requiresAuth?: boolean };
@@ -1007,7 +1007,7 @@ Middlewares bundle reusable configuration that can be applied to multiple routes
 Create middleware with the `middleware()` function. It returns a middleware object that supports the same builder methods as routes, except `.route()`.
 
 ```tsx
-import { middleware } from "waymark";
+import { middleware } from "@typeroute/router";
 
 const pagination = middleware().search(
   z.object({
@@ -1080,7 +1080,7 @@ const editorPage = route("/editor").use(guard("editor")).component(EditorPage);
 
 # Route matching and ranking
 
-When a user navigates to a URL, Waymark needs to determine which route matches. Since multiple routes can potentially match the same path (think `/users/:id` vs `/users/new`), Waymark uses a ranking algorithm to pick the most specific one.
+When a user navigates to a URL, TypeRoute needs to determine which route matches. Since multiple routes can potentially match the same path (think `/users/:id` vs `/users/new`), TypeRoute uses a ranking algorithm to pick the most specific one.
 
 Each segment in a route pattern gets a weight:
 
@@ -1090,7 +1090,7 @@ Each segment in a route pattern gets a weight:
 | Dynamic      | 1      | `:id`, `:slug?`            |
 | Wildcard     | 0      | `*`, `*?`                  |
 
-When multiple routes match, Waymark compares them segment by segment from left to right. The route with the higher weight at the first differing position wins. If weights are equal, it continues to the next segment.
+When multiple routes match, TypeRoute compares them segment by segment from left to right. The route with the higher weight at the first differing position wins. If weights are equal, it continues to the next segment.
 
 Consider these routes:
 
@@ -1100,7 +1100,7 @@ const userProfile = route("/users/:id").component(UserProfile);
 const userCatchAll = route("/users/*").component(UserCatchAll);
 ```
 
-For the path `/users/new`, all three would match. Waymark ranks them to pick the most specific:
+For the path `/users/new`, all three would match. TypeRoute ranks them to pick the most specific:
 
 ```
 /users/new  → [static, static]   → weights [2, 2] ✓ Wins
@@ -1118,7 +1118,7 @@ For the path `/users/42`:
 /users/*    → [static, wildcard] → weights [2, 0]
 ```
 
-This ranking algorithm means you don't need to order your routes array carefully. Define them in any order and Waymark figures out the right match regardless:
+This ranking algorithm means you don't need to order your routes array carefully. Define them in any order and TypeRoute figures out the right match regardless:
 
 ```tsx
 const routes = [
@@ -1132,14 +1132,14 @@ const routes = [
 
 # History implementations
 
-History is an abstraction layer that sits between the router and the actual low-level navigation logic. It handles reading and updating the current location, managing navigation state, and notifying when the URL changes. This abstraction allows Waymark to work in different environments (browser, hash-based, in-memory, server-side, tests, etc.) without changing the router's core logic. You can switch between environments simply by swapping the history implementation - the rest of your app stays exactly the same.
+History is an abstraction layer that sits between the router and the actual low-level navigation logic. It handles reading and updating the current location, managing navigation state, and notifying when the URL changes. This abstraction allows TypeRoute to work in different environments (browser, hash-based, in-memory, server-side, tests, etc.) without changing the router's core logic. You can switch between environments simply by swapping the history implementation - the rest of your app stays exactly the same.
 
-Waymark supports three history modes out of the box.
+TypeRoute supports three history modes out of the box.
 
 **BrowserHistory** is the default. It uses the browser's History API, working with browser URLs like `/posts/123`:
 
 ```tsx
-import { BrowserHistory } from "waymark";
+import { BrowserHistory } from "@typeroute/router";
 
 <RouterRoot routes={routes} history={new BrowserHistory()} />;
 ```
@@ -1147,7 +1147,7 @@ import { BrowserHistory } from "waymark";
 **HashHistory** stores the path in the URL hash, producing URLs like `/#/posts/123`. This is useful for static file hosting where you can't configure server-side routing:
 
 ```tsx
-import { HashHistory } from "waymark";
+import { HashHistory } from "@typeroute/router";
 
 <RouterRoot routes={routes} history={new HashHistory()} />;
 ```
@@ -1155,7 +1155,7 @@ import { HashHistory } from "waymark";
 **MemoryHistory** keeps the history in memory without touching the URL. It also doesn't rely on any browser API. Perfect for testing, server-side rendering (SSR), or embedded applications:
 
 ```tsx
-import { MemoryHistory } from "waymark";
+import { MemoryHistory } from "@typeroute/router";
 
 <RouterRoot routes={routes} history={new MemoryHistory("/initial/path")} />;
 ```
@@ -1166,16 +1166,16 @@ All history implementations conform to the `HistoryLike` interface, so you can c
 
 # Devtools
 
-Waymark has a companion devtools package for inspecting routes, matches, parameters, and navigation state.
+TypeRoute has a companion devtools package for inspecting routes, matches, parameters, and navigation state.
 
 ```bash
-npm install waymark-devtools
+npm install @typeroute/devtools
 ```
 
 Render the `Devtools` component anywhere inside your routes. It displays a toggle button that opens a draggable and resizable floating panel:
 
 ```tsx
-import { Devtools } from "waymark-devtools";
+import { Devtools } from "@typeroute/devtools";
 
 const layout = route("/").component(Layout);
 
@@ -1192,7 +1192,7 @@ function Layout() {
 If you'd rather embed the panel directly into your layout instead of using the floating window, use `DevtoolsPanel`:
 
 ```tsx
-import { DevtoolsPanel } from "waymark-devtools";
+import { DevtoolsPanel } from "@typeroute/devtools";
 
 function DebugSidebar() {
   return (
@@ -1218,7 +1218,7 @@ import.meta.env.DEV && <Devtools />;
 Here's a minimal but complete routing setup with a layout and two pages:
 
 ```tsx
-import { route, RouterRoot, Outlet, Link } from "waymark";
+import { route, RouterRoot, Outlet, Link } from "@typeroute/router";
 
 // Layout route
 const app = route("/").component(AppLayout);
@@ -1248,7 +1248,7 @@ export function App() {
   return <RouterRoot routes={routes} />;
 }
 
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
   }
@@ -1257,12 +1257,12 @@ declare module "waymark" {
 
 ## Server-side rendering (SSR)
 
-Waymark supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
+TypeRoute supports server-side rendering using `MemoryHistory`. The key is to use `MemoryHistory` on the server (initialized with the request URL) and `BrowserHistory` on the client:
 
 ```tsx
 // server.tsx
 import { renderToString } from "react-dom/server";
-import { RouterRoot, MemoryHistory, type SSRContext } from "waymark";
+import { RouterRoot, MemoryHistory, type SSRContext } from "@typeroute/router";
 import { routes } from "./routes";
 
 function handleRequest(req: Request) {
@@ -1290,7 +1290,7 @@ On the client, use the default (`BrowserHistory`) for hydration:
 ```tsx
 // client.tsx
 import { hydrateRoot } from "react-dom/client";
-import { RouterRoot } from "waymark";
+import { RouterRoot } from "@typeroute/router";
 import { routes } from "./routes";
 
 hydrateRoot(rootElement, <RouterRoot routes={routes} />);
@@ -1303,7 +1303,7 @@ You can also manually set `ssrContext.statusCode` in your components during SSR 
 Create a component that scrolls to top when the path changes and include it in your layout:
 
 ```tsx
-import { useLocation } from "waymark";
+import { useLocation } from "@typeroute/router";
 import { useEffect } from "react";
 
 function ScrollToTop() {
@@ -1333,7 +1333,7 @@ The hook returns a Match object (containing `route` and `params`) if there's a m
 - **Strict matching** (`strict: true`): Matches only if the path exactly matches the route pattern.
 
 ```tsx
-import { useMatch } from "waymark";
+import { useMatch } from "@typeroute/router";
 
 const dashboard = route("/dashboard").component(Dashboard);
 
@@ -1424,7 +1424,7 @@ You can use the view transitions API for smoother page animations. Create a hist
 
 ```tsx
 import { flushSync } from "react-dom";
-import { BrowserHistory, type HistoryLike } from "waymark";
+import { BrowserHistory, type HistoryLike } from "@typeroute/router";
 
 const withViewTransition = (history: HistoryLike) => {
   const { go, push } = history;
@@ -1464,7 +1464,7 @@ For more advanced techniques, see the [MDN documentation on View Transitions](ht
 
 ## Router class
 
-The `Router` class is the core of Waymark. You can create an instance directly or let `RouterRoot` create one.
+The `Router` class is the core of TypeRoute. You can create an instance directly or let `RouterRoot` create one.
 
 **Properties:**
 
@@ -1802,7 +1802,7 @@ function Layout() {
 
 ## History interface
 
-The `HistoryLike` interface defines how Waymark interacts with navigation. All history implementations conform to this interface.
+The `HistoryLike` interface defines how TypeRoute interacts with navigation. All history implementations conform to this interface.
 
 **Available implementations:**
 
@@ -1964,7 +1964,7 @@ interface PreloadContext {
 - Relative path navigation? Not sure it's worth the extra bundle size given that users can export/import route objects and pass them as navigation option.
 - Document usage in test environments
 - Navigation blockers (`useBlocker`, etc.)
-- Open to suggestions, we can discuss them [here](https://github.com/strblr/waymark/discussions).
+- Open to suggestions, we can discuss them [here](https://github.com/strblr/typeroute/discussions).
 
 ---
 
