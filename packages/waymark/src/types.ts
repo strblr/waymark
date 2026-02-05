@@ -2,7 +2,7 @@ import type { ComponentType, CSSProperties } from "react";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { Merge } from "type-fest";
 import type { Route } from "./route";
-import type { MaybeKey, OptionalOnUndefined } from "./utils";
+import type { MaybeKey } from "./utils";
 
 // Register
 
@@ -19,12 +19,10 @@ export type Handle = Register extends { handle: infer Handle } ? Handle : any;
 // Route
 
 export interface Middleware<S extends {} = any> {
-  use: <S2 extends {}>(
-    middleware: Middleware<S2>
-  ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
+  use: <S2 extends {}>(middleware: Middleware<S2>) => Middleware<Merge<S, S2>>;
   search: <S2 extends {}>(
     validate: Validator<S, S2>
-  ) => Middleware<Merge<S, OptionalOnUndefined<S2>>>;
+  ) => Middleware<Merge<S, S2>>;
   handle: (handle: Handle) => Middleware<S>;
   preload: (
     preload: (context: PreloadContext<{}, S>) => Promise<any>
@@ -85,7 +83,7 @@ export type NavigateOptions<P extends Pattern> = {
   replace?: boolean;
   state?: any;
 } & MaybeKey<"params", Params<P>> &
-  MaybeKey<"search", Search<P>>;
+  MaybeKey<"search", Partial<Search<P>>>;
 
 export interface LinkOptions {
   strict?: boolean;
