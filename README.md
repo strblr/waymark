@@ -166,7 +166,7 @@ Here's what routing looks like with TypeRoute:
 ```tsx
 import { route, RouterRoot, Outlet, Link, useParams } from "@typeroute/router";
 
-// Layout
+// Routes
 const layout = route("/").component(() => (
   <div>
     <nav>
@@ -179,10 +179,9 @@ const layout = route("/").component(() => (
   </div>
 ));
 
-// Pages
 const home = layout.route("/").component(() => <h1>Home</h1>);
 
-const user = layout.route("/users/:id").component(function UserPage() {
+const user = layout.route("/users/:id").component(() => {
   const { id } = useParams(user); // Fully typed
   return <h1>User {id}</h1>;
 });
