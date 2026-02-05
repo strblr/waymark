@@ -27,7 +27,7 @@ export function RouteTree({
     () =>
       !currentMatch
         ? new Set<Route>()
-        : new Set<Route>(currentMatch.route._.chain).add(currentMatch.route),
+        : new Set<Route>(getChain(currentMatch.route)),
     [currentMatch]
   );
 
@@ -38,7 +38,7 @@ export function RouteTree({
 
     for (let i = 0; i < routes.length; i++) {
       const route = routes[i];
-      const chain = [...route._.chain, route];
+      const chain = getChain(route);
       for (let j = 0; j < chain.length; j++) {
         const r = chain[j];
         let node = nodeMap.get(r);
@@ -167,12 +167,17 @@ function RouteTreeNode({
   );
 }
 
+function getChain(route: Route): Route[] {
+  const parent = route._.p;
+  return !parent ? [route] : [...getChain(parent), route];
+}
+
 function formatPattern(route: Route) {
   let pattern = route._.pattern;
   if (pattern === "/") return "/";
-  const chain = route._.chain;
-  if (chain.size) {
-    const parentPattern = [...chain].at(-1)!._.pattern;
+  const parent = route._.p;
+  if (parent) {
+    const parentPattern = parent._.pattern;
     pattern = pattern.substring(parentPattern.length);
   }
   if (pattern.startsWith("/")) pattern = pattern.substring(1);
