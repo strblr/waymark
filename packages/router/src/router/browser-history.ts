@@ -22,8 +22,7 @@ export class BrowserHistory implements HistoryLike {
         const original = history[type];
         history[type] = function (...args) {
           original.apply(this, args);
-          const event = new Event(type);
-          dispatchEvent(event);
+          dispatchEvent(new Event(type));
         };
       }
       (window as any)[patch] = 1;

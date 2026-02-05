@@ -42,12 +42,12 @@ export function errorBoundary(
   Comp: ComponentType<{ error: unknown }>
 ): ComponentType {
   type Props = { children: ReactNode };
-  type State = { children: ReactNode; error: null | [unknown] };
+  type State = { children: ReactNode; error?: [unknown] };
 
   class Catch extends Component<Props, State> {
     constructor(props: Props) {
       super(props);
-      this.state = { children: props.children, error: null };
+      this.state = { ...props };
     }
 
     static getDerivedStateFromError(error: unknown) {
@@ -56,7 +56,7 @@ export function errorBoundary(
 
     static getDerivedStateFromProps(props: Props, state: State) {
       if (props.children !== state.children) {
-        return { children: props.children, error: null };
+        return { ...props, error: undefined };
       }
       return state;
     }
