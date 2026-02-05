@@ -79,6 +79,7 @@ Waymark is a routing library for React built around three core ideas: **type saf
 | **Route match ranking**\*        |   ✅    |      ✅      |       ✅        |   ❌   |
 | **View transitions**             |   ✅    |      ✅      |       ✅        |   ✅   |
 | **Devtools**                     |   ✅    |      ⚠️      |       ✅        |   ❌   |
+| **Navigation blockers**          |   🔨    |      ✅      |       ✅        |   ❌   |
 | **File-based routing**           |   ❌    |      ✅      |       ✅        |   ❌   |
 | **React Native**                 |   ❌    |      ✅      |       ❌        |   ❌   |
 
