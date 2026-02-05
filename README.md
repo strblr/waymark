@@ -135,6 +135,7 @@ If you believe there's a mistake in the comparison table, please [open an issue]
   - [Global link configuration](#global-link-configuration)
   - [History middleware](#history-middleware)
   - [View transitions](#view-transitions)
+  - [Dynamic page titles](#dynamic-page-titles)
 - [API reference](#api-reference)
   - [Router class](#router-class)
   - [Route class](#route-class)
@@ -1451,6 +1452,63 @@ Add CSS to control the transition:
 ```
 
 For more advanced techniques, see the [MDN documentation on View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API).
+
+## Dynamic page titles
+
+Use [route handles](#route-handles) to define page titles and update the browser's document title dynamically as users navigate. First, attach a `title` handle to each route:
+
+```tsx
+const layout = route("/").handle({ title: "App" }).component(Layout);
+const home = layout.route("/").handle({ title: "Home" }).component(HomePage);
+const settings = layout
+  .route("/settings")
+  .handle({ title: "Settings" })
+  .component(SettingsPage);
+```
+
+Then create a component that reads the handles and updates `document.title`:
+
+```tsx
+function DocumentTitle() {
+  const handles = useHandles();
+
+  useEffect(() => {
+    document.title = handles
+      .map(h => h.title)
+      .reverse()
+      .join(" - ");
+  }, [handles]);
+
+  return null;
+}
+```
+
+Place this component somewhere in your layout:
+
+```tsx
+function Layout() {
+  return (
+    <>
+      <DocumentTitle />
+      <Header />
+      <Outlet />
+    </>
+  );
+}
+```
+
+When visiting `/settings`, the document title becomes "Settings - App". The `useHandles()` hook returns handles from all routes in the current matching chain (from root to leaf), so reversing the array puts the most specific page first.
+
+For type safety, register your handle type:
+
+```tsx
+declare module "@typeroute/router" {
+  interface Register {
+    routes: typeof routes;
+    handle: { title: string };
+  }
+}
+```
 
 ---
 

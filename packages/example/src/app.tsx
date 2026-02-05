@@ -1,4 +1,4 @@
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import {
   useQuery,
   QueryClient,
@@ -123,6 +123,7 @@ function Layout() {
       <div className="content">
         <Outlet />
       </div>
+      <PageTitle />
       <Devtools />
     </div>
   );
@@ -137,6 +138,17 @@ function ErrorBoundary({ error }: { error: unknown }) {
       </div>
     </div>
   );
+}
+
+function PageTitle() {
+  const handles = useHandles();
+  useEffect(() => {
+    document.title = handles
+      .map(h => h.breadcrumb)
+      .reverse()
+      .join(" - ");
+  }, [handles]);
+  return null;
 }
 
 // Index
