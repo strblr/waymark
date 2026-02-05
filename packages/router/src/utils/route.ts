@@ -28,9 +28,9 @@ export function validator<Input extends {}, Output extends {}>(
     return (input: Input) => {
       const result = validate["~standard"].validate(input);
       if (result instanceof Promise) {
-        throw new Error("[Waymark] Validation can't be async");
+        throw new Error("[TypeRoute] Validation can't be async");
       } else if (result.issues) {
-        throw new Error("[Waymark] Validation failed", {
+        throw new Error("[TypeRoute] Validation failed", {
           cause: result.issues
         });
       } else {

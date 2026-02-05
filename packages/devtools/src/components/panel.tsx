@@ -12,7 +12,7 @@ import {
   type Router,
   type Route,
   type Match
-} from "waymark";
+} from "@typeroute/router";
 import { RouteTree } from "./route-tree";
 import { Inspector } from "./inspector";
 import { styles } from "../styles";

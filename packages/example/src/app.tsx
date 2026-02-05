@@ -5,7 +5,7 @@ import {
   QueryClientProvider
 } from "@tanstack/react-query";
 import { z } from "zod";
-import { Devtools } from "waymark-devtools";
+import { Devtools } from "@typeroute/devtools";
 import {
   RouterRoot,
   route,
@@ -21,7 +21,7 @@ import {
   useMatch,
   BrowserHistory,
   type HistoryLike
-} from "waymark";
+} from "@typeroute/router";
 
 // App
 
@@ -42,7 +42,7 @@ export function App() {
           history={logMiddleware(new BrowserHistory())}
           defaultLinkOptions={{
             preload: "intent",
-            className: "waymark-link",
+            className: "typeroute-link",
             activeClassName: "active-link"
           }}
         />
@@ -417,7 +417,7 @@ const logMiddleware = (history: HistoryLike) => {
   return history;
 };
 
-declare module "waymark" {
+declare module "@typeroute/router" {
   interface Register {
     routes: typeof routes;
     handle: { breadcrumb: string };

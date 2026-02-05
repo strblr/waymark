@@ -1,9 +1,9 @@
 {
-  "name": "waymark-devtools",
-  "version": "0.6.1",
+  "name": "@typeroute/devtools",
+  "version": "0.7.0",
   "license": "MIT",
   "author": "strblr",
-  "description": "Devtools for Waymark router - inspect routes, matches, and navigation state",
+  "description": "Devtools for TypeRoute router - inspect routes, matches, and navigation state",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,12 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strblr/waymark.git"
+    "url": "git+https://github.com/strblr/typeroute.git"
   },
-  "homepage": "https://waymarkrouter.com",
-  "bugs": "https://github.com/strblr/waymark/issues",
+  "homepage": "https://typeroute.com",
+  "bugs": "https://github.com/strblr/typeroute/issues",
   "keywords": [
-    "waymark",
+    "typeroute",
     "router",
     "devtools",
     "react",
@@ -33,13 +33,13 @@
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.7",
-    "@types/react": "^19.2.10",
-    "tsdown": "^0.20.1",
+    "@types/bun": "^1.3.8",
+    "@types/react": "^19.2.11",
+    "tsdown": "^0.20.2",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "waymark": ">=0.6.0"
+    "@typeroute/router": ">=0.7.0",
+    "react": ">=18"
   }
 }

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
 export function useLocalStorage<T>(key: string, defaultValue: T) {
-  const fullKey = `waymark-devtools:${key}`;
+  const fullKey = `typeroute-devtools:${key}`;
 
   const [value, set] = useState<T>(() => {
     try {

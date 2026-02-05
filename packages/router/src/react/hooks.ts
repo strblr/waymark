@@ -20,7 +20,7 @@ import type {
 export function useRouter() {
   const router = useContext(RouterContext);
   if (router) return router;
-  throw new Error("[Waymark] useRouter must be within a router context");
+  throw new Error("[TypeRoute] useRouter must be within a router context");
 }
 
 // useLocation
@@ -28,7 +28,7 @@ export function useRouter() {
 export function useLocation() {
   const location = useContext(LocationContext);
   if (location) return location;
-  throw new Error("[Waymark] useLocation must be within a router context");
+  throw new Error("[TypeRoute] useLocation must be within a router context");
 }
 
 // useMatch
@@ -66,7 +66,9 @@ export function useHandles(): Handle[] {
 export function useParams<P extends Pattern>(from: P | GetRoute<P>) {
   const match = useMatch({ from });
   if (match) return match.params;
-  throw new Error(`[Waymark] Can't read params for non-matching route ${from}`);
+  throw new Error(
+    `[TypeRoute] Can't read params for non-matching route ${from}`
+  );
 }
 
 // useSearch

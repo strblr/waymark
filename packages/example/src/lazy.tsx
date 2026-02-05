@@ -1,4 +1,4 @@
-import { Link, Outlet } from "waymark";
+import { Link, Outlet } from "@typeroute/router";
 
 export default function LazyPage() {
   return (

@@ -1,6 +1,6 @@
 {
-  "name": "waymark",
-  "version": "0.6.1",
+  "name": "@typeroute/router",
+  "version": "0.7.0",
   "license": "MIT",
   "author": "strblr",
   "description": "Type-safe React router that just works - simple setup, full autocomplete, 4kB gzipped",
@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strblr/waymark.git"
+    "url": "git+https://github.com/strblr/typeroute.git"
   },
-  "homepage": "https://waymarkrouter.com",
-  "bugs": "https://github.com/strblr/waymark/issues",
+  "homepage": "https://typeroute.com",
+  "bugs": "https://github.com/strblr/typeroute/issues",
   "keywords": [
     "react",
     "router",
@@ -43,9 +43,9 @@
     "postpublish": "rm -f README.md"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.7",
-    "@types/react": "^19.2.10",
-    "tsdown": "^0.20.1",
+    "@types/bun": "^1.3.8",
+    "@types/react": "^19.2.11",
+    "tsdown": "^0.20.2",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
