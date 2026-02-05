@@ -38,13 +38,13 @@ export function FloatingWindow({
     height: Math.max(minSize.height, Math.min(size.height, maxSize.height))
   });
 
-  const handleDragStart = (e: React.MouseEvent) => {
+  const handleDragStart = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     e.preventDefault();
     let frame: number;
     const { clientX, clientY } = e;
 
-    const handleDrag = (e: MouseEvent) => {
+    const handleDrag = (e: PointerEvent) => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         setPosition(
@@ -57,22 +57,22 @@ export function FloatingWindow({
     };
 
     const handleDragEnd = () => {
-      document.removeEventListener("mousemove", handleDrag);
-      document.removeEventListener("mouseup", handleDragEnd);
+      document.removeEventListener("pointermove", handleDrag);
+      document.removeEventListener("pointerup", handleDragEnd);
     };
 
-    document.addEventListener("mousemove", handleDrag);
-    document.addEventListener("mouseup", handleDragEnd);
+    document.addEventListener("pointermove", handleDrag);
+    document.addEventListener("pointerup", handleDragEnd);
   };
 
   const handleResizeStart =
-    (edge: (typeof resizeEdges)[number]) => (e: React.MouseEvent) => {
+    (edge: (typeof resizeEdges)[number]) => (e: React.PointerEvent) => {
       if (e.button !== 0) return;
       e.preventDefault();
       let frame: number;
       const { clientX, clientY } = e;
 
-      const handleResize = (e: MouseEvent) => {
+      const handleResize = (e: PointerEvent) => {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
           const deltaX = e.clientX - clientX;
@@ -108,12 +108,12 @@ export function FloatingWindow({
       };
 
       const handleResizeEnd = () => {
-        document.removeEventListener("mousemove", handleResize);
-        document.removeEventListener("mouseup", handleResizeEnd);
+        document.removeEventListener("pointermove", handleResize);
+        document.removeEventListener("pointerup", handleResizeEnd);
       };
 
-      document.addEventListener("mousemove", handleResize);
-      document.addEventListener("mouseup", handleResizeEnd);
+      document.addEventListener("pointermove", handleResize);
+      document.addEventListener("pointerup", handleResizeEnd);
     };
 
   return !open ? null : (
@@ -122,10 +122,10 @@ export function FloatingWindow({
         <div
           key={edge}
           style={styles.floatingWindowResizeHandle(edge)}
-          onMouseDown={handleResizeStart(edge)}
+          onPointerDown={handleResizeStart(edge)}
         />
       ))}
-      <div style={styles.floatingWindowHeader} onMouseDown={handleDragStart}>
+      <div style={styles.floatingWindowHeader} onPointerDown={handleDragStart}>
         <div style={styles.floatingWindowTitle}>
           <Logo size={18} />
           <span>{title}</span>

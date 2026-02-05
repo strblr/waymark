@@ -144,7 +144,12 @@ export const styles = {
         cursor: "nesw-resize"
       }
     };
-    return { position: "absolute", zIndex: 1, ...positions[edge] };
+    return {
+      position: "absolute",
+      zIndex: 1,
+      touchAction: "none",
+      ...positions[edge]
+    };
   },
 
   floatingWindowHeader: {
@@ -157,6 +162,7 @@ export const styles = {
     backdropFilter: "blur(12px)",
     cursor: "move",
     userSelect: "none",
+    touchAction: "none",
     flexShrink: 0,
     boxSizing: "border-box"
   },
