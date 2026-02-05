@@ -11,11 +11,12 @@ export function normalizePath<P extends string>(path: P) {
 
 export function parsePattern<P extends string>(pattern: P) {
   const { keys, pattern: regex } = parse(pattern);
+  const loose = parse(pattern, true).pattern;
   const weights = pattern
     .split("/")
     .slice(1)
     .map(s => (s.includes("*") ? 0 : s.includes(":") ? 1 : 2));
-  return { pattern, keys, regex, weights };
+  return { pattern, keys, regex, loose, weights };
 }
 
 export function validator<Input extends {}, Output extends {}>(
@@ -27,7 +28,7 @@ export function validator<Input extends {}, Output extends {}>(
     return (input: Input) => {
       const result = validate["~standard"].validate(input);
       if (result instanceof Promise) {
-        throw new Error("[Waymark] Validation must be synchronous");
+        throw new Error("[Waymark] Validation can't be async");
       } else if (result.issues) {
         throw new Error("[Waymark] Validation failed", {
           cause: result.issues

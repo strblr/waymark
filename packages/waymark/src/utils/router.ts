@@ -1,5 +1,6 @@
 import { normalizePath } from "./route";
 import { parseSearch, stringifySearch } from "./search";
+import type { Route } from "../route";
 import type { Match } from "../types";
 
 export function absolutePath(rpath: string, basePath: string) {
@@ -22,13 +23,13 @@ export function parseUrl(url: string) {
   return { path: pathname, search: parseSearch(search) };
 }
 
-export function matchPattern(
-  regex: RegExp,
-  keys: string[],
+export function match(
+  { keys, regex, loose }: Route["_"],
+  strict: boolean | undefined,
   path: string,
   basePath: string
 ) {
-  const matches = regex.exec(relativePath(path, basePath));
+  const matches = (strict ? regex : loose).exec(relativePath(path, basePath));
   if (!matches) return null;
   const out: Record<string, string> = {};
   keys.forEach((key, i) => {
