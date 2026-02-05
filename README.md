@@ -21,7 +21,8 @@
   </a>
   <a href="https://github.com/strblr/typeroute/blob/master/LICENSE">
     <img
-      src="https://img.shields.io/npm/l/@typeroute/router?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
+      src="https://img.shields.io/github/license/strblr/typeroute
+?style=flat-square&color=0B0D0F&labelColor=0B0D0F"
       alt="license"
     />
   </a>
