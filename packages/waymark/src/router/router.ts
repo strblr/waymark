@@ -4,7 +4,7 @@ import type { Route } from "../route";
 import {
   normalizePath,
   mergeUrl,
-  matchPattern,
+  match,
   rankMatches,
   absolutePath
 } from "../utils";
@@ -13,6 +13,7 @@ import type {
   RouterOptions,
   Pattern,
   GetRoute,
+  MatchOptions,
   Match,
   NavigateOptions,
   HistoryLike,
@@ -53,23 +54,27 @@ export class Router {
     }
     const route = this._.routeMap.get(pattern);
     if (!route) {
-      throw new Error(`[Waymark] Route not found for pattern: ${pattern}`);
+      throw new Error(`[Waymark] Route not found for ${pattern}`);
     }
     return route as GetRoute<P>;
   };
 
   match = <P extends Pattern>(
     path: string,
-    route: GetRoute<P>
+    options: MatchOptions<P>
   ): Match<P> | null => {
-    const { regex, keys } = route._;
-    const params = matchPattern(regex, keys, path, this.basePath);
-    return !params ? null : { route, params };
+    const { from, strict, params: filter } = options;
+    const route = this.getRoute(from);
+    const params = match(route._, strict, path, this.basePath);
+    return params &&
+      (!filter || Object.keys(filter).every(key => filter[key] === params[key]))
+      ? { route, params }
+      : null;
   };
 
   matchAll = (path: string): Match | null => {
     const matches = this.routes
-      .map(route => this.match(path, route))
+      .map(route => this.match(path, { from: route, strict: true }))
       .filter(m => !!m);
     return rankMatches(matches)[0] ?? null;
   };

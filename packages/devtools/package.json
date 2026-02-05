@@ -1,6 +1,6 @@
 {
   "name": "waymark-devtools",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "author": "strblr",
   "description": "Devtools for Waymark router - inspect routes, matches, and navigation state",

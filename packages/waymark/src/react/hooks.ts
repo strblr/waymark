@@ -11,7 +11,6 @@ import type {
   Pattern,
   GetRoute,
   MatchOptions,
-  Params,
   Search,
   Updater
 } from "../types";
@@ -21,7 +20,7 @@ import type {
 export function useRouter() {
   const router = useContext(RouterContext);
   if (router) return router;
-  throw new Error("[Waymark] useRouter must be used within a router context");
+  throw new Error("[Waymark] useRouter must be within a router context");
 }
 
 // useLocation
@@ -29,24 +28,18 @@ export function useRouter() {
 export function useLocation() {
   const location = useContext(LocationContext);
   if (location) return location;
-  throw new Error("[Waymark] useLocation must be used within a router context");
+  throw new Error("[Waymark] useLocation must be within a router context");
 }
 
 // useMatch
 
-export function useMatch<P extends Pattern>(
-  options: MatchOptions<P>
-): Params<P> | null {
+export function useMatch<P extends Pattern>(options: MatchOptions<P>) {
   const router = useRouter();
-  const match = useContext(MatchContext);
-  const { from, strict, params } = options;
-  const route = router.getRoute(from);
-  return match &&
-    (match.route === route || (!strict && match.route._.chain.has(route))) &&
-    (!params ||
-      Object.keys(params).every(key => params[key] === match.params[key]))
-    ? match.params
-    : null;
+  const { path } = useLocation();
+  return useMemo(
+    () => router.match(path, options),
+    [router, path, options.from, options.strict, options.params]
+  );
 }
 
 // useOutlet
@@ -70,30 +63,28 @@ export function useHandles(): Handle[] {
 
 // useParams
 
-export function useParams<P extends Pattern>(from: P | GetRoute<P>): Params<P> {
-  const params = useMatch({ from });
-  if (params) return params;
-  throw new Error(
-    `[Waymark] Can't read params for non-matching route: ${from}`
-  );
+export function useParams<P extends Pattern>(from: P | GetRoute<P>) {
+  const match = useMatch({ from });
+  if (match) return match.params;
+  throw new Error(`[Waymark] Can't read params for non-matching route ${from}`);
 }
 
 // useSearch
 
 export function useSearch<P extends Pattern>(from: P | GetRoute<P>) {
   const router = useRouter();
-  const location = useLocation();
+  const { search, path } = useLocation();
   const route = router.getRoute(from);
   const validated = useMemo<Search<P>>(
-    () => route._.validate(location.search),
-    [route, location.search]
+    () => route._.validate(search),
+    [route, search]
   );
 
   const setSearch = useEvent(
     (update: Updater<Search<P>>, replace?: boolean) => {
       update = typeof update === "function" ? update(validated) : update;
       const search = { ...validated, ...update };
-      const url = mergeUrl(location.path, search);
+      const url = mergeUrl(path, search);
       router.navigate({ url, replace });
     }
   );
