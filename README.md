@@ -171,7 +171,7 @@ const layout = route("/").component(() => (
   <div>
     <nav>
       <Link to="/">Home</Link>
-      <Link to="/users/:id" params={{ id: "42" }}>
+      <Link to={user} params={{ id: "42" }}>
         User
       </Link>
     </nav>
