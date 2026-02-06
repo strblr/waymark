@@ -10,8 +10,8 @@ import {
   cloneElement,
   type ReactNode,
   type MouseEvent,
-  type FocusEvent,
-  type PointerEvent,
+  type SyntheticEvent,
+  type ReactEventHandler,
   type RefAttributes,
   type AnchorHTMLAttributes
 } from "react";
@@ -180,33 +180,12 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     router.navigate({ url, replace, state });
   };
 
-  const onFocus = (event: FocusEvent<HTMLAnchorElement>) => {
-    rest.onFocus?.(event);
-    if (preload === "intent" && !event.defaultPrevented) {
-      schedulePreload();
-    }
-  };
-
-  const onBlur = (event: FocusEvent<HTMLAnchorElement>) => {
-    rest.onBlur?.(event);
-    if (preload === "intent") {
-      cancelPreload();
-    }
-  };
-
-  const onPointerEnter = (event: PointerEvent<HTMLAnchorElement>) => {
-    rest.onPointerEnter?.(event);
-    if (preload === "intent" && !event.defaultPrevented) {
-      schedulePreload();
-    }
-  };
-
-  const onPointerLeave = (event: PointerEvent<HTMLAnchorElement>) => {
-    rest.onPointerLeave?.(event);
-    if (preload === "intent") {
-      cancelPreload();
-    }
-  };
+  const intentEvent =
+    (action: () => void, handler?: ReactEventHandler<HTMLAnchorElement>) =>
+    (e: SyntheticEvent<HTMLAnchorElement>) => {
+      handler?.(e);
+      preload === "intent" && !e.defaultPrevented && action();
+    };
 
   const anchorProps = {
     ...rest,
@@ -214,10 +193,10 @@ export function Link<P extends Pattern>(props: LinkProps<P>): ReactNode {
     ref: mergeRefs(ref, rest.ref),
     href: url,
     onClick,
-    onFocus,
-    onBlur,
-    onPointerEnter,
-    onPointerLeave
+    onFocus: intentEvent(schedulePreload, rest.onFocus),
+    onBlur: intentEvent(cancelPreload, rest.onBlur),
+    onPointerEnter: intentEvent(schedulePreload, rest.onPointerEnter),
+    onPointerLeave: intentEvent(cancelPreload, rest.onPointerLeave)
   };
 
   return asChild && isValidElement(children) ? (
