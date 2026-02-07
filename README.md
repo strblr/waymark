@@ -15,6 +15,12 @@
   </a>
   <a href="https://www.npmjs.com/package/@typeroute/router">
     <img
+      src="https://img.shields.io/npm/dw/%40typeroute%2Frouter?color=0d1117&labelColor=0d1117"
+      alt="weekly downloads"
+    />
+  </a>
+  <a href="https://www.npmjs.com/package/@typeroute/router">
+    <img
       src="https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@typeroute/router/dist/index.js?compression=gzip&label=gzip&color=0d1117&labelColor=0d1117"
       alt="gzip size"
     />
